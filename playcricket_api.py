@@ -1,101 +1,340 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
-Direct Play-Cricket API access.
+playcricket_api.py
 
-This module provides a lightweight interface to the Play-Cricket API
-without using the playcric package.
+Pure Play-Cricket API client.
 
-Design principle:
-    - Minimise API requests
-    - Retrieve the season match list once
-    - Retrieve each match detail once
-    - Allow the Scorecard class to extract all match information
-      from that single match-detail response
+Responsibilities
+----------------
+This class is responsible ONLY for communicating with the
+Play-Cricket API and returning API data in useful Python forms.
+
+It does NOT:
+    - store JSON data
+    - load or save the local database
+    - decide whether a match is already stored
+    - update the local database
+    - calculate player statistics
+    - create Scorecard objects
+
+Those responsibilities belong to PlayCricketDatabase and the
+analysis classes.
+
+Main API methods
+----------------
+get_all_matches()
+    Retrieve the Play-Cricket match list for a season.
+
+get_match_detail()
+    Retrieve the complete raw scorecard/detail for one match.
+
+The API match list includes a `last_updated` field. This is
+important because Play-Cricket scorecards can be edited after
+the original result has been entered. PlayCricketDatabase can
+use this value to determine whether its local copy is current.
 """
 
-import requests
-import pandas as pd
+import os
+import json
+from datetime import datetime
+
 import numpy as np
+import pandas as pd
+import requests
 
 
 class PlayCricketAPI:
 
-    # --------------------------------------------------
-    # API ENDPOINTS
-    # --------------------------------------------------
-
-    MATCHES_URL = (
-        "http://play-cricket.com/api/v2/"
-        "matches.json"
-        "?&site_id={site_id}"
-        "&season={season}"
-        "&api_token={api_key}"
-    )
-
-    MATCH_DETAIL_URL = (
-        "http://play-cricket.com/api/v2/"
-        "match_detail.json"
-        "?&match_id={match_id}"
-        "&api_token={api_key}"
-    )
-
-    # --------------------------------------------------
-    # INITIALISE
-    # --------------------------------------------------
+    # ==========================================================
+    # INITIALISATION
+    # ==========================================================
 
     def __init__(
         self,
-        api_key,
-        site_id,
-        team_names=None,
-        team_name_to_ids_lookup=None
+        api_key=None,
+        site_id=None,
+        base_url="https://play-cricket.com/api/v2",
+        timeout=60
     ):
+        """
+        Initialise the Play-Cricket API client.
+
+        Parameters
+        ----------
+        api_key : str
+            Play-Cricket API key.
+
+        site_id : int
+            Play-Cricket site ID.
+
+            For East Lancs Paper Mill CC this is:
+
+                9653
+
+        base_url : str
+            Base URL for the Play-Cricket API.
+
+        timeout : int
+            HTTP request timeout in seconds.
+        """
+
+        if api_key is None:
+            api_key = os.environ.get("PLAY_CRICKET_API_KEY")
+
+        if not api_key:
+            raise ValueError(
+                "No Play-Cricket API key supplied. "
+                "Pass api_key=... or set PLAY_CRICKET_API_KEY."
+            )
+
+        if site_id is None:
+            raise ValueError(
+                "site_id is required when creating PlayCricketAPI."
+            )
 
         self.api_key = api_key
-        self.site_id = site_id
+        self.site_id = int(site_id)
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
 
-        self.team_names = (
-            team_names
-            if team_names is not None
-            else []
-        )
-
-        self.team_name_to_ids_lookup = (
-            team_name_to_ids_lookup
-            if team_name_to_ids_lookup is not None
-            else {}
-        )
-
-        # Re-use the same HTTP session
-        # rather than creating a new connection
-        # for every request.
+        # Reusable HTTP session
         self.session = requests.Session()
 
-    # ==================================================
-    # INTERNAL API REQUEST
-    # ==================================================
+        self.session.headers.update({
+            "User-Agent": "East-Lancs-Paper-Mill-Cricket-Stats/1.0"
+        })
 
-    def _make_api_request(self, url):
+    # ==========================================================
+    # HTTP REQUEST
+    # ==========================================================
+
+    def _make_api_request(
+        self,
+        endpoint,
+        params=None
+    ):
         """
-        Make one request to the Play-Cricket API.
+        Make a GET request to the Play-Cricket API.
+
+        Parameters
+        ----------
+        endpoint : str
+            API endpoint, e.g. "matches.json".
+
+        params : dict, optional
+            Query parameters.
 
         Returns
         -------
         dict
-            JSON response from the API.
+            Decoded JSON response.
         """
+
+        if params is None:
+            params = {}
+
+        params = params.copy()
+
+        # API key is always supplied by the client
+        params["api_token"] = self.api_key
+
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
 
         response = self.session.get(
             url,
-            timeout=30
+            params=params,
+            timeout=self.timeout
         )
 
+        # Raise an informative HTTP error if the API rejects
+        # the request.
         response.raise_for_status()
 
-        return response.json()
+        try:
+            return response.json()
 
-    # ==================================================
-    # MATCHES
-    # ==================================================
+        except ValueError as exc:
+
+            raise ValueError(
+                "Play-Cricket API returned a response that "
+                "could not be decoded as JSON.\n\n"
+                f"URL: {response.url}\n"
+                f"Status: {response.status_code}\n"
+                f"Response: {response.text[:500]}"
+            ) from exc
+
+    # ==========================================================
+    # ID NORMALISATION
+    # ==========================================================
+
+    @staticmethod
+    def _normalise_id(value):
+        """
+        Normalise a Play-Cricket ID.
+
+        Play-Cricket sometimes returns IDs as strings,
+        integers or floats.
+
+        Examples
+        --------
+        "9653"      -> 9653
+        9653        -> 9653
+        9653.0      -> 9653
+        np.nan      -> None
+        """
+
+        if pd.isna(value):
+            return None
+
+        try:
+            return int(float(value))
+
+        except (TypeError, ValueError):
+            return None
+
+    # ==========================================================
+    # MATCH DATAFRAME NORMALISATION
+    # ==========================================================
+
+    def _normalise_matches(
+        self,
+        matches
+    ):
+        """
+        Convert the raw match list into a pandas DataFrame.
+
+        This method only shapes API data.
+
+        It does NOT save anything to the database.
+        """
+
+        if matches is None:
+            return pd.DataFrame()
+
+        if not isinstance(matches, list):
+            raise TypeError(
+                "Expected match data to be a list."
+            )
+
+        if len(matches) == 0:
+            return pd.DataFrame()
+
+        data = pd.DataFrame(matches).copy()
+
+        # ------------------------------------------------------
+        # Standardise commonly used ID columns
+        # ------------------------------------------------------
+
+        id_columns = [
+            "id",
+            "home_club_id",
+            "home_team_id",
+            "away_club_id",
+            "away_team_id",
+            "division_id",
+            "cup_id",
+            "competition_id",
+            "league_id"
+        ]
+
+        for column in id_columns:
+
+            if column in data.columns:
+
+                data[column] = data[column].apply(
+                    self._normalise_id
+                )
+
+        # ------------------------------------------------------
+        # Standardise match ID
+        # ------------------------------------------------------
+
+        if "id" in data.columns:
+
+            data["id"] = data["id"].astype("Int64")
+
+        # ------------------------------------------------------
+        # Standardise season
+        # ------------------------------------------------------
+
+        if "season" in data.columns:
+
+            data["season"] = pd.to_numeric(
+                data["season"],
+                errors="coerce"
+            ).astype("Int64")
+
+        # ------------------------------------------------------
+        # Parse match date
+        # ------------------------------------------------------
+
+        if "match_date" in data.columns:
+
+            data["match_date"] = pd.to_datetime(
+                data["match_date"],
+                dayfirst=True,
+                errors="coerce"
+            )
+
+        # ------------------------------------------------------
+        # Parse last_updated
+        # ------------------------------------------------------
+
+        if "last_updated" in data.columns:
+
+            data["last_updated"] = self._parse_last_updated(
+                data["last_updated"]
+            )
+
+        return data
+
+    # ==========================================================
+    # LAST UPDATED
+    # ==========================================================
+
+    @staticmethod
+    def _parse_last_updated(series):
+        """
+        Parse Play-Cricket last_updated values.
+
+        Play-Cricket has returned slightly different date
+        formats over time, so parsing is deliberately tolerant.
+
+        Invalid values become NaT rather than causing an API
+        request to fail.
+        """
+
+        if not isinstance(series, pd.Series):
+            series = pd.Series(series)
+
+        # First attempt: normal pandas parsing
+        parsed = pd.to_datetime(
+            series,
+            errors="coerce",
+            dayfirst=True
+        )
+
+        # Some Play-Cricket responses contain ISO timestamps.
+        # Re-attempt values which were not parsed.
+        missing = parsed.isna()
+
+        if missing.any():
+
+            parsed_iso = pd.to_datetime(
+                series[missing],
+                errors="coerce",
+                format="mixed"
+            )
+
+            parsed.loc[missing] = parsed_iso
+
+        return parsed
+
+    # ==========================================================
+    # GET ALL MATCHES
+    # ==========================================================
 
     def get_all_matches(
         self,
@@ -103,166 +342,346 @@ class PlayCricketAPI:
         team_ids=None,
         competition_ids=None,
         competition_types=None,
+        division_id=None,
+        cup_id=None,
+        from_entry_date=None,
+        end_entry_date=None,
+        include_unpublished=False,
         site_id=None
     ):
         """
-        Retrieve all matches for a season.
+        Retrieve matches from Play-Cricket.
 
-        The Play-Cricket matches endpoint is called once.
+        Parameters
+        ----------
+        season : int
+            Season to retrieve.
 
-        Optional filtering is performed locally so that filtering
-        does not require additional API requests.
+        team_ids : list, optional
+            Restrict matches to specific team IDs.
+
+        competition_ids : list, optional
+            Restrict matches to specific competition IDs.
+
+        competition_types : list, optional
+            Restrict by competition type.
+
+            Examples:
+                ["League"]
+                ["Cup"]
+                ["Friendly"]
+
+        division_id : int, optional
+            Restrict to a division.
+
+        cup_id : int, optional
+            Restrict to a cup.
+
+        from_entry_date : str, optional
+            Return records updated from this date/time.
+
+            Example:
+                "23/08/2026T00:00:00"
+
+        end_entry_date : str, optional
+            Return records updated before this date/time.
+
+        include_unpublished : bool
+            Whether unpublished fixtures should be included.
+
+        site_id : int, optional
+            Alternative site ID.
+
+        Returns
+        -------
+        pandas.DataFrame
+            One row per Play-Cricket match.
         """
-
-        if team_ids is None:
-            team_ids = []
-
-        if competition_ids is None:
-            competition_ids = []
-
-        if competition_types is None:
-            competition_types = []
 
         if site_id is None:
             site_id = self.site_id
 
-        # --------------------------------------------------
-        # ONE API REQUEST
-        # --------------------------------------------------
+        site_id = self._normalise_id(site_id)
 
-        url = self.MATCHES_URL.format(
-            site_id=site_id,
-            season=season,
-            api_key=self.api_key
-        )
+        season = self._normalise_id(season)
 
-        data = self._make_api_request(url)
-
-        # --------------------------------------------------
-        # CONVERT TO DATAFRAME
-        # --------------------------------------------------
-
-        df = pd.json_normalize(
-            data["matches"]
-        )
-
-        if df.empty:
-            return pd.DataFrame()
-
-        # --------------------------------------------------
-        # MATCH DATE
-        # --------------------------------------------------
-
-        for col in [
-            "last_updated",
-            "match_date"
-        ]:
-
-            if col in df.columns:
-
-                df[col] = pd.to_datetime(
-                    df[col],
-                    format="%d/%m/%Y"
-                )
-
-        # --------------------------------------------------
-        # COMPETITION ID
-        # --------------------------------------------------
-
-        if "competition_id" in df.columns:
-
-            df["competition_id"] = (
-                df["competition_id"]
-                .replace("", np.nan)
-                .astype(float)
+        if season is None:
+            raise ValueError(
+                "A valid season is required."
             )
 
-        # --------------------------------------------------
-        # TEAM IDS
-        # --------------------------------------------------
+        params = {
+            "site_id": site_id,
+            "season": season
+        }
 
-        for col in [
-            "home_team_id",
-            "away_team_id"
-        ]:
+        # ------------------------------------------------------
+        # Optional filters
+        # ------------------------------------------------------
 
-            if col in df.columns:
+        if division_id is not None:
 
-                df[col] = (
-                    df[col]
-                    .astype(int)
+            params["division_id"] = self._normalise_id(
+                division_id
+            )
+
+        if cup_id is not None:
+
+            params["cup_id"] = self._normalise_id(
+                cup_id
+            )
+
+        if from_entry_date is not None:
+
+            params["from_entry_date"] = from_entry_date
+
+        if end_entry_date is not None:
+
+            params["end_entry_date"] = end_entry_date
+
+        if include_unpublished:
+
+            params["include_unpublished"] = "yes"
+
+        # ------------------------------------------------------
+        # Retrieve matches
+        # ------------------------------------------------------
+
+        response = self._make_api_request(
+            "matches.json",
+            params=params
+        )
+
+        matches = response.get(
+            "matches",
+            []
+        )
+
+        data = self._normalise_matches(
+            matches
+        )
+
+        if data.empty:
+            return data
+
+        # ------------------------------------------------------
+        # Local team filtering
+        #
+        # These filters are applied after retrieval because
+        # team_ids and competition_ids may be supplied as
+        # lists.
+        # ------------------------------------------------------
+
+        if team_ids is not None:
+
+            team_ids = {
+                self._normalise_id(x)
+                for x in team_ids
+            }
+
+            home = (
+                data["home_team_id"]
+                if "home_team_id" in data.columns
+                else pd.Series(
+                    [None] * len(data),
+                    index=data.index
                 )
+            )
 
-        # --------------------------------------------------
-        # TEAM FILTER
-        # --------------------------------------------------
+            away = (
+                data["away_team_id"]
+                if "away_team_id" in data.columns
+                else pd.Series(
+                    [None] * len(data),
+                    index=data.index
+                )
+            )
 
-        if team_ids:
+            mask = (
+                home.isin(team_ids)
+                | away.isin(team_ids)
+            )
 
-            df = df.loc[
-                (df["home_team_id"].isin(team_ids))
-                |
-                (df["away_team_id"].isin(team_ids))
-            ]
+            data = data.loc[mask].copy()
 
-        # --------------------------------------------------
-        # COMPETITION FILTER
-        # --------------------------------------------------
+        if competition_ids is not None:
 
-        if competition_ids:
+            competition_ids = {
+                self._normalise_id(x)
+                for x in competition_ids
+            }
 
-            df = df.loc[
-                df["competition_id"]
-                .isin(competition_ids)
-            ]
+            if "competition_id" in data.columns:
 
-        # --------------------------------------------------
-        # COMPETITION TYPE FILTER
-        # --------------------------------------------------
+                data = data[
+                    data["competition_id"].isin(
+                        competition_ids
+                    )
+                ].copy()
 
-        if competition_types:
+        if competition_types is not None:
 
-            df = df.loc[
-                df["competition_type"]
-                .isin(competition_types)
-            ]
+            competition_types = {
+                str(x).lower()
+                for x in competition_types
+            }
 
-        return df
+            if "competition_type" in data.columns:
 
-    # ==================================================
-    # MATCH DETAIL
-    # ==================================================
+                data = data[
+                    data["competition_type"]
+                    .astype(str)
+                    .str.lower()
+                    .isin(competition_types)
+                ].copy()
+
+        return data.reset_index(drop=True)
+
+    # ==========================================================
+    # GET MATCH DETAIL
+    # ==========================================================
 
     def get_match_detail(
         self,
         match_id
     ):
         """
-        Retrieve the complete match-detail response.
+        Retrieve raw match-detail data from Play-Cricket.
 
-        IMPORTANT:
-            This is the single API request from which the
-            Scorecard will derive:
+        No database access takes place here.
 
-                - match information
-                - players
-                - batting
-                - bowling
-                - innings totals
-                - partnerships
-                - fall of wickets
+        Parameters
+        ----------
+        match_id : int
 
         Returns
         -------
         dict
-            The raw ``match_details[0]`` dictionary.
+            Raw Play-Cricket match-detail response.
+
+        Notes
+        -----
+        The returned object is deliberately left as raw JSON.
+
+        Scorecard is responsible for interpreting this data.
         """
 
-        url = self.MATCH_DETAIL_URL.format(
-            match_id=match_id,
-            api_key=self.api_key
+        match_id = self._normalise_id(
+            match_id
         )
 
-        data = self._make_api_request(url)
+        if match_id is None:
+            raise ValueError(
+                "A valid match_id is required."
+            )
 
-        return data["match_details"][0]
+        response = self._make_api_request(
+            "match_detail.json",
+            params={
+                "match_id": match_id
+            }
+        )
+
+        return response
+
+    # ==========================================================
+    # OPTIONAL RESULT SUMMARY
+    # ==========================================================
+
+    def get_result_summary(
+        self,
+        season,
+        team_id=None,
+        competition_type=None,
+        from_match_date=None,
+        end_match_date=None,
+        from_entry_date=None,
+        end_entry_date=None,
+        site_id=None
+    ):
+        """
+        Retrieve Play-Cricket result-summary data.
+
+        This is useful when a lightweight list of completed
+        results is required without downloading full scorecards.
+
+        It is also potentially useful for future database
+        synchronisation because Play-Cricket supports filtering
+        result records using last-updated entry dates.
+
+        Returns
+        -------
+        pandas.DataFrame
+        """
+
+        if site_id is None:
+            site_id = self.site_id
+
+        params = {
+            "site_id": self._normalise_id(site_id),
+            "season": self._normalise_id(season)
+        }
+
+        if team_id is not None:
+
+            params["team_id"] = self._normalise_id(
+                team_id
+            )
+
+        if competition_type is not None:
+
+            params["competition_type"] = (
+                competition_type
+            )
+
+        if from_match_date is not None:
+
+            params["from_match_date"] = (
+                from_match_date
+            )
+
+        if end_match_date is not None:
+
+            params["end_match_date"] = (
+                end_match_date
+            )
+
+        if from_entry_date is not None:
+
+            params["from_entry_date"] = (
+                from_entry_date
+            )
+
+        if end_entry_date is not None:
+
+            params["end_entry_date"] = (
+                end_entry_date
+            )
+
+        response = self._make_api_request(
+            "result_summary.json",
+            params=params
+        )
+
+        results = response.get(
+            "result_summary",
+            []
+        )
+
+        if not results:
+            return pd.DataFrame()
+
+        return self._normalise_matches(
+            results
+        )
+
+    # ==========================================================
+    # SIMPLE API INFORMATION
+    # ==========================================================
+
+    def __repr__(self):
+        return (
+            f"PlayCricketAPI("
+            f"site_id={self.site_id}, "
+            f"base_url='{self.base_url}')"
+        )
