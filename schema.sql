@@ -12,11 +12,15 @@
 -- different origins (play_cricket / crichq_pdf / cricketstatz) can coexist
 -- before reconciliation (roadmap item 4) links them together.
 --
--- `players` is the canonical player identity. `player_source_ids` maps
--- each source system's own identifier (or, for sources with no numeric
--- id, a derived key such as a normalised name) onto one canonical player.
--- Batting/bowling rows always point at the canonical player_id, so
--- career stats can span sources once reconciliation fills the mapping in.
+-- `players`/`clubs`/`teams` are canonical identities with surrogate
+-- (autoincrement) primary keys. `player_source_ids`/`club_source_ids`/
+-- `team_source_ids` map each source system's own identifier -- a
+-- Play-Cricket numeric id, or for sources with no numeric id (CricHQ,
+-- CricketStatz) a derived text key such as a normalised name -- onto one
+-- canonical row. Fact tables always point at the canonical id, so career
+-- stats and team/club grouping can span sources once reconciliation
+-- (currently: automatic only for exact-key repeats within one source;
+-- cross-source matching is a later pass) fills the mapping in.
 --
 -- Raw source payloads are preserved on `matches.source_payload` (JSON
 -- text) so nothing is lost if a normalised column turns out to be
@@ -29,14 +33,28 @@ PRAGMA foreign_keys = ON;
 -- ================================================================
 
 CREATE TABLE IF NOT EXISTS clubs (
-    club_id     INTEGER PRIMARY KEY,
+    club_id     INTEGER PRIMARY KEY AUTOINCREMENT,
     club_name   TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS club_source_ids (
+    source              TEXT NOT NULL,
+    source_club_id      TEXT NOT NULL,
+    club_id             INTEGER NOT NULL REFERENCES clubs (club_id),
+    PRIMARY KEY (source, source_club_id)
+);
+
 CREATE TABLE IF NOT EXISTS teams (
-    team_id     INTEGER PRIMARY KEY,
+    team_id     INTEGER PRIMARY KEY AUTOINCREMENT,
     team_name   TEXT NOT NULL,
     club_id     INTEGER REFERENCES clubs (club_id)
+);
+
+CREATE TABLE IF NOT EXISTS team_source_ids (
+    source              TEXT NOT NULL,
+    source_team_id      TEXT NOT NULL,
+    team_id             INTEGER NOT NULL REFERENCES teams (team_id),
+    PRIMARY KEY (source, source_team_id)
 );
 
 -- ================================================================

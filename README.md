@@ -30,8 +30,9 @@ PlayCricketDatabase   (local JSON cache + sync)
       |
       v
 Scorecard              (one match -> batting/bowling/partnerships/FoW)
+      ^
+      |                CricHQ PDF -> crichq_pdf.py (parses to the same shape)
       |
-      v
 SQLiteStore            (schema.sql + sqlite_store.py: the normalised store)
       |
       v
@@ -62,16 +63,32 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   teams, players, matches, innings, batting/bowling innings, match
   appearances/team sheets, milestone views), fed from the JSON cache with no
   API calls. `PlayCricketDatabase`/JSON stays the sync layer; SQLite is the
-  canonical query/analysis layer, built for cross-source reconciliation
-  (each row carries `source`/`source_*_id`, and player identity across
-  sources is resolved through `player_source_ids`). Run
-  `python3 sqlite_store.py` to (re)build it from `playcricket_database.json`.
+  canonical query/analysis layer, built for cross-source reconciliation:
+  every fact table carries `source`, and canonical identity for players,
+  clubs, and teams alike is resolved through a `*_source_ids` mapping table
+  (`player_source_ids`, `club_source_ids`, `team_source_ids`) rather than
+  reusing Play-Cricket's own numeric ids as primary keys — required once a
+  source (CricHQ) has no numeric ids of its own to reuse. Run
+  `python3 sqlite_store.py` to (re)build the Play-Cricket side of the store
+  from `playcricket_database.json`.
+- **`crichq_pdf.py`** — Parses CricHQ "Full Scorecard Report" PDF exports
+  (one PDF = a season's worth of matches for one team, concatenated across
+  pages) into the same match-detail shape `Scorecard` expects, so they load
+  through the exact same `SQLiteStore.insert_match()` path as Play-Cricket
+  data, with `source="crichq_pdf"`. Handles mid-row PDF line-wraps, partial/
+  abandoned matches, and the CricHQ dismissal-text format (`"c X b Y"`,
+  `"run out (A/B)"`, etc.). Player identity is deliberately **not** matched
+  against existing players — every CricHQ name becomes its own new
+  canonical player for now (see "Not built yet" below). Run
+  `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
+  more PDFs.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
   leaderboards — top runs, average, strike rate, wickets, economy, catches,
   milestones, etc). This is now the only stats/leaderboard layer in the
-  project — see "Retired" below.
+  project — see "Retired" below. Source-agnostic: works the same whether the
+  store holds Play-Cricket data, CricHQ data, or both.
 
 ### Retired
 
@@ -98,40 +115,57 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
 
 - `playcricket_2026.json` — a synced local database (70 matches) showing the
   storage schema in practice.
-- `ELPM 1st XI 2019.pdf` — a sample CricHQ-style archive scorecard, used as
-  reference material for the PDF ingestion work below.
+- `ELPM 1st XI 2019.pdf` — a CricHQ full-season scorecard export (23
+  matches, 16 played + 7 abandoned), used to build and validate
+  `crichq_pdf.py`. Ingests cleanly: 295 batting rows, 147 bowling rows, 348
+  match appearances, zero unmatched lines, zero foreign-key violations.
 - `ELPM2018.csd` — a CricketStatz database export, used as reference
   material for the binary-format mapping work below.
 
 ### Not built yet
 
-- CricHQ PDF parsing/ingestion.
 - Binary-archive-format reader/converter.
 - Reconciliation/merge logic across the three sources (dedup, conflict
-  resolution, player identity matching for sources with no Play-Cricket id
-  to anchor on — the `player_source_ids` mapping table is ready for this,
-  the matching logic itself isn't written yet).
+  resolution, player/club/team identity matching for sources with no
+  Play-Cricket id to anchor on). The `*_source_ids` mapping tables are ready
+  for this; the matching logic itself isn't written yet. Concretely: right
+  now the same real person/club/team gets a separate canonical row per
+  source (e.g. "East Lancs Paper Mill CC" exists as both `club_id 1`
+  from Play-Cricket and a different `club_id` from CricHQ), and CricHQ
+  player names are matched against nothing — deliberately deferred to a
+  dedicated reconciliation pass across all three sources rather than
+  guessed at during ingestion (see the "MR Robinson" / seven-Robinsons
+  example this was scoped against).
 - Formatted scorecard export (image/PDF) for printing or framing.
 - Social-media formatting for player performances and weekend results.
 - Any CLI/UI entry point — everything today is a library.
 
 ## Roadmap
 
-1. **Data foundation** — *Done for the Play-Cricket source.* SQLite store
-   built (`schema.sql` / `sqlite_store.py`): players, clubs, teams, matches,
-   innings, batting/bowling, match appearances (team sheets), and milestone
-   views, with `source`/`source_*_id` columns on every fact table and a
-   `player_source_ids` mapping table so cross-source player identity can be
-   resolved without redesigning the schema later. Query/leaderboard layer
+1. **Data foundation** — *Done.* SQLite store built (`schema.sql` /
+   `sqlite_store.py`): players, clubs, teams, matches, innings,
+   batting/bowling, match appearances (team sheets), and milestone views,
+   with `source` on every fact table and canonical identity for players,
+   clubs, *and* teams resolved through `*_source_ids` mapping tables (not
+   just Play-Cricket's own numeric ids as primary keys — necessary once
+   CricHQ, which has none, joined the store). Query/leaderboard layer
    (`sqlite_queries.py`) built and verified against the old pandas pipeline,
    which has now been retired (`player_performances.py`,
    `multi_player_stats.py`, and the redundant query methods on
-   `PlayCricketDatabase` — see "Retired" above). Still to do: an explicit
-   name-based reconciliation step for players who only appear in the
-   CricHQ/CricketStatz sources (no Play-Cricket id to anchor on).
-2. **CricHQ PDF ingestion** — Parser to extract scorecards from the archive
-   PDFs into the same internal scorecard shape used by `Scorecard`, so
-   downstream analysis code can be reused unchanged.
+   `PlayCricketDatabase` — see "Retired" above). Still to do: the
+   cross-source reconciliation pass itself (see "Not built yet").
+2. **CricHQ PDF ingestion** — *Done.* `crichq_pdf.py` parses CricHQ's "Full
+   Scorecard Report" PDF export into the same internal shape `Scorecard`
+   uses, validated end to end against `ELPM 1st XI 2019.pdf` (23 matches,
+   295 batting rows, 147 bowling rows, no unmatched lines). Along the way,
+   found and fixed a latent bug in `sqlite_store.py`'s value-cleaning
+   helpers: Play-Cricket's raw JSON always uses `""` for a missing
+   fielder/bowler, so pandas never introduced `NaN` there, but a Python
+   `None` (used by the new PDF parser) gets upgraded to float `NaN` by
+   pandas whenever it shares a column with strings — which the old
+   `value in (None, "")` checks couldn't catch, since `NaN` compares
+   unequal to everything, including itself. Fixed once, centrally, so any
+   future source hits the same safety net.
 3. **Binary archive ingestion (`.csd` mapping)** — Reverse-engineer the
    CricketStatz `.csd` format and read it into the same internal shape.
    `.csd` is a proprietary multi-table binary flat-file (no dBase/Paradox/
@@ -150,9 +184,12 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
    Remaining work: map every table and field, then write a parser that
    emits the same internal scorecard/player shape the other two sources
    use.
-4. **Reconciliation layer** — Merge the three sources per match/player with
-   conflict detection and a clear precedence rule (e.g. Play-Cricket wins on
-   overlap, archives fill gaps).
+4. **Reconciliation layer** — Merge the three sources per match/player/club/
+   team with conflict detection and a clear precedence rule (e.g.
+   Play-Cricket wins on overlap, archives fill gaps). Player matching is the
+   hard part (initials-only names, no stable id — see "Not built yet");
+   club/team matching should be far more reliable since names are close to
+   exact strings across sources.
 5. **Career & historical stats** — Extend `sqlite_queries.py` to operate
    across the merged multi-source database (all-time leaderboards, career
    milestones, team/season filtering already work for the Play-Cricket-only

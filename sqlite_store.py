@@ -81,9 +81,29 @@ class SQLiteStore:
     # ==========================================================
 
     @staticmethod
-    def _clean_id(value):
+    def _is_missing(value):
+        """
+        True for None, "", and pandas/float NaN.
 
-        if value in (None, "", "0", 0):
+        NaN cannot be caught by `value in (None, "")` -- NaN compares
+        unequal to everything, including itself -- so a bare Python
+        None that pandas has upgraded to NaN (which happens whenever
+        it shares a DataFrame column with strings) would otherwise
+        slip past every _clean_*() check below as a truthy value.
+        """
+
+        if value is None or value == "":
+            return True
+
+        if isinstance(value, float) and value != value:
+            return True
+
+        return False
+
+    @classmethod
+    def _clean_id(cls, value):
+
+        if cls._is_missing(value) or value in ("0", 0):
             return None
 
         try:
@@ -91,10 +111,10 @@ class SQLiteStore:
         except (TypeError, ValueError):
             return None
 
-    @staticmethod
-    def _clean_int(value):
+    @classmethod
+    def _clean_int(cls, value):
 
-        if value in (None, ""):
+        if cls._is_missing(value):
             return None
 
         try:
@@ -102,10 +122,10 @@ class SQLiteStore:
         except (TypeError, ValueError):
             return None
 
-    @staticmethod
-    def _clean_bool(value):
+    @classmethod
+    def _clean_bool(cls, value):
 
-        if value in (None, ""):
+        if cls._is_missing(value):
             return None
 
         if isinstance(value, str):
@@ -113,10 +133,10 @@ class SQLiteStore:
 
         return 1 if value else 0
 
-    @staticmethod
-    def _clean_text(value):
+    @classmethod
+    def _clean_text(cls, value):
 
-        if value in (None, ""):
+        if cls._is_missing(value):
             return None
 
         return str(value)
@@ -125,44 +145,95 @@ class SQLiteStore:
     # DIMENSION UPSERTS
     # ==========================================================
 
-    def _upsert_club(self, club_id, club_name):
+    def _upsert_club(self, source, source_club_id, club_name):
+        """
+        Resolve a source-specific club id (Play-Cricket's numeric id, or
+        a normalised club name for sources with no numeric id) to a
+        canonical club_id, creating both the canonical row and the
+        mapping row the first time this (source, source_club_id) is seen.
+        """
 
-        club_id = self._clean_id(club_id)
+        source_club_id = self._clean_text(source_club_id)
 
-        if club_id is None:
+        if source_club_id is None:
             return None
 
+        row = self.conn.execute(
+            "SELECT club_id FROM club_source_ids WHERE source = ? AND source_club_id = ?",
+            (source, source_club_id)
+        ).fetchone()
+
+        if row:
+            return row[0]
+
+        cursor = self.conn.execute(
+            "INSERT INTO clubs (club_name) VALUES (?)",
+            (self._clean_text(club_name) or source_club_id,)
+        )
+
+        club_id = cursor.lastrowid
+
         self.conn.execute(
-            """
-            INSERT INTO clubs (club_id, club_name)
-            VALUES (?, ?)
-            ON CONFLICT(club_id) DO UPDATE SET
-                club_name = excluded.club_name
-            """,
-            (club_id, self._clean_text(club_name))
+            "INSERT INTO club_source_ids (source, source_club_id, club_id) VALUES (?, ?, ?)",
+            (source, source_club_id, club_id)
         )
 
         return club_id
 
-    def _upsert_team(self, team_id, team_name, club_id):
+    def _upsert_team(self, source, source_team_id, team_name, club_id):
+        """
+        Resolve a source-specific team id to a canonical team_id, the
+        same way _upsert_club() resolves clubs.
+        """
 
-        team_id = self._clean_id(team_id)
+        source_team_id = self._clean_text(source_team_id)
 
-        if team_id is None:
+        if source_team_id is None:
             return None
 
+        row = self.conn.execute(
+            "SELECT team_id FROM team_source_ids WHERE source = ? AND source_team_id = ?",
+            (source, source_team_id)
+        ).fetchone()
+
+        if row:
+            return row[0]
+
+        cursor = self.conn.execute(
+            "INSERT INTO teams (team_name, club_id) VALUES (?, ?)",
+            (self._clean_text(team_name) or source_team_id, club_id)
+        )
+
+        team_id = cursor.lastrowid
+
         self.conn.execute(
-            """
-            INSERT INTO teams (team_id, team_name, club_id)
-            VALUES (?, ?, ?)
-            ON CONFLICT(team_id) DO UPDATE SET
-                team_name = excluded.team_name,
-                club_id = excluded.club_id
-            """,
-            (team_id, self._clean_text(team_name), club_id)
+            "INSERT INTO team_source_ids (source, source_team_id, team_id) VALUES (?, ?, ?)",
+            (source, source_team_id, team_id)
         )
 
         return team_id
+
+    def _resolve_team_id(self, source, source_team_id):
+        """
+        Look up a canonical team_id for a source-specific team id that
+        should already have been upserted (e.g. a team_batting_id that
+        must be one of the two teams already upserted for this match).
+        Returns None rather than creating anything -- an unresolvable
+        reference here means the source data is inconsistent, not that
+        a new team should be invented.
+        """
+
+        source_team_id = self._clean_text(source_team_id)
+
+        if source_team_id is None:
+            return None
+
+        row = self.conn.execute(
+            "SELECT team_id FROM team_source_ids WHERE source = ? AND source_team_id = ?",
+            (source, source_team_id)
+        ).fetchone()
+
+        return row[0] if row else None
 
     def _upsert_player(self, source, source_player_id, known_as):
         """
@@ -180,6 +251,7 @@ class SQLiteStore:
         """
 
         source_player_id = self._clean_text(source_player_id)
+        known_as = self._clean_text(known_as)
 
         if source_player_id is None:
             return None
@@ -268,17 +340,17 @@ class SQLiteStore:
         # ------------------------------------------------------
 
         home_club_id = self._upsert_club(
-            match.get("home_club_id"), match.get("home_club_name")
+            source, match.get("home_club_id"), match.get("home_club_name")
         )
         away_club_id = self._upsert_club(
-            match.get("away_club_id"), match.get("away_club_name")
+            source, match.get("away_club_id"), match.get("away_club_name")
         )
 
         home_team_id = self._upsert_team(
-            match.get("home_team_id"), match.get("home_team_name"), home_club_id
+            source, match.get("home_team_id"), match.get("home_team_name"), home_club_id
         )
         away_team_id = self._upsert_team(
-            match.get("away_team_id"), match.get("away_team_name"), away_club_id
+            source, match.get("away_team_id"), match.get("away_team_name"), away_club_id
         )
 
         # ------------------------------------------------------
@@ -341,9 +413,9 @@ class SQLiteStore:
                 self._clean_int(match.get("no_of_overs")),
                 self._clean_int(match.get("no_of_days")),
                 self._clean_text(match.get("toss")),
-                self._clean_id(match.get("toss_won_by_team_id")),
+                self._resolve_team_id(source, match.get("toss_won_by_team_id")),
                 self._clean_text(match.get("result")),
-                self._clean_id(match.get("result_applied_to")),
+                self._resolve_team_id(source, match.get("result_applied_to")),
                 self._clean_text(match.get("result_description")),
                 self._clean_text(match.get("status")),
                 self._clean_text(match.get("last_updated")),
@@ -372,8 +444,8 @@ class SQLiteStore:
 
             innings_number = int(innings_row["innings_number"])
 
-            team_batting_id = self._clean_id(
-                innings_row.get("team_batting_id")
+            team_batting_id = self._resolve_team_id(
+                source, innings_row.get("team_batting_id")
             )
 
             cursor = self.conn.execute(
@@ -433,7 +505,7 @@ class SQLiteStore:
                     """,
                     (
                         match_id, player_id,
-                        self._clean_id(player_row.get("team_id")),
+                        self._resolve_team_id(source, player_row.get("team_id")),
                         self._clean_int(player_row.get("position")),
                         self._clean_bool(player_row.get("captain")),
                         self._clean_bool(player_row.get("wicket_keeper"))
@@ -478,7 +550,7 @@ class SQLiteStore:
                     """,
                     (
                         innings_id, player_id,
-                        self._clean_id(bat_row.get("team_id")),
+                        self._resolve_team_id(source, bat_row.get("team_id")),
                         self._clean_int(bat_row.get("position")),
                         self._clean_int(bat_row.get("runs")),
                         self._clean_int(bat_row.get("balls")),
@@ -519,7 +591,7 @@ class SQLiteStore:
                     """,
                     (
                         innings_id, player_id,
-                        self._clean_id(bowl_row.get("team_id")),
+                        self._resolve_team_id(source, bowl_row.get("team_id")),
                         self._clean_text(bowl_row.get("overs")),
                         self._clean_int(bowl_row.get("balls")),
                         self._clean_int(bowl_row.get("maidens")),
