@@ -405,6 +405,42 @@ class SQLiteStore:
             innings_id_by_number[innings_number] = cursor.lastrowid
 
         # ------------------------------------------------------
+        # Match appearances (team sheet)
+        #
+        # This is the source of truth for "games played" and covers
+        # players who fielded but never got a batting or bowling row
+        # (e.g. never came in to bat, wasn't required to bowl).
+        # ------------------------------------------------------
+
+        if not scorecard.players.empty:
+
+            for _, player_row in scorecard.players.iterrows():
+
+                player_id = self._upsert_player(
+                    source, player_row.get("player_id"), player_row.get("player_name")
+                )
+
+                if player_id is None:
+                    continue
+
+                self.conn.execute(
+                    """
+                    INSERT INTO match_appearances (
+                        match_id, player_id, team_id,
+                        position, captain, wicket_keeper
+                    ) VALUES (?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(match_id, player_id) DO NOTHING
+                    """,
+                    (
+                        match_id, player_id,
+                        self._clean_id(player_row.get("team_id")),
+                        self._clean_int(player_row.get("position")),
+                        self._clean_bool(player_row.get("captain")),
+                        self._clean_bool(player_row.get("wicket_keeper"))
+                    )
+                )
+
+        # ------------------------------------------------------
         # Batting
         # ------------------------------------------------------
 

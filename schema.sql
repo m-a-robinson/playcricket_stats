@@ -191,6 +191,71 @@ CREATE INDEX IF NOT EXISTS idx_bowling_innings_innings ON bowling_innings (innin
 CREATE INDEX IF NOT EXISTS idx_bowling_innings_player ON bowling_innings (player_id);
 
 -- ================================================================
+-- MATCH APPEARANCES (team sheet)
+-- ================================================================
+--
+-- One row per player named on a team sheet for a match, independent
+-- of whether they went on to bat or bowl. This is the source of truth
+-- for "games played" and captures information (captain, wicket-keeper)
+-- that batting/bowling rows alone cannot: a player who only fielded
+-- has a match_appearances row but no batting_innings/bowling_innings
+-- row at all.
+
+CREATE TABLE IF NOT EXISTS match_appearances (
+    appearance_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id             INTEGER NOT NULL REFERENCES matches (match_id) ON DELETE CASCADE,
+
+    player_id               INTEGER REFERENCES players (player_id),
+    team_id                    INTEGER REFERENCES teams (team_id),
+
+    position                     INTEGER,
+    captain                        INTEGER,   -- 0/1
+    wicket_keeper                    INTEGER, -- 0/1
+
+    UNIQUE (match_id, player_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_match_appearances_match ON match_appearances (match_id);
+CREATE INDEX IF NOT EXISTS idx_match_appearances_player ON match_appearances (player_id);
+
+-- ================================================================
+-- ACHIEVEMENTS (milestone views)
+-- ================================================================
+--
+-- Declarative, always-in-sync-with-the-data replacement for
+-- Scorecard.get_performances(): rather than compute milestone flags
+-- once at parse time and store them, these are derived on read from
+-- the batting/bowling rows already in the database.
+
+CREATE VIEW IF NOT EXISTS v_batting_achievements AS
+SELECT
+    b.batting_id,
+    b.innings_id,
+    b.player_id,
+    i.match_id,
+    b.runs,
+    CASE
+        WHEN b.runs >= 200 THEN 'double_century'
+        WHEN b.runs >= 100 THEN 'century'
+        WHEN b.runs >= 50  THEN 'half_century'
+    END AS achievement
+FROM batting_innings b
+JOIN innings i ON i.innings_id = b.innings_id
+WHERE b.runs >= 50;
+
+CREATE VIEW IF NOT EXISTS v_bowling_achievements AS
+SELECT
+    bo.bowling_id,
+    bo.innings_id,
+    bo.player_id,
+    i.match_id,
+    bo.wickets,
+    'five_wicket_haul' AS achievement
+FROM bowling_innings bo
+JOIN innings i ON i.innings_id = bo.innings_id
+WHERE bo.wickets >= 5;
+
+-- ================================================================
 -- SYNC / BUILD BOOKKEEPING
 -- ================================================================
 
