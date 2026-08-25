@@ -32,10 +32,10 @@ PlayCricketDatabase   (local JSON cache + sync)
 Scorecard              (one match -> batting/bowling/partnerships/FoW)
       |
       v
-PlayerPerformances     (per-player aggregation across matches)
+SQLiteStore            (schema.sql + sqlite_store.py: the normalised store)
       |
       v
-MultiPlayerStats       (cross-player leaderboards/comparisons)
+sqlite_queries.py      (career stats / leaderboards, read via SQL)
 ```
 
 ### Modules
@@ -48,29 +48,51 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
   where API-call minimisation lives: `sync_season()` makes one call for the
   season's match list, then compares each match's `last_updated` timestamp
   against the locally stored value and only re-downloads match detail for
-  new or changed matches. All query methods here are local-only and never
-  touch the API.
+  new or changed matches. Exposes the raw stored data (`seasons()`,
+  `matches()`, `match()`, `match_details()`, `match_metadata()`) for
+  `SQLiteStore` to build from — never touches the API itself. Its former
+  player/club/team query methods have been retired (see below).
 - **`playcricket_scorecard.py`** — Turns one raw match-detail record into
   structured DataFrames: batting, bowling, partnerships, fall-of-wickets,
-  extras. Already detects individual milestone achievements (half-century,
-  century, double-century, 4- and 5-wicket hauls) and has a `print_scorecard()`
-  plain-text console renderer.
-- **`player_performances.py`** — Aggregates scorecards across matches into
-  per-player batting/bowling/fielding/participation stats and an overall
-  `summary()` table, including a `notable_performances` count fed by the
-  milestone detection above.
-- **`multi_player_stats.py`** — Cross-player leaderboards built on
-  `PlayerPerformances`: qualification-based tables for top runs, batting
-  average, strike rate, top scores, fifties, hundreds, wickets, bowling
-  average, economy, bowling strike rate, catches, fielding, and highlights.
+  extras. Detects individual milestone achievements (half-century, century,
+  double-century, 4- and 5-wicket hauls) and has a `print_scorecard()`
+  plain-text console renderer. Directly reused by `sqlite_store.py` as its
+  parsing engine.
 - **`schema.sql`** / **`sqlite_store.py`** — Normalised SQLite store (clubs,
-  teams, players, matches, innings, batting/bowling innings), fed from the
-  JSON cache with no API calls. `PlayCricketDatabase`/JSON stays the sync
-  layer; SQLite is the canonical query/analysis layer, built for
-  cross-source reconciliation (each row carries `source`/`source_*_id`,
-  and player identity across sources is resolved through
-  `player_source_ids`). Run `python3 sqlite_store.py` to (re)build it from
-  `playcricket_database.json`.
+  teams, players, matches, innings, batting/bowling innings, match
+  appearances/team sheets, milestone views), fed from the JSON cache with no
+  API calls. `PlayCricketDatabase`/JSON stays the sync layer; SQLite is the
+  canonical query/analysis layer, built for cross-source reconciliation
+  (each row carries `source`/`source_*_id`, and player identity across
+  sources is resolved through `player_source_ids`). Run
+  `python3 sqlite_store.py` to (re)build it from `playcricket_database.json`.
+- **`sqlite_queries.py`** — Career stats and leaderboards computed directly
+  from the SQLite store: `career_stats()` (true career totals per player,
+  splitting by team only if asked) and `SQLPlayerStats` (qualification-based
+  leaderboards — top runs, average, strike rate, wickets, economy, catches,
+  milestones, etc). This is now the only stats/leaderboard layer in the
+  project — see "Retired" below.
+
+### Retired
+
+- **`player_performances.py`** and **`multi_player_stats.py`** have been
+  removed. Both were pandas-over-raw-JSON reimplementations of what the
+  SQLite store now does, and were not imported anywhere else in the
+  codebase. They're recoverable from git history if needed, but shouldn't
+  be resurrected — see the findings below for why.
+- **`PlayCricketDatabase.players()`, `.player_appearances()`, `.clubs()`,
+  `.teams()`, `.matches_dataframe()`** have been removed for the same
+  reason: unused outside their own definitions, and superseded by SQL
+  queries against the normalised store.
+- Verified before removal, against the sample database: `career_stats()`
+  reproduces every figure the retired code produced correctly, fixes the
+  career-totals-fragmented-by-team bug found earlier (e.g. a player who
+  guests for another XI is now one person, not several), surfaces 10
+  fielder-only appearances the old code couldn't see at all (no bat/bowl
+  row to hang them on), and `top_fifties()`/`top_hundreds()`/`highlights()`
+  — which always silently returned empty from `MultiPlayerStats` because it
+  sorted by columns `PlayerPerformances.summary()` never populated — now
+  return real results.
 
 ### Sample data
 
@@ -86,29 +108,27 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
 - CricHQ PDF parsing/ingestion.
 - Binary-archive-format reader/converter.
 - Reconciliation/merge logic across the three sources (dedup, conflict
-  resolution, player identity matching across sources).
-- Persistent storage beyond flat JSON (fine today, but will strain once
-  archive data is merged in).
+  resolution, player identity matching for sources with no Play-Cricket id
+  to anchor on — the `player_source_ids` mapping table is ready for this,
+  the matching logic itself isn't written yet).
 - Formatted scorecard export (image/PDF) for printing or framing.
 - Social-media formatting for player performances and weekend results.
-- A player identity model spanning seasons/sources (career stats currently
-  only work within what Play-Cricket IDs provide).
 - Any CLI/UI entry point — everything today is a library.
 
 ## Roadmap
 
-1. **Data foundation** — *SQLite store built* (`schema.sql` /
-   `sqlite_store.py`): players, clubs, teams, matches, innings, batting and
-   bowling tables, with `source`/`source_*_id` columns on every fact table
-   and a `player_source_ids` mapping table so cross-source player identity
-   can be resolved without redesigning the schema later. Verified against
-   the existing pandas summary — and in doing so found that
-   `PlayerPerformances.summary()` splits a player's career totals by team
-   (a player who guests for another XI gets counted as a separate person
-   per team), which the SQLite build's player-level aggregation avoids.
-   Still to do: an explicit name-based reconciliation step for players who
-   only appear in the CricHQ/CricketStatz sources (no Play-Cricket id to
-   anchor on).
+1. **Data foundation** — *Done for the Play-Cricket source.* SQLite store
+   built (`schema.sql` / `sqlite_store.py`): players, clubs, teams, matches,
+   innings, batting/bowling, match appearances (team sheets), and milestone
+   views, with `source`/`source_*_id` columns on every fact table and a
+   `player_source_ids` mapping table so cross-source player identity can be
+   resolved without redesigning the schema later. Query/leaderboard layer
+   (`sqlite_queries.py`) built and verified against the old pandas pipeline,
+   which has now been retired (`player_performances.py`,
+   `multi_player_stats.py`, and the redundant query methods on
+   `PlayCricketDatabase` — see "Retired" above). Still to do: an explicit
+   name-based reconciliation step for players who only appear in the
+   CricHQ/CricketStatz sources (no Play-Cricket id to anchor on).
 2. **CricHQ PDF ingestion** — Parser to extract scorecards from the archive
    PDFs into the same internal scorecard shape used by `Scorecard`, so
    downstream analysis code can be reused unchanged.
@@ -133,9 +153,10 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
 4. **Reconciliation layer** — Merge the three sources per match/player with
    conflict detection and a clear precedence rule (e.g. Play-Cricket wins on
    overlap, archives fill gaps).
-5. **Career & historical stats** — Extend `PlayerPerformances`/
-   `MultiPlayerStats` to operate across the merged multi-source database
-   (all-time leaderboards, career milestones, team/season filtering).
+5. **Career & historical stats** — Extend `sqlite_queries.py` to operate
+   across the merged multi-source database (all-time leaderboards, career
+   milestones, team/season filtering already work for the Play-Cricket-only
+   case today).
 6. **Scorecard export** — Turn `print_scorecard`'s data into a designed,
    printable artifact (PDF/image) triggerable on milestone detection (which
    already exists) for framing/display.
