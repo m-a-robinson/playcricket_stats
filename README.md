@@ -140,6 +140,119 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
 - Social-media formatting for player performances and weekend results.
 - Any CLI/UI entry point — everything today is a library.
 
+## Basic usage (verifying progress in ipython)
+
+Everything is a plain Python library today, so the easiest way to check
+progress is to import the pieces directly in an `ipython` session and look
+at what comes back. One-time setup:
+
+```bash
+pip install ipython pandas numpy requests pypdf
+cd playcricket_stats
+ipython
+```
+
+The examples below all use the files already in the repo
+(`playcricket_2026.json`, `ELPM 1st XI 2019.pdf`) — nothing needs an API key
+to run.
+
+### 1. Build the SQLite store from the sample Play-Cricket data
+
+This is usually run from the shell, not ipython, since it's a one-shot
+build step:
+
+```bash
+python3 sqlite_store.py --json-db playcricket_2026.json --sqlite-db demo.sqlite
+```
+
+```
+Built 70 matches into demo.sqlite
+```
+
+### 2. Look at one match's scorecard
+
+Good for eyeballing that a match parsed correctly against what you remember
+of the game:
+
+```python
+from playcricket_database import PlayCricketDatabase
+from playcricket_scorecard import Scorecard
+
+db = PlayCricketDatabase(api=None, filename="playcricket_2026.json")
+
+# db.match_details(season=2026) lists every match; db.match(match_id) gets
+# one. Both return the raw stored API response, so unwrap ["match_details"][0]
+# to get the record Scorecard expects.
+raw = db.match(7239375)
+sc = Scorecard(raw["match_details"][0])
+
+sc.teams()          # {'home': '...', 'away': '...'}
+sc.get_result()      # 'East Lancs Paper Mill CC - 1st XI - Won'
+sc.batting_table(1)   # innings-1 batting card as a DataFrame
+sc.print_scorecard()   # full scorecard, printed
+```
+
+### 3. Query career stats and leaderboards
+
+This is the main "did this actually work" check — cross-check a name or
+figure you know against what comes back:
+
+```python
+import sqlite3
+from sqlite_queries import SQLPlayerStats
+
+conn = sqlite3.connect("demo.sqlite")
+stats = SQLPlayerStats(conn)
+
+stats.top_runs(top_n=10)              # leaderboard, ranked
+stats.top_wickets(top_n=10)
+stats.top_batting_average(top_n=10)
+stats.highlights(top_n=10)             # milestone counts (50s/100s/5-fors)
+
+stats.career()                          # every player, full career stats
+stats.career(team_id=1)                  # same, restricted to one team
+stats.career().query("player_name == 'Ian Wade'")   # look up one player
+```
+
+### 4. Ingest a CricHQ PDF and check it landed correctly
+
+```bash
+python3 crichq_pdf.py "ELPM 1st XI 2019.pdf" --sqlite-db demo.sqlite
+```
+
+```
+Parsing ELPM 1st XI 2019.pdf ...
+  23 matches found in this file.
+Done. Played: 16, Abandoned: 7
+```
+
+Then, back in ipython, query it the same way as the Play-Cricket data (the
+store now holds both sources side by side):
+
+```python
+conn = sqlite3.connect("demo.sqlite")   # reconnect to pick up the new data
+stats = SQLPlayerStats(conn)
+
+conn.execute("SELECT source, COUNT(*) FROM matches GROUP BY source").fetchall()
+# [('crichq_pdf', 23), ('play_cricket', 70)]
+
+stats.career(season=2019).sort_values("wickets", ascending=False).head(10)
+```
+
+### 5. Poke at the raw tables directly
+
+For anything the query helpers don't cover yet, plain SQL against `demo.sqlite`
+works — the schema is in `schema.sql`:
+
+```python
+conn.execute("SELECT * FROM matches WHERE source='crichq_pdf' LIMIT 1").fetchone()
+conn.execute("SELECT * FROM v_batting_achievements LIMIT 5").fetchall()
+conn.execute("PRAGMA foreign_key_check").fetchall()   # should always be []
+```
+
+Delete `demo.sqlite` and re-run steps 1/4 any time to rebuild from scratch —
+nothing in the pipeline is destructive to the source JSON/PDF files.
+
 ## Roadmap
 
 1. **Data foundation** — *Done.* SQLite store built (`schema.sql` /
