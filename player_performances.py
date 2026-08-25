@@ -1,1086 +1,2192 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Aug 21 15:13:30 2026
 
-@author: SPSMROBI
 """
+player_performances.py
+
+Player-level performance extraction from Play-Cricket scorecards.
+
+Architecture
+------------
+
+    PlayCricketAPI
+          |
+          v
+    PlayCricketDatabase
+          |
+          v
+    Scorecard / raw match detail
+          |
+          v
+    PlayerPerformances
+          |
+          v
+    batting / bowling / fielding / participation
+
+
+Important
+---------
+
+The Play-Cricket match-detail API returns:
+
+{
+    "match_details": [
+        {
+            ...
+            "players": [...],
+            "innings": [...]
+        }
+    ]
+}
+
+This class therefore works from:
+
+    match["match_details"][0]
+
+rather than assuming that the top-level dictionary is itself
+the match record.
+
+The class does NOT:
+
+    - call the Play-Cricket API
+    - modify the database
+    - save data
+    - create Scorecard objects
+    - calculate club-wide statistics
+
+It is purely a local analysis/extraction layer.
+"""
+
 import pandas as pd
+import numpy as np
 
 
 class PlayerPerformances:
-    """
-    Aggregates player participation and statistical performance
-    across multiple Scorecard objects.
-
-    The class deliberately separates:
-
-        participation
-            Players who appeared in a match.
-
-        batting_records
-            Players who recorded a batting innings.
-
-        bowling_records
-            Players who recorded a bowling innings.
-
-        fielding_records
-            Fielding/dismissal records derived from batting data.
-
-        highlight_records
-            Notable performances identified by Scorecard.
-
-    This allows games played to be counted independently from
-    batting and bowling appearances.
-    """
 
     # ==========================================================
     # INITIALISATION
     # ==========================================================
-    def __init__(self, scorecards, club_id=None):
 
-        self.scorecards = scorecards
-        self.club_id = club_id
+    def __init__(
+        self,
+        database,
+        season=None,
+        match_ids=None,
+        club_id=None,
+        team_id=None
+    ):
+        """
+        Initialise PlayerPerformances.
 
-        # Core datasets
-        self.participation = self._load_participation()
-        self.batting_records = self._load_batting()
-        self.bowling_records = self._load_bowling()
-        self.fielding_records = self._load_fielding()
-        self.highlight_records = self._load_highlights()
+        Parameters
+        ----------
+        database : PlayCricketDatabase
+            Local database containing downloaded match details.
+
+        season : int, optional
+            Restrict analysis to one season.
+
+        match_ids : list, optional
+            Restrict analysis to particular matches.
+
+        club_id : int, optional
+            Restrict players to one club.
+
+        team_id : int, optional
+            Restrict players to one team.
+
+        Notes
+        -----
+        No API calls are made.
+        """
+
+        self.database = database
+
+        self.season = season
+        self.match_ids = (
+            set(int(x) for x in match_ids)
+            if match_ids is not None
+            else None
+        )
+
+        self.club_id = (
+            int(club_id)
+            if club_id is not None
+            else None
+        )
+
+        self.team_id = (
+            int(team_id)
+            if team_id is not None
+            else None
+        )
 
     # ==========================================================
-    # MATCH METADATA
+    # BASIC HELPERS
     # ==========================================================
 
-    def _match_metadata(self, scorecard):
+    @staticmethod
+    def _to_int(value):
         """
-        Return common match metadata for a Scorecard.
+        Convert a value to int.
+
+        Blank strings and invalid values become None.
         """
 
-        match = scorecard.match.iloc[0]
+        if value is None:
+            return None
 
-        return {
-            "season": scorecard.season,
-            "match_id": scorecard.match_id,
-            "match_date": match.get("match_date"),
-            "competition_name": match.get("competition_name"),
-            "competition_id": match.get("competition_id"),
-            "competition_type": match.get("competition_type"),
-            "match_type": match.get("match_type"),
-            "game_type": match.get("game_type"),
-            "ground_name": match.get("ground_name"),
-        }
+        if isinstance(value, str):
+            value = value.strip()
+
+            if value == "":
+                return None
+
+        try:
+            if pd.isna(value):
+                return None
+        except Exception:
+            pass
+
+        try:
+            return int(float(value))
+
+        except (TypeError, ValueError):
+            return None
+
+    # ----------------------------------------------------------
+
+    @staticmethod
+    def _to_float(value):
+        """
+        Convert a value to float.
+
+        Blank strings and invalid values become NaN.
+        """
+
+        if value is None:
+            return np.nan
+
+        if isinstance(value, str):
+            value = value.strip()
+
+            if value == "":
+                return np.nan
+
+        try:
+            return float(value)
+
+        except (TypeError, ValueError):
+            return np.nan
+
+    # ----------------------------------------------------------
+
+    @staticmethod
+    def _overs_to_balls(value):
+        """
+        Convert cricket overs notation into legal balls.
+
+        Examples
+        --------
+        12.0 -> 72
+        12.3 -> 75
+
+        IMPORTANT
+        ---------
+        Cricket notation 12.3 means 12 overs and 3 balls,
+        NOT 12.3 decimal overs.
+
+        This method is primarily useful for bowling analysis.
+        """
+
+        if value is None:
+            return np.nan
+
+        if isinstance(value, str):
+
+            value = value.strip()
+
+            if not value:
+                return np.nan
+
+        try:
+
+            value = float(value)
+
+        except (TypeError, ValueError):
+
+            return np.nan
+
+        whole_overs = int(value)
+
+        # Convert decimal representation into the digit after
+        # the decimal point.
+        decimal_part = round(
+            (value - whole_overs) * 10
+        )
+
+        return (
+            whole_overs * 6
+            + decimal_part
+        )
+
+    # ==========================================================
+    # MATCH EXTRACTION
+    # ==========================================================
+
+    @staticmethod
+    def _unwrap_match(raw_match):
+        """
+        Return the actual Play-Cricket match-detail dictionary.
+    
+        The database stores the raw API response, which normally has
+        the structure:
+    
+            {
+                "match_details": [
+                    {
+                        ...
+                    }
+                ]
+            }
+    
+        This method unwraps that outer API response.
+    
+        It also accepts an already-unwrapped match dictionary.
+        """
+    
+        if raw_match is None:
+            return None
+    
+        if not isinstance(raw_match, dict):
+            return None
+    
+        # ----------------------------------------------------------
+        # Normal Play-Cricket API response
+        # ----------------------------------------------------------
+    
+        if "match_details" in raw_match:
+    
+            match_details = raw_match.get(
+                "match_details"
+            )
+    
+            if not match_details:
+                return None
+    
+            if isinstance(match_details, list):
+    
+                if len(match_details) == 0:
+                    return None
+    
+                return match_details[0]
+    
+            if isinstance(match_details, dict):
+                return match_details
+    
+            return None
+    
+        # ----------------------------------------------------------
+        # Already unwrapped
+        # ----------------------------------------------------------
+    
+        return raw_match
+
+    # ==========================================================
+    # MATCH ITERATOR
+    # ==========================================================
+
+    def _iter_matches(self):
+        """
+        Yield locally stored match records which satisfy the
+        PlayerPerformances filters.
+        """
+
+        seasons = self.database.data.get(
+            "seasons",
+            {}
+        )
+
+        # ------------------------------------------------------
+        # Select season
+        # ------------------------------------------------------
+
+        if self.season is not None:
+
+            season_key = str(
+                int(self.season)
+            )
+
+            selected_seasons = {
+                season_key:
+                    seasons.get(
+                        season_key,
+                        {}
+                    )
+            }
+
+        else:
+
+            selected_seasons = seasons
+
+        # ------------------------------------------------------
+        # Iterate matches
+        # ------------------------------------------------------
+
+        for season_key, season_data in (
+            selected_seasons.items()
+        ):
+
+            matches = season_data.get(
+                "matches",
+                {}
+            )
+
+            for stored_match_id, raw_match in (
+                matches.items()
+            ):
+
+                match = self._unwrap_match(
+                    raw_match
+                )
+
+                if match is None:
+                    continue
+
+                match_id = self._to_int(
+                    match.get(
+                        "match_id",
+                        stored_match_id
+                    )
+                )
+
+                if match_id is None:
+                    continue
+
+                # ------------------------------------------------
+                # Match ID filter
+                # ------------------------------------------------
+
+                if (
+                    self.match_ids is not None
+                    and match_id not in self.match_ids
+                ):
+                    continue
+
+                # ------------------------------------------------
+                # Club/team filtering is applied later where
+                # player team identity is known.
+                # ------------------------------------------------
+
+                yield (
+                    int(season_key),
+                    match
+                )
+
+    # ==========================================================
+    # TEAM INFORMATION
+    # ==========================================================
+
+    @staticmethod
+    def _team_information(
+        match,
+        team_id
+    ):
+        """
+        Return team metadata for a team appearing in a match.
+
+        Returns
+        -------
+        dict
+        """
+
+        team_id = PlayerPerformances._to_int(
+            team_id
+        )
+
+        home_team_id = (
+            PlayerPerformances._to_int(
+                match.get(
+                    "home_team_id"
+                )
+            )
+        )
+
+        away_team_id = (
+            PlayerPerformances._to_int(
+                match.get(
+                    "away_team_id"
+                )
+            )
+        )
+
+        if team_id == home_team_id:
+
+            return {
+                "team_id":
+                    home_team_id,
+
+                "team_name":
+                    match.get(
+                        "home_team_name"
+                    ),
+
+                "club_id":
+                    PlayerPerformances._to_int(
+                        match.get(
+                            "home_club_id"
+                        )
+                    ),
+
+                "club_name":
+                    match.get(
+                        "home_club_name"
+                    ),
+
+                "opposition_id":
+                    away_team_id,
+
+                "opposition_name":
+                    match.get(
+                        "away_team_name"
+                    ),
+
+                "opposition_club_id":
+                    PlayerPerformances._to_int(
+                        match.get(
+                            "away_club_id"
+                        )
+                    ),
+
+                "opposition_club_name":
+                    match.get(
+                        "away_club_name"
+                    )
+            }
+
+        if team_id == away_team_id:
+
+            return {
+                "team_id":
+                    away_team_id,
+
+                "team_name":
+                    match.get(
+                        "away_team_name"
+                    ),
+
+                "club_id":
+                    PlayerPerformances._to_int(
+                        match.get(
+                            "away_club_id"
+                        )
+                    ),
+
+                "club_name":
+                    match.get(
+                        "away_club_name"
+                    ),
+
+                "opposition_id":
+                    home_team_id,
+
+                "opposition_name":
+                    match.get(
+                        "home_team_name"
+                    ),
+
+                "opposition_club_id":
+                    PlayerPerformances._to_int(
+                        match.get(
+                            "home_club_id"
+                        )
+                    ),
+
+                "opposition_club_name":
+                    match.get(
+                        "home_club_name"
+                    )
+            }
+
+        return None
+
+    # ==========================================================
+    # PLAYER TEAM SHEET
+    # ==========================================================
+
+    def _player_team_records(
+        self,
+        match,
+        season
+    ):
+        """
+        Extract the players recorded on the team sheets.
+
+        Returns
+        -------
+        list of dict
+
+        One row per:
+
+            match / player / team
+        """
+
+        records = []
+
+        players = match.get(
+            "players",
+            []
+        )
+
+        if not isinstance(players, list):
+            return records
+
+        for group in players:
+
+            if not isinstance(group, dict):
+                continue
+
+            # --------------------------------------------------
+            # Home team
+            # --------------------------------------------------
+
+            if "home_team" in group:
+
+                team_players = (
+                    group.get(
+                        "home_team"
+                    ) or []
+                )
+
+                team_id = self._to_int(
+                    match.get(
+                        "home_team_id"
+                    )
+                )
+
+                for player in team_players:
+
+                    if not isinstance(
+                        player,
+                        dict
+                    ):
+                        continue
+
+                    player_id = self._to_int(
+                        player.get(
+                            "player_id"
+                        )
+                    )
+
+                    if player_id is None:
+                        continue
+
+                    records.append({
+
+                        "season":
+                            season,
+
+                        "match_id":
+                            self._to_int(
+                                match.get(
+                                    "match_id"
+                                )
+                            ),
+
+                        "match_date":
+                            match.get(
+                                "match_date"
+                            ),
+
+                        "player_id":
+                            player_id,
+
+                        "player_name":
+                            player.get(
+                                "player_name"
+                            ),
+
+                        "team_id":
+                            team_id,
+
+                        "team_name":
+                            match.get(
+                                "home_team_name"
+                            ),
+
+                        "club_id":
+                            self._to_int(
+                                match.get(
+                                    "home_club_id"
+                                )
+                            ),
+
+                        "club_name":
+                            match.get(
+                                "home_club_name"
+                            ),
+
+                        "opposition_id":
+                            self._to_int(
+                                match.get(
+                                    "away_team_id"
+                                )
+                            ),
+
+                        "opposition_name":
+                            match.get(
+                                "away_team_name"
+                            ),
+
+                        "opposition_club_id":
+                            self._to_int(
+                                match.get(
+                                    "away_club_id"
+                                )
+                            ),
+
+                        "opposition_club_name":
+                            match.get(
+                                "away_club_name"
+                            ),
+
+                        "position":
+                            self._to_int(
+                                player.get(
+                                    "position"
+                                )
+                            ),
+
+                        "captain":
+                            bool(
+                                player.get(
+                                    "captain",
+                                    False
+                                )
+                            ),
+
+                        "wicket_keeper":
+                            bool(
+                                player.get(
+                                    "wicket_keeper",
+                                    False
+                                )
+                            )
+                    })
+
+            # --------------------------------------------------
+            # Away team
+            # --------------------------------------------------
+
+            if "away_team" in group:
+
+                team_players = (
+                    group.get(
+                        "away_team"
+                    ) or []
+                )
+
+                team_id = self._to_int(
+                    match.get(
+                        "away_team_id"
+                    )
+                )
+
+                for player in team_players:
+
+                    if not isinstance(
+                        player,
+                        dict
+                    ):
+                        continue
+
+                    player_id = self._to_int(
+                        player.get(
+                            "player_id"
+                        )
+                    )
+
+                    if player_id is None:
+                        continue
+
+                    records.append({
+
+                        "season":
+                            season,
+
+                        "match_id":
+                            self._to_int(
+                                match.get(
+                                    "match_id"
+                                )
+                            ),
+
+                        "match_date":
+                            match.get(
+                                "match_date"
+                            ),
+
+                        "player_id":
+                            player_id,
+
+                        "player_name":
+                            player.get(
+                                "player_name"
+                            ),
+
+                        "team_id":
+                            team_id,
+
+                        "team_name":
+                            match.get(
+                                "away_team_name"
+                            ),
+
+                        "club_id":
+                            self._to_int(
+                                match.get(
+                                    "away_club_id"
+                                )
+                            ),
+
+                        "club_name":
+                            match.get(
+                                "away_club_name"
+                            ),
+
+                        "opposition_id":
+                            self._to_int(
+                                match.get(
+                                    "home_team_id"
+                                )
+                            ),
+
+                        "opposition_name":
+                            match.get(
+                                "home_team_name"
+                            ),
+
+                        "opposition_club_id":
+                            self._to_int(
+                                match.get(
+                                    "home_club_id"
+                                )
+                            ),
+
+                        "opposition_club_name":
+                            match.get(
+                                "home_club_name"
+                            ),
+
+                        "position":
+                            self._to_int(
+                                player.get(
+                                    "position"
+                                )
+                            ),
+
+                        "captain":
+                            bool(
+                                player.get(
+                                    "captain",
+                                    False
+                                )
+                            ),
+
+                        "wicket_keeper":
+                            bool(
+                                player.get(
+                                    "wicket_keeper",
+                                    False
+                                )
+                            )
+                    })
+
+        return records
 
     # ==========================================================
     # PARTICIPATION
     # ==========================================================
 
-    def _load_participation(self):
+    def participation_records(self):
         """
-        Load every player listed as playing in every match.
+        Return one row per player appearance.
 
-        This is the master player population.
+        A player is considered to have participated if they
+        appear on the Play-Cricket team sheet.
 
-        A player is considered to have played if they appear in
-        scorecard.players, regardless of whether they batted or bowled.
+        This includes players who:
+
+            - did not bat
+            - did not bowl
+            - did not field
+
+        Returns
+        -------
+        pandas.DataFrame
         """
 
-        data = []
+        records = []
 
-        for scorecard in self.scorecards:
+        for season, match in self._iter_matches():
 
-            if (
-                scorecard.players is None
-                or scorecard.players.empty
-            ):
-                continue
+            records.extend(
+                self._player_team_records(
+                    match,
+                    season
+                )
+            )
 
-            players = scorecard.players.copy()
+        if not records:
 
-            metadata = self._match_metadata(scorecard)
-
-            for key, value in metadata.items():
-                players[key] = value
-
-            data.append(players)
-
-        if not data:
             return pd.DataFrame()
 
-        data = pd.concat(
-            data,
-            ignore_index=True
+        df = pd.DataFrame(
+            records
         )
 
-        # Remove accidental duplicate player/match records
-        data = data.drop_duplicates(
+        # ------------------------------------------------------
+        # Apply club/team filters
+        # ------------------------------------------------------
+
+        if self.club_id is not None:
+
+            df = df[
+                df["club_id"]
+                == self.club_id
+            ]
+
+        if self.team_id is not None:
+
+            df = df[
+                df["team_id"]
+                == self.team_id
+            ]
+
+        # ------------------------------------------------------
+        # Remove accidental duplicates
+        # ------------------------------------------------------
+
+        df = df.drop_duplicates(
             subset=[
+                "season",
                 "match_id",
                 "player_id",
                 "team_id"
             ]
         )
 
-        return data.reset_index(drop=True)
-    
-    def get_participation(
-        self,
-        player_id=None,
-        season=None,
-        team_id=None,
-        opposition_id=None
-    ):
+        # ------------------------------------------------------
+        # Sort
+        # ------------------------------------------------------
 
-        return self._filter(
-            self.participation,
-            player_id=player_id,
-            season=season,
-            team_id=team_id,
-            opposition_id=opposition_id
+        df = df.sort_values(
+            [
+                "season",
+                "match_date",
+                "team_id",
+                "position"
+            ],
+            na_position="last"
+        )
+
+        return df.reset_index(
+            drop=True
         )
 
     # ==========================================================
     # BATTING
     # ==========================================================
 
-    def _load_batting(self):
+    def batting(self):
         """
-        Load all batting records from all Scorecards.
-        """
+        Return one row per batting performance.
 
-        data = []
+        Data are taken directly from:
 
-        for scorecard in self.scorecards:
+            match_details[0]["innings"][n]["bat"]
 
-            if (
-                scorecard.batting is None
-                or scorecard.batting.empty
-            ):
-                continue
-
-            batting = scorecard.batting.copy()
-
-            metadata = self._match_metadata(scorecard)
-
-            for key, value in metadata.items():
-                batting[key] = value
-
-            data.append(batting)
-
-        if not data:
-            return pd.DataFrame()
-
-        return pd.concat(
-            data,
-            ignore_index=True
-        )
-
-    # ==========================================================
-    # BOWLING
-    # ==========================================================
-
-    def _load_bowling(self):
-        """
-        Load all bowling records from all Scorecards.
+        Returns
+        -------
+        pandas.DataFrame
         """
 
-        data = []
+        records = []
 
-        for scorecard in self.scorecards:
+        for season, match in self._iter_matches():
 
-            if (
-                scorecard.bowling is None
-                or scorecard.bowling.empty
-            ):
-                continue
-
-            bowling = scorecard.bowling.copy()
-
-            metadata = self._match_metadata(scorecard)
-
-            for key, value in metadata.items():
-                bowling[key] = value
-
-            data.append(bowling)
-
-        if not data:
-            return pd.DataFrame()
-
-        return pd.concat(
-            data,
-            ignore_index=True
-        )
-
-    # ==========================================================
-    # FIELDING
-    # ==========================================================
-
-    def _load_fielding(self):
-        """
-        Load fielding/dismissal records.
-
-        Fielding information is contained within the batting
-        dataframe because each dismissal records:
-
-            fielder_name
-            fielder_id
-            how_out
-
-        Individual dismissal records are retained here so that
-        catches, stumpings and run outs can be analysed separately.
-        """
-
-        data = []
-
-        for scorecard in self.scorecards:
-
-            if (
-                scorecard.batting is None
-                or scorecard.batting.empty
-            ):
-                continue
-
-            fielding = scorecard.batting.copy()
-
-            metadata = self._match_metadata(scorecard)
-
-            for key, value in metadata.items():
-                fielding[key] = value
-
-            data.append(fielding)
-
-        if not data:
-            return pd.DataFrame()
-
-        data = pd.concat(
-            data,
-            ignore_index=True
-        )
-
-        # Only rows where a fielder is recorded
-        data = data[
-            data["fielder_id"].notna()
-            & (
-                data["fielder_id"]
-                .astype(str)
-                .str.strip()
-                != ""
-            )
-        ].copy()
-
-        # Standardise dismissal description
-        data["how_out_clean"] = (
-            data["how_out"]
-            .fillna("")
-            .astype(str)
-            .str.lower()
-            .str.strip()
-        )
-
-        return data.reset_index(drop=True)
-
-    # ==========================================================
-    # HIGHLIGHTS
-    # ==========================================================
-
-    def _load_highlights(self):
-        """
-        Load notable performances identified by Scorecard.
-        """
-
-        data = []
-
-        for scorecard in self.scorecards:
-
-            if (
-                scorecard.performances is None
-                or scorecard.performances.empty
-            ):
-                continue
-
-            performances = (
-                scorecard.performances.copy()
+            innings_list = match.get(
+                "innings",
+                []
             )
 
-            metadata = self._match_metadata(scorecard)
+            if not isinstance(
+                innings_list,
+                list
+            ):
+                continue
 
-            for key, value in metadata.items():
-                performances[key] = value
+            for innings in innings_list:
 
-            data.append(performances)
+                if not isinstance(
+                    innings,
+                    dict
+                ):
+                    continue
 
-        if not data:
-            return pd.DataFrame()
-
-        return pd.concat(
-            data,
-            ignore_index=True
-        )
-
-    # ==========================================================
-    # FILTERING HELPERS
-    # ==========================================================
-    
-    def _filter(
-        self,
-        data,
-        player_id=None,
-        season=None,
-        team_id=None,
-        opposition_id=None
-    ):
-        """
-        Apply common filters to a player record dataframe.
-    
-        Player IDs are normalised before comparison so that integer
-        and floating-point representations of the same Play-Cricket
-        ID are treated as identical.
-    
-        Club membership is determined from participation records.
-        This means batting, bowling, fielding and highlight records
-        can all be restricted to the selected club even where those
-        records do not contain club_id directly.
-        """
-    
-        result = data.copy()
-    
-        if result.empty:
-            return result
-    
-        # ------------------------------------------------------
-        # HELPER FOR PLAY-CRICKET IDS
-        # ------------------------------------------------------
-    
-        def normalise_id(series):
-    
-            numeric = pd.to_numeric(
-                series,
-                errors="coerce"
-            )
-    
-            return numeric.astype("Int64")
-    
-        # ------------------------------------------------------
-        # IDENTIFY PLAYER ID COLUMN
-        # ------------------------------------------------------
-    
-        id_column = None
-    
-        if "player_id" in result.columns:
-            id_column = "player_id"
-    
-        elif "batsman_id" in result.columns:
-            id_column = "batsman_id"
-    
-        elif "bowler_id" in result.columns:
-            id_column = "bowler_id"
-    
-        elif "fielder_id" in result.columns:
-            id_column = "fielder_id"
-    
-        # ------------------------------------------------------
-        # CLUB
-        # ------------------------------------------------------
-    
-        if self.club_id is not None:
-    
-            # If the dataframe contains club_id directly
-            if "club_id" in result.columns:
-    
-                result = result[
-                    normalise_id(result["club_id"])
-                    == int(self.club_id)
-                ]
-    
-            # Otherwise determine club membership from
-            # participation records
-            elif id_column is not None:
-    
-                club_players = self.participation[
-                    normalise_id(
-                        self.participation["club_id"]
+                batting_team_id = self._to_int(
+                    innings.get(
+                        "team_batting_id"
                     )
-                    == int(self.club_id)
-                ]
-    
-                allowed_player_ids = set(
-                    normalise_id(
-                        club_players["player_id"]
-                    ).dropna()
                 )
-    
-                result = result[
-                    normalise_id(
-                        result[id_column]
-                    ).isin(allowed_player_ids)
-                ]
-    
-        # ------------------------------------------------------
-        # PLAYER ID
-        # ------------------------------------------------------
-    
-        if player_id is not None:
-    
-            if id_column is None:
-    
-                raise KeyError(
-                    "Could not identify a player ID column "
-                    "in dataframe."
+
+                team_info = self._team_information(
+                    match,
+                    batting_team_id
                 )
-    
-            result = result[
-                normalise_id(result[id_column])
-                == int(player_id)
-            ]
-    
-        # ------------------------------------------------------
-        # SEASON
-        # ------------------------------------------------------
-    
-        if season is not None:
-    
-            if "season" in result.columns:
-    
-                result = result[
-                    result["season"] == season
-                ]
-    
-        # ------------------------------------------------------
-        # TEAM
-        # ------------------------------------------------------
-    
-        if team_id is not None:
-    
-            if "team_id" in result.columns:
-    
-                result = result[
-                    normalise_id(result["team_id"])
-                    == int(team_id)
-                ]
-    
-        # ------------------------------------------------------
-        # OPPOSITION
-        # ------------------------------------------------------
-    
-        if opposition_id is not None:
-    
-            if "opposition_id" in result.columns:
-    
-                result = result[
-                    normalise_id(result["opposition_id"])
-                    == int(opposition_id)
-                ]
-    
-        return result.copy()
-    
-    
-    # ==========================================================
-    # PLAYER IDENTIFICATION
-    # ==========================================================
 
-    def get_player(
-        self,
-        player_id,
-        season=None,
-        team_id=None
-    ):
-        """
-        Return participation records for a player.
+                if team_info is None:
+                    continue
 
-        This is deliberately based on participation rather than
-        batting/bowling records.
-        """
+                # ------------------------------------------------
+                # Apply team filters
+                # ------------------------------------------------
 
-        return self._filter(
-            self.participation,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
+                if (
+                    self.club_id is not None
+                    and team_info["club_id"]
+                    != self.club_id
+                ):
+                    continue
+
+                if (
+                    self.team_id is not None
+                    and team_info["team_id"]
+                    != self.team_id
+                ):
+                    continue
+
+                batters = innings.get(
+                    "bat",
+                    []
+                )
+
+                if not isinstance(
+                    batters,
+                    list
+                ):
+                    continue
+
+                for batter in batters:
+
+                    if not isinstance(
+                        batter,
+                        dict
+                    ):
+                        continue
+
+                    player_id = self._to_int(
+                        batter.get(
+                            "batsman_id"
+                        )
+                    )
+
+                    if player_id is None:
+                        continue
+
+                    how_out = (
+                        batter.get(
+                            "how_out"
+                        )
+                    )
+
+                    # ------------------------------------------------
+                    # Normalise not-out status
+                    # ------------------------------------------------
+
+                    not_out = (
+                        str(
+                            how_out
+                        ).strip().lower()
+                        in (
+                            "not out",
+                            "retired not out"
+                        )
+                    )
+
+                    records.append({
+
+                        "season":
+                            season,
+
+                        "match_id":
+                            self._to_int(
+                                match.get(
+                                    "match_id"
+                                )
+                            ),
+
+                        "match_date":
+                            match.get(
+                                "match_date"
+                            ),
+
+                        "player_id":
+                            player_id,
+
+                        "player_name":
+                            batter.get(
+                                "batsman_name"
+                            ),
+
+                        "team_id":
+                            team_info["team_id"],
+
+                        "team_name":
+                            team_info["team_name"],
+
+                        "club_id":
+                            team_info["club_id"],
+
+                        "club_name":
+                            team_info["club_name"],
+
+                        "opposition_id":
+                            team_info[
+                                "opposition_id"
+                            ],
+
+                        "opposition_name":
+                            team_info[
+                                "opposition_name"
+                            ],
+
+                        "opposition_club_id":
+                            team_info[
+                                "opposition_club_id"
+                            ],
+
+                        "opposition_club_name":
+                            team_info[
+                                "opposition_club_name"
+                            ],
+
+                        "innings":
+                            self._to_int(
+                                innings.get(
+                                    "innings_number"
+                                )
+                            ),
+
+                        "position":
+                            self._to_int(
+                                batter.get(
+                                    "position"
+                                )
+                            ),
+
+                        "runs":
+                            self._to_int(
+                                batter.get(
+                                    "runs"
+                                )
+                            ),
+
+                        "balls":
+                            self._to_int(
+                                batter.get(
+                                    "balls"
+                                )
+                            ),
+
+                        "fours":
+                            self._to_int(
+                                batter.get(
+                                    "fours"
+                                )
+                            ),
+
+                        "sixes":
+                            self._to_int(
+                                batter.get(
+                                    "sixes"
+                                )
+                            ),
+
+                        "how_out":
+                            how_out,
+
+                        "not_out":
+                            not_out,
+
+                        "bowler_id":
+                            self._to_int(
+                                batter.get(
+                                    "bowler_id"
+                                )
+                            ),
+
+                        "bowler_name":
+                            batter.get(
+                                "bowler_name"
+                            ),
+
+                        "fielder_id":
+                            self._to_int(
+                                batter.get(
+                                    "fielder_id"
+                                )
+                            ),
+
+                        "fielder_name":
+                            batter.get(
+                                "fielder_name"
+                            )
+                    })
+
+        if not records:
+
+            return pd.DataFrame()
+
+        df = pd.DataFrame(
+            records
         )
 
-    # ==========================================================
-    # PARTICIPATION
-    # ==========================================================
+        # ------------------------------------------------------
+        # Derived strike rate
+        # ------------------------------------------------------
 
-    def participation_records(
-        self,
-        player_id=None,
-        season=None,
-        team_id=None
-    ):
-        """
-        Return player participation records.
-        """
-
-        return self._filter(
-            self.participation,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
+        df["strike_rate"] = np.where(
+            df["balls"] > 0,
+            (
+                df["runs"]
+                / df["balls"]
+                * 100
+            ),
+            np.nan
         )
 
-    # ==========================================================
-    # BATTING
-    # ==========================================================
-
-    def batting(
-        self,
-        player_id=None,
-        season=None,
-        team_id=None
-    ):
-        """
-        Return batting records.
-        """
-
-        return self._filter(
-            self.batting_records,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        ).copy()
+        return (
+            df
+            .sort_values(
+                [
+                    "season",
+                    "match_date",
+                    "team_id",
+                    "innings",
+                    "position"
+                ],
+                na_position="last"
+            )
+            .reset_index(
+                drop=True
+            )
+        )
 
     # ==========================================================
     # BOWLING
     # ==========================================================
 
-    def bowling(
-        self,
-        player_id=None,
-        season=None,
-        team_id=None
-    ):
+    def bowling(self):
         """
-        Return bowling records.
+        Return one row per bowling performance.
+
+        Data are taken directly from:
+
+            match_details[0]["innings"][n]["bowl"]
+
+        Returns
+        -------
+        pandas.DataFrame
         """
 
-        return self._filter(
-            self.bowling_records,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        ).copy()
+        records = []
+
+        for season, match in self._iter_matches():
+
+            innings_list = match.get(
+                "innings",
+                []
+            )
+
+            if not isinstance(
+                innings_list,
+                list
+            ):
+                continue
+
+            for innings in innings_list:
+
+                if not isinstance(
+                    innings,
+                    dict
+                ):
+                    continue
+
+                batting_team_id = self._to_int(
+                    innings.get(
+                        "team_batting_id"
+                    )
+                )
+
+                batting_team_info = (
+                    self._team_information(
+                        match,
+                        batting_team_id
+                    )
+                )
+
+                if batting_team_info is None:
+                    continue
+
+                # ------------------------------------------------
+                # Bowling team is opposition to batting team
+                # ------------------------------------------------
+
+                bowling_team_id = (
+                    batting_team_info[
+                        "opposition_id"
+                    ]
+                )
+
+                team_info = self._team_information(
+                    match,
+                    bowling_team_id
+                )
+
+                if team_info is None:
+                    continue
+
+                # ------------------------------------------------
+                # Apply team filters
+                # ------------------------------------------------
+
+                if (
+                    self.club_id is not None
+                    and team_info["club_id"]
+                    != self.club_id
+                ):
+                    continue
+
+                if (
+                    self.team_id is not None
+                    and team_info["team_id"]
+                    != self.team_id
+                ):
+                    continue
+
+                bowlers = innings.get(
+                    "bowl",
+                    []
+                )
+
+                if not isinstance(
+                    bowlers,
+                    list
+                ):
+                    continue
+
+                for bowler in bowlers:
+
+                    if not isinstance(
+                        bowler,
+                        dict
+                    ):
+                        continue
+
+                    player_id = self._to_int(
+                        bowler.get(
+                            "bowler_id"
+                        )
+                    )
+
+                    if player_id is None:
+                        continue
+
+                    overs = bowler.get(
+                        "overs"
+                    )
+
+                    runs = self._to_int(
+                        bowler.get(
+                            "runs"
+                        )
+                    )
+
+                    wickets = self._to_int(
+                        bowler.get(
+                            "wickets"
+                        )
+                    )
+
+                    balls = (
+                        self._overs_to_balls(
+                            overs
+                        )
+                    )
+
+                    records.append({
+
+                        "season":
+                            season,
+
+                        "match_id":
+                            self._to_int(
+                                match.get(
+                                    "match_id"
+                                )
+                            ),
+
+                        "match_date":
+                            match.get(
+                                "match_date"
+                            ),
+
+                        "player_id":
+                            player_id,
+
+                        "player_name":
+                            bowler.get(
+                                "bowler_name"
+                            ),
+
+                        "team_id":
+                            team_info["team_id"],
+
+                        "team_name":
+                            team_info["team_name"],
+
+                        "club_id":
+                            team_info["club_id"],
+
+                        "club_name":
+                            team_info["club_name"],
+
+                        "opposition_id":
+                            team_info[
+                                "opposition_id"
+                            ],
+
+                        "opposition_name":
+                            team_info[
+                                "opposition_name"
+                            ],
+
+                        "opposition_club_id":
+                            team_info[
+                                "opposition_club_id"
+                            ],
+
+                        "opposition_club_name":
+                            team_info[
+                                "opposition_club_name"
+                            ],
+
+                        "innings":
+                            self._to_int(
+                                innings.get(
+                                    "innings_number"
+                                )
+                            ),
+
+                        "overs":
+                            overs,
+
+                        "balls":
+                            balls,
+
+                        "maidens":
+                            self._to_int(
+                                bowler.get(
+                                    "maidens"
+                                )
+                            ),
+
+                        "runs":
+                            runs,
+
+                        "wickets":
+                            wickets,
+
+                        "wides":
+                            self._to_int(
+                                bowler.get(
+                                    "wides"
+                                )
+                            ),
+
+                        "no_balls":
+                            self._to_int(
+                                bowler.get(
+                                    "no_balls"
+                                )
+                            )
+                    })
+
+        if not records:
+
+            return pd.DataFrame()
+
+        df = pd.DataFrame(
+            records
+        )
+
+        # ------------------------------------------------------
+        # Bowling calculations
+        # ------------------------------------------------------
+
+        df["economy"] = np.where(
+            df["balls"] > 0,
+            (
+                df["runs"]
+                / df["balls"]
+                * 6
+            ),
+            np.nan
+        )
+
+        df["bowling_average"] = np.where(
+            df["wickets"] > 0,
+            (
+                df["runs"]
+                / df["wickets"]
+            ),
+            np.nan
+        )
+
+        df["bowling_strike_rate"] = np.where(
+            df["wickets"] > 0,
+            (
+                df["balls"]
+                / df["wickets"]
+            ),
+            np.nan
+        )
+
+        return (
+            df
+            .sort_values(
+                [
+                    "season",
+                    "match_date",
+                    "team_id",
+                    "innings"
+                ],
+                na_position="last"
+            )
+            .reset_index(
+                drop=True
+            )
+        )
 
     # ==========================================================
     # FIELDING
     # ==========================================================
 
-    def fielding(
-        self,
-        player_id=None,
-        season=None,
-        team_id=None
-    ):
+    def fielding(self):
         """
-        Return individual fielding/dismissal records.
-        """
+        Return one row per fielding dismissal.
 
-        return self._filter(
-            self.fielding_records,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        ).copy()
+        Fielding information is contained in the batting record
+        of the dismissed batsman.
 
-    # ==========================================================
-    # HIGHLIGHTS
-    # ==========================================================
+        Examples
+        --------
+        how_out == "ct"
+            -> catch
 
-    def highlights(
-        self,
-        player_id=None,
-        season=None,
-        team_id=None
-    ):
-        """
-        Return notable performances.
+        how_out == "st"
+            -> stumping
+
+        how_out == "run out"
+            -> run out
+
+        Returns
+        -------
+        pandas.DataFrame
         """
 
-        return self._filter(
-            self.highlight_records,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        ).copy()
+        records = []
 
-    # ==========================================================
-    # PLAYER SUMMARY
-    # ==========================================================
+        for season, match in self._iter_matches():
 
-    def summary(
-        self,
-        player_id,
-        season=None,
-        team_id=None
-    ):
-        """
-        Return a complete statistical summary for one player.
+            innings_list = match.get(
+                "innings",
+                []
+            )
 
-        games_played is calculated independently from batting
-        and bowling appearances.
-        """
+            if not isinstance(
+                innings_list,
+                list
+            ):
+                continue
 
-        participation = self._filter(
-            self.participation,
-            player_id=player_id,
-            season=season,
-            team_id=team_id
+            for innings in innings_list:
+
+                if not isinstance(
+                    innings,
+                    dict
+                ):
+                    continue
+
+                batting_team_id = self._to_int(
+                    innings.get(
+                        "team_batting_id"
+                    )
+                )
+
+                batting_team_info = (
+                    self._team_information(
+                        match,
+                        batting_team_id
+                    )
+                )
+
+                if batting_team_info is None:
+                    continue
+
+                fielding_team_id = (
+                    batting_team_info[
+                        "opposition_id"
+                    ]
+                )
+
+                team_info = self._team_information(
+                    match,
+                    fielding_team_id
+                )
+
+                if team_info is None:
+                    continue
+
+                # ------------------------------------------------
+                # Apply team filters
+                # ------------------------------------------------
+
+                if (
+                    self.club_id is not None
+                    and team_info["club_id"]
+                    != self.club_id
+                ):
+                    continue
+
+                if (
+                    self.team_id is not None
+                    and team_info["team_id"]
+                    != self.team_id
+                ):
+                    continue
+
+                batters = innings.get(
+                    "bat",
+                    []
+                )
+
+                if not isinstance(
+                    batters,
+                    list
+                ):
+                    continue
+
+                for batter in batters:
+
+                    if not isinstance(
+                        batter,
+                        dict
+                    ):
+                        continue
+
+                    how_out = str(
+                        batter.get(
+                            "how_out",
+                            ""
+                        )
+                    ).strip().lower()
+
+                    fielder_id = self._to_int(
+                        batter.get(
+                            "fielder_id"
+                        )
+                    )
+
+                    fielder_name = batter.get(
+                        "fielder_name"
+                    )
+
+                    # ------------------------------------------------
+                    # Only dismissal types involving a named fielder
+                    # ------------------------------------------------
+
+                    if how_out in (
+                        "ct",
+                        "caught",
+                        "st",
+                        "stumped",
+                        "run out"
+                    ):
+
+                        if fielder_id is None:
+                            continue
+
+                        if how_out in (
+                            "ct",
+                            "caught"
+                        ):
+
+                            dismissal_type = (
+                                "catch"
+                            )
+
+                        elif how_out in (
+                            "st",
+                            "stumped"
+                        ):
+
+                            dismissal_type = (
+                                "stumping"
+                            )
+
+                        else:
+
+                            dismissal_type = (
+                                "run out"
+                            )
+
+                        records.append({
+
+                            "season":
+                                season,
+
+                            "match_id":
+                                self._to_int(
+                                    match.get(
+                                        "match_id"
+                                    )
+                                ),
+
+                            "match_date":
+                                match.get(
+                                    "match_date"
+                                ),
+
+                            "player_id":
+                                fielder_id,
+
+                            "player_name":
+                                fielder_name,
+
+                            "team_id":
+                                team_info["team_id"],
+
+                            "team_name":
+                                team_info["team_name"],
+
+                            "club_id":
+                                team_info["club_id"],
+
+                            "club_name":
+                                team_info["club_name"],
+
+                            "opposition_id":
+                                team_info[
+                                    "opposition_id"
+                                ],
+
+                            "opposition_name":
+                                team_info[
+                                    "opposition_name"
+                                ],
+
+                            "opposition_club_id":
+                                team_info[
+                                    "opposition_club_id"
+                                ],
+
+                            "opposition_club_name":
+                                team_info[
+                                    "opposition_club_name"
+                                ],
+
+                            "innings":
+                                self._to_int(
+                                    innings.get(
+                                        "innings_number"
+                                    )
+                                ),
+
+                            "dismissal_type":
+                                dismissal_type,
+
+                            "dismissed_player_id":
+                                self._to_int(
+                                    batter.get(
+                                        "batsman_id"
+                                    )
+                                ),
+
+                            "dismissed_player_name":
+                                batter.get(
+                                    "batsman_name"
+                                )
+                        })
+
+        if not records:
+
+            return pd.DataFrame()
+
+        df = pd.DataFrame(
+            records
         )
+
+        # ------------------------------------------------------
+        # Convenience indicator columns
+        # ------------------------------------------------------
+
+        df["catch"] = (
+            df["dismissal_type"]
+            == "catch"
+        ).astype(int)
+
+        df["stumping"] = (
+            df["dismissal_type"]
+            == "stumping"
+        ).astype(int)
+
+        df["run_out"] = (
+            df["dismissal_type"]
+            == "run out"
+        ).astype(int)
+
+        return (
+            df
+            .sort_values(
+                [
+                    "season",
+                    "match_date",
+                    "team_id",
+                    "innings"
+                ],
+                na_position="last"
+            )
+            .reset_index(
+                drop=True
+            )
+        )
+
+    # ==========================================================
+    # SUMMARY
+    # ==========================================================
+
+    def summary(self):
+        """
+        Return one row per player with summary performance
+        information across the selected matches.
+
+        This is intended as a convenient player comparison table.
+
+        More detailed aggregation remains the responsibility of
+        MultiPlayerRecords.
+        """
+
+        participation = (
+            self.participation_records()
+        )
+
+        batting = self.batting()
+        bowling = self.bowling()
+        fielding = self.fielding()
+
+        # ------------------------------------------------------
+        # No participation data
+        # ------------------------------------------------------
 
         if participation.empty:
+
             return pd.DataFrame()
 
         # ------------------------------------------------------
-        # PLAYER NAME
+        # Base player table
         # ------------------------------------------------------
 
-        player_name = (
-            participation["player_name"]
-            .iloc[0]
+        group_columns = [
+            "player_id",
+            "player_name",
+            "team_id",
+            "team_name",
+            "club_id",
+            "club_name"
+        ]
+
+        summary = (
+            participation
+            .groupby(
+                group_columns,
+                dropna=False
+            )
+            .agg(
+                games_played=(
+                    "match_id",
+                    "nunique"
+                )
+            )
+            .reset_index()
         )
 
         # ------------------------------------------------------
-        # GAMES PLAYED
+        # Batting summary
         # ------------------------------------------------------
-
-        games_played = (
-            participation["match_id"]
-            .nunique()
-        )
-
-        # ------------------------------------------------------
-        # BATTING DATA
-        # ------------------------------------------------------
-
-        batting = self.batting(
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        )
-
-        batting_innings = 0
-        runs = 0
-        balls_faced = 0
-        fours = 0
-        sixes = 0
-        times_dismissed = 0
-        highest_score = 0
 
         if not batting.empty:
 
-            batting_innings = (
-                batting[
-                    ["match_id", "innings"]
-                ]
-                .drop_duplicates()
-                .shape[0]
-            )
-
-            runs = int(
-                pd.to_numeric(
-                    batting["runs"],
-                    errors="coerce"
+            batting_group = (
+                batting
+                .groupby(
+                    [
+                        "player_id",
+                        "team_id"
+                    ],
+                    dropna=False
                 )
-                .fillna(0)
-                .sum()
-            )
+                .agg(
 
-            balls_faced = int(
-                pd.to_numeric(
-                    batting["balls"],
-                    errors="coerce"
+                    batting_innings=(
+                        "match_id",
+                        "nunique"
+                    ),
+
+                    runs=(
+                        "runs",
+                        "sum"
+                    ),
+
+                    times_dismissed=(
+                        "not_out",
+                        lambda x:
+                            int(
+                                (~x).sum()
+                            )
+                    ),
+
+                    highest_score=(
+                        "runs",
+                        "max"
+                    ),
+
+                    balls_faced=(
+                        "balls",
+                        "sum"
+                    ),
+
+                    fours=(
+                        "fours",
+                        "sum"
+                    ),
+
+                    sixes=(
+                        "sixes",
+                        "sum"
+                    )
                 )
-                .fillna(0)
-                .sum()
+                .reset_index()
             )
 
-            fours = int(
-                pd.to_numeric(
-                    batting["fours"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
-            )
+            # --------------------------------------------------
+            # Batting average
+            # --------------------------------------------------
 
-            sixes = int(
-                pd.to_numeric(
-                    batting["sixes"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
-            )
+            batting_group[
+                "batting_average"
+            ] = np.where(
 
-            times_dismissed = int(
-                (batting["not_out"] == 0).sum()
-            )
+                batting_group[
+                    "times_dismissed"
+                ] > 0,
 
-            highest_score = int(
-                pd.to_numeric(
-                    batting["runs"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .max()
-            )
-
-        # ------------------------------------------------------
-        # BATTING DERIVED STATISTICS
-        # ------------------------------------------------------
-
-        batting_average = (
-            runs / times_dismissed
-            if times_dismissed > 0
-            else None
-        )
-
-        strike_rate = (
-            runs / balls_faced * 100
-            if balls_faced > 0
-            else None
-        )
-
-        fifties = 0
-        hundreds = 0
-        double_hundreds = 0
-
-        if not batting.empty:
-
-            batting_runs = pd.to_numeric(
-                batting["runs"],
-                errors="coerce"
-            ).fillna(0)
-
-            fifties = int(
                 (
-                    (batting_runs >= 50)
-                    & (batting_runs < 100)
-                ).sum()
+                    batting_group["runs"]
+                    /
+                    batting_group[
+                        "times_dismissed"
+                    ]
+                ),
+
+                np.nan
             )
 
-            hundreds = int(
+            # --------------------------------------------------
+            # Strike rate
+            # --------------------------------------------------
+
+            batting_group[
+                "strike_rate"
+            ] = np.where(
+
+                batting_group[
+                    "balls_faced"
+                ] > 0,
+
                 (
-                    (batting_runs >= 100)
-                    & (batting_runs < 200)
-                ).sum()
+                    batting_group["runs"]
+                    /
+                    batting_group[
+                        "balls_faced"
+                    ]
+                    * 100
+                ),
+
+                np.nan
             )
 
-            double_hundreds = int(
-                (batting_runs >= 200).sum()
+            summary = summary.merge(
+                batting_group,
+                on=[
+                    "player_id",
+                    "team_id"
+                ],
+                how="left"
             )
 
         # ------------------------------------------------------
-        # BOWLING DATA
+        # Bowling summary
         # ------------------------------------------------------
-
-        bowling = self.bowling(
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        )
-
-        bowling_innings = 0
-        balls_bowled = 0
-        runs_conceded = 0
-        wickets = 0
-        maidens = 0
-        wides = 0
-        no_balls = 0
 
         if not bowling.empty:
 
-            bowling_innings = (
-                bowling[
-                    ["match_id", "innings"]
-                ]
-                .drop_duplicates()
-                .shape[0]
+            bowling_group = (
+                bowling
+                .groupby(
+                    [
+                        "player_id",
+                        "team_id"
+                    ],
+                    dropna=False
+                )
+                .agg(
+
+                    bowling_innings=(
+                        "match_id",
+                        "nunique"
+                    ),
+
+                    wickets=(
+                        "wickets",
+                        "sum"
+                    ),
+
+                    runs_conceded=(
+                        "runs",
+                        "sum"
+                    ),
+
+                    balls_bowled=(
+                        "balls",
+                        "sum"
+                    ),
+
+                    maidens=(
+                        "maidens",
+                        "sum"
+                    ),
+
+                    wides=(
+                        "wides",
+                        "sum"
+                    ),
+
+                    no_balls=(
+                        "no_balls",
+                        "sum"
+                    )
+                )
+                .reset_index()
             )
 
-            balls_bowled = int(
-                pd.to_numeric(
-                    bowling["balls"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
+            # --------------------------------------------------
+            # Bowling average
+            # --------------------------------------------------
+
+            bowling_group[
+                "bowling_average"
+            ] = np.where(
+
+                bowling_group[
+                    "wickets"
+                ] > 0,
+
+                (
+                    bowling_group[
+                        "runs_conceded"
+                    ]
+                    /
+                    bowling_group[
+                        "wickets"
+                    ]
+                ),
+
+                np.nan
             )
 
-            runs_conceded = int(
-                pd.to_numeric(
-                    bowling["runs"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
+            # --------------------------------------------------
+            # Economy
+            # --------------------------------------------------
+
+            bowling_group[
+                "economy"
+            ] = np.where(
+
+                bowling_group[
+                    "balls_bowled"
+                ] > 0,
+
+                (
+                    bowling_group[
+                        "runs_conceded"
+                    ]
+                    /
+                    bowling_group[
+                        "balls_bowled"
+                    ]
+                    * 6
+                ),
+
+                np.nan
             )
 
-            wickets = int(
-                pd.to_numeric(
-                    bowling["wickets"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
+            # --------------------------------------------------
+            # Bowling strike rate
+            # --------------------------------------------------
+
+            bowling_group[
+                "bowling_strike_rate"
+            ] = np.where(
+
+                bowling_group[
+                    "wickets"
+                ] > 0,
+
+                (
+                    bowling_group[
+                        "balls_bowled"
+                    ]
+                    /
+                    bowling_group[
+                        "wickets"
+                    ]
+                ),
+
+                np.nan
             )
 
-            maidens = int(
-                pd.to_numeric(
-                    bowling["maidens"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
-            )
-
-            wides = int(
-                pd.to_numeric(
-                    bowling["wides"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
-            )
-
-            no_balls = int(
-                pd.to_numeric(
-                    bowling["no_balls"],
-                    errors="coerce"
-                )
-                .fillna(0)
-                .sum()
+            summary = summary.merge(
+                bowling_group,
+                on=[
+                    "player_id",
+                    "team_id"
+                ],
+                how="left"
             )
 
         # ------------------------------------------------------
-        # BOWLING DERIVED STATISTICS
+        # Fielding summary
         # ------------------------------------------------------
-
-        bowling_average = (
-            runs_conceded / wickets
-            if wickets > 0
-            else None
-        )
-
-        economy = (
-            runs_conceded
-            / (balls_bowled / 6)
-            if balls_bowled > 0
-            else None
-        )
-
-        bowling_strike_rate = (
-            balls_bowled / wickets
-            if wickets > 0
-            else None
-        )
-
-        # ------------------------------------------------------
-        # FIELDING
-        # ------------------------------------------------------
-
-        fielding = self.fielding(
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        )
-
-        catches = 0
-        stumpings = 0
-        run_outs = 0
-        fielding_dismissals = 0
 
         if not fielding.empty:
 
-            how_out = (
-                fielding["how_out_clean"]
-                .astype(str)
+            fielding_group = (
+                fielding
+                .groupby(
+                    [
+                        "player_id",
+                        "team_id"
+                    ],
+                    dropna=False
+                )
+                .agg(
+
+                    catches=(
+                        "catch",
+                        "sum"
+                    ),
+
+                    stumpings=(
+                        "stumping",
+                        "sum"
+                    ),
+
+                    run_outs=(
+                        "run_out",
+                        "sum"
+                    )
+                )
+                .reset_index()
             )
 
-            catches = int(
-                (how_out == "ct").sum()
+            fielding_group[
+                "fielding_dismissals"
+            ] = (
+                fielding_group["catches"]
+                + fielding_group["stumpings"]
+                + fielding_group["run_outs"]
             )
 
-            stumpings = int(
-                (how_out == "st").sum()
-            )
-
-            run_outs = int(
-                (how_out == "ro").sum()
-            )
-
-            fielding_dismissals = (
-                catches
-                + stumpings
-                + run_outs
-            )
-
-        # ------------------------------------------------------
-        # HIGHLIGHTS
-        # ------------------------------------------------------
-
-        highlights = self.highlights(
-            player_id=player_id,
-            season=season,
-            team_id=team_id
-        )
-
-        notable_performances = (
-            len(highlights)
-            if not highlights.empty
-            else 0
-        )
-
-        # ------------------------------------------------------
-        # RETURN SUMMARY
-        # ------------------------------------------------------
-
-        return pd.DataFrame([{
-
-            # Identity
-            "player_id": player_id,
-            "player_name": player_name,
-
-            # Participation
-            "games_played": games_played,
-
-            # Batting
-            "batting_innings": batting_innings,
-            "runs": runs,
-            "times_dismissed": times_dismissed,
-            "batting_average": batting_average,
-            "highest_score": highest_score,
-            "fifties": fifties,
-            "hundreds": hundreds,
-            "double_hundreds": double_hundreds,
-            "fours": fours,
-            "sixes": sixes,
-            "balls_faced": balls_faced,
-            "strike_rate": strike_rate,
-
-            # Bowling
-            "bowling_innings": bowling_innings,
-            "balls_bowled": balls_bowled,
-            "runs_conceded": runs_conceded,
-            "wickets": wickets,
-            "maidens": maidens,
-            "bowling_average": bowling_average,
-            "economy": economy,
-            "bowling_strike_rate": bowling_strike_rate,
-            "wides": wides,
-            "no_balls": no_balls,
-
-            # Fielding
-            "catches": catches,
-            "stumpings": stumpings,
-            "run_outs": run_outs,
-            "fielding_dismissals": fielding_dismissals,
-
-            # Highlights
-            "notable_performances": notable_performances,
-
-        }])
-
-    # ==========================================================
-    # ALL PLAYER SUMMARIES
-    # ==========================================================
-    
-    def get_all(
-        self,
-        season=None,
-        team_id=None
-    ):
-        """
-        Return a complete statistical summary for every registered
-        Play-Cricket player who participated in the selected
-        season/team.
-    
-        Players without a Play-Cricket player_id are retained in the
-        underlying participation data but are currently excluded from
-        the statistical summary because they cannot be reliably
-        matched across scorecards.
-        """
-    
-        participation = self._filter(
-            self.participation,
-            season=season,
-            team_id=team_id
-        )
-    
-        if participation.empty:
-            return pd.DataFrame()
-    
-        players = (
-            participation[
-                [
+            summary = summary.merge(
+                fielding_group,
+                on=[
                     "player_id",
-                    "player_name"
-                ]
-            ]
-            .dropna(subset=["player_id"])
-            .drop_duplicates()
-        )
-    
-        summaries = []
-    
-        for _, player in players.iterrows():
-    
-            summary = self.summary(
-                player_id=player["player_id"],
-                season=season,
-                team_id=team_id
+                    "team_id"
+                ],
+                how="left"
             )
-    
-            if not summary.empty:
-                summaries.append(summary)
-    
-        summaries = [
-            s for s in summaries
-            if s is not None and not s.empty
+
+        # ------------------------------------------------------
+        # Fill numeric performance values
+        # ------------------------------------------------------
+
+        numeric_columns = [
+            "batting_innings",
+            "runs",
+            "times_dismissed",
+            "highest_score",
+            "balls_faced",
+            "fours",
+            "sixes",
+            "bowling_innings",
+            "wickets",
+            "runs_conceded",
+            "balls_bowled",
+            "maidens",
+            "wides",
+            "no_balls",
+            "catches",
+            "stumpings",
+            "run_outs",
+            "fielding_dismissals"
         ]
-    
-        if not summaries:
-            return pd.DataFrame()
-    
-        return pd.concat(
-            summaries,
-            ignore_index=True
-        )
-        
-    
-    # ==========================================================
-    # SEASON PLAYER SUMMARY
-    # ==========================================================
 
-    def season(
-        self,
-        season,
-        team_id=None
-    ):
-        """
-        Convenience method for a season-wide player summary.
-        """
+        for column in numeric_columns:
 
-        return self.get_all(
-            season=season,
-            team_id=team_id
+            if column in summary.columns:
+
+                summary[column] = (
+                    summary[column]
+                    .fillna(0)
+                    .astype(int)
+                )
+
+        return summary.reset_index(
+            drop=True
         )
 
     # ==========================================================
-    # TEAM PLAYER SUMMARY
+    # REPRESENTATION
     # ==========================================================
 
-    def team(
-        self,
-        team_id,
-        season=None
-    ):
-        """
-        Convenience method for a team-wide player summary.
-        """
+    def __repr__(self):
 
-        return self.get_all(
-            season=season,
-            team_id=team_id
+        return (
+            "PlayerPerformances("
+            f"season={self.season}, "
+            f"match_ids={self.match_ids}, "
+            f"club_id={self.club_id}, "
+            f"team_id={self.team_id})"
         )

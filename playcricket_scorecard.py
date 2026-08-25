@@ -1,22 +1,32 @@
 import pandas as pd
+import numpy as np
 
 
 class Scorecard:
     """
     Represents one Play-Cricket match.
 
-    Uses the playcric API to retrieve:
+    The complete match-detail response is supplied when the object
+    is created. No API calls are made by this class.
+
+    The supplied match detail contains:
+
         - Match information
-        - Innings totals
-        - Batting
-        - Bowling
-        - Partnerships
+        - Players
+        - Innings
+            - Batting
+            - Bowling
+            - Fall of wickets / partnerships
+
+    All scorecard tables and performance information are derived
+    locally from this data.
     """
 
-    def __init__(self, playc, match_id, season):
-        self.playc = playc
-        self.match_id = match_id
-        self.season = season
+    def __init__(self, detail):
+
+        self.detail = detail
+
+        self.match_id = detail["id"]
 
         self.match = None
         self.players = None
@@ -26,75 +36,612 @@ class Scorecard:
         self.partnerships = None
         self.performances = None
 
-
         self._load()
 
-    # --------------------------------------------------
+    # ==========================================================
     # LOAD DATA
-    # --------------------------------------------------
+    # ==========================================================
 
     def _load(self):
+        """
+        Extract all scorecard information from the supplied
+        match-detail dictionary.
 
-        # Match information
-        matches = self.playc.get_all_matches(
-            season=self.season
+        IMPORTANT:
+            No API requests are made here.
+        """
+
+        # --------------------------------------------------
+        # MATCH INFORMATION
+        # --------------------------------------------------
+
+        self.match = pd.DataFrame([
+            {
+                key: value
+                for key, value in self.detail.items()
+                if key not in ["players", "innings"]
+            }
+        ])  
+
+        # --------------------------------------------------
+        # PLAYERS
+        # --------------------------------------------------
+
+        self.players = self._extract_players()
+
+        # --------------------------------------------------
+        # INNINGS
+        # --------------------------------------------------
+
+        innings_data = self.detail.get(
+            "innings",
+            []
         )
 
-        self.match = matches[
-            matches["id"] == self.match_id
-        ].copy()
+        if not innings_data:
 
-        if self.match.empty:
-            raise ValueError(
-                f"Match {self.match_id} "
-                f"was not found in season {self.season}."
+            self.innings = pd.DataFrame()
+
+            self.batting = pd.DataFrame()
+
+            self.bowling = pd.DataFrame()
+
+            self.partnerships = pd.DataFrame()
+
+            self.performances = pd.DataFrame()
+
+            return
+
+        # --------------------------------------------------
+        # BUILD DATAFRAMES
+        # --------------------------------------------------
+
+        batting_frames = []
+        bowling_frames = []
+        partnership_frames = []
+        innings_frames = []
+
+        for innings_number, innings in enumerate(
+            innings_data,
+            start=1
+        ):
+
+            # ----------------------------------------------
+            # INNINGS SUMMARY
+            # ----------------------------------------------
+
+            innings_row = {
+                key: value
+                for key, value in innings.items()
+                if key not in [
+                    "bat",
+                    "bowl",
+                    "fow"
+                ]
+            }
+
+            innings_row["innings_number"] = (
+                innings_number
             )
 
-        # Players used in match
-        self.players = self.playc._get_players_used_in_match(
-            self.match_id
-        )
-
-        # Batting and bowling
-        (
-            self.batting,
-            self.bowling
-        ) = self.playc.get_individual_stats(
-            match_id=self.match_id,
-            stat_string=False
-        )
-
-        # Innings
-        self.innings = (
-            self.playc.get_innings_total_scores(
+            innings_row["match_id"] = (
                 self.match_id
             )
+
+            innings_frames.append(
+                innings_row
+            )
+
+            # ----------------------------------------------
+            # TEAM INFORMATION
+            # ----------------------------------------------
+
+            batting_team_id = self._normalise_id(
+                innings.get("team_batting_id")
+            )
+
+            batting_team_name = (
+                innings.get("team_batting_name")
+            )
+
+            if batting_team_name is None:
+
+                batting_team_name = self._team_name(
+                    batting_team_id
+                )
+
+            bowling_team_id = self._opposition_team_id(
+                batting_team_id
+            )
+
+            bowling_team_name = self._team_name(
+                bowling_team_id
+            )
+
+            # ----------------------------------------------
+            # BATTING
+            # ----------------------------------------------
+
+            bat = pd.json_normalize(
+                innings.get("bat", [])
+            )
+
+            if not bat.empty:
+
+                bat = self._add_context(
+                    bat,
+                    team_name=batting_team_name,
+                    team_id=batting_team_id,
+                    opposition_name=bowling_team_name,
+                    opposition_id=bowling_team_id,
+                    innings_number=innings_number
+                )
+
+                batting_frames.append(
+                    bat
+                )
+
+            # ----------------------------------------------
+            # BOWLING
+            # ----------------------------------------------
+
+            bowl = pd.json_normalize(
+                innings.get("bowl", [])
+            )
+
+            if not bowl.empty:
+
+                bowl = self._add_context(
+                    bowl,
+                    team_name=bowling_team_name,
+                    team_id=bowling_team_id,
+                    opposition_name=batting_team_name,
+                    opposition_id=batting_team_id,
+                    innings_number=innings_number
+                )
+
+                bowling_frames.append(
+                    bowl
+                )
+
+            # ----------------------------------------------
+            # FALL OF WICKETS
+            # ----------------------------------------------
+
+            fow = pd.json_normalize(
+                innings.get("fow", [])
+            )
+
+            if not fow.empty:
+
+                fow = self._add_context(
+                    fow,
+                    team_name=batting_team_name,
+                    team_id=batting_team_id,
+                    opposition_name=bowling_team_name,
+                    opposition_id=bowling_team_id,
+                    innings_number=innings_number
+                )
+
+                partnership_frames.append(
+                    fow
+                )
+
+        # --------------------------------------------------
+        # COMBINE INNINGS
+        # --------------------------------------------------
+
+        self.innings = pd.DataFrame(
+            innings_frames
         )
 
-        # Partnerships
-        self.partnerships = (
-            self.playc.get_match_partnerships(
-                self.match_id
+        # --------------------------------------------------
+        # COMBINE BATTING
+        # --------------------------------------------------
+
+        if batting_frames:
+
+            self.batting = self._standardise_batting(
+                pd.concat(
+                    batting_frames,
+                    ignore_index=True
+                )
+            )
+
+        else:
+
+            self.batting = pd.DataFrame()
+
+        # --------------------------------------------------
+        # COMBINE BOWLING
+        # --------------------------------------------------
+
+        if bowling_frames:
+
+            self.bowling = self._standardise_bowling(
+                pd.concat(
+                    bowling_frames,
+                    ignore_index=True
+                )
+            )
+
+        else:
+
+            self.bowling = pd.DataFrame()
+
+        # --------------------------------------------------
+        # COMBINE PARTNERSHIPS
+        # --------------------------------------------------
+
+        if partnership_frames:
+
+            self.partnerships = pd.concat(
+                partnership_frames,
+                ignore_index=True
+            )
+
+            self.partnerships = (
+                self._calculate_partnership_scores(
+                    self.partnerships
+                )
+            )
+
+        else:
+
+            self.partnerships = pd.DataFrame()
+
+        # --------------------------------------------------
+        # PERFORMANCES
+        # --------------------------------------------------
+
+        self.performances = (
+            self.get_performances()
+        )
+
+    # ==========================================================
+    # INTERNAL HELPERS
+    # ==========================================================
+
+    @staticmethod
+    def _normalise_id(value):
+
+        if value in [None, ""]:
+            return None
+
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return value
+
+    # ----------------------------------------------------------
+
+    def _team_name(self, team_id):
+
+        if team_id is None:
+            return None
+
+        home_id = self._normalise_id(
+            self.detail.get("home_team_id")
+        )
+
+        away_id = self._normalise_id(
+            self.detail.get("away_team_id")
+        )
+
+        if team_id == home_id:
+
+            return (
+                f"{self.detail.get('home_club_name')} "
+                f"- "
+                f"{self.detail.get('home_team_name')}"
+            )
+
+        if team_id == away_id:
+
+            return (
+                f"{self.detail.get('away_club_name')} "
+                f"- "
+                f"{self.detail.get('away_team_name')}"
+            )
+
+        return None
+
+    # ----------------------------------------------------------
+
+    def _opposition_team_id(self, team_id):
+
+        home_id = self._normalise_id(
+            self.detail.get("home_team_id")
+        )
+
+        away_id = self._normalise_id(
+            self.detail.get("away_team_id")
+        )
+
+        if team_id == home_id:
+            return away_id
+
+        if team_id == away_id:
+            return home_id
+
+        return None
+
+    # ----------------------------------------------------------
+
+    @staticmethod
+    def _add_context(
+        df,
+        team_name,
+        team_id,
+        opposition_name,
+        opposition_id,
+        innings_number
+    ):
+
+        df = df.copy()
+
+        df["team_name"] = team_name
+        df["team_id"] = team_id
+
+        df["opposition_name"] = (
+            opposition_name
+        )
+
+        df["opposition_id"] = (
+            opposition_id
+        )
+
+        df["innings"] = innings_number
+
+        return df
+
+    # ==========================================================
+    # PLAYERS
+    # ==========================================================
+
+    def _extract_players(self):
+
+        players = []
+
+        player_data = self.detail.get(
+            "players",
+            []
+        )
+
+        # Home team
+
+        if len(player_data) >= 1:
+
+            home_players = player_data[0].get(
+                "home_team",
+                []
+            )
+
+            home = pd.json_normalize(
+                home_players
+            )
+
+            if not home.empty:
+
+                home["team_id"] = self._normalise_id(
+                    self.detail.get("home_team_id")
+                )
+
+                home["club_id"] = self._normalise_id(
+                    self.detail.get("home_club_id")
+                )
+
+                players.append(home)
+
+        # Away team
+
+        if len(player_data) >= 2:
+
+            away_players = player_data[1].get(
+                "away_team",
+                []
+            )
+
+            away = pd.json_normalize(
+                away_players
+            )
+
+            if not away.empty:
+
+                away["team_id"] = self._normalise_id(
+                    self.detail.get("away_team_id")
+                )
+
+                away["club_id"] = self._normalise_id(
+                    self.detail.get("away_club_id")
+                )
+
+                players.append(away)
+
+        if not players:
+
+            return pd.DataFrame()
+
+        return pd.concat(
+            players,
+            ignore_index=True
+        )
+
+    # ==========================================================
+    # STANDARDISE BATTING
+    # ==========================================================
+
+    def _standardise_batting(self, data):
+
+        if data.empty:
+            return data
+
+        data = data.copy()
+
+        # Numeric columns
+
+        for column in [
+            "runs",
+            "fours",
+            "sixes",
+            "balls",
+            "position"
+        ]:
+
+            if column in data.columns:
+
+                data[column] = (
+                    pd.to_numeric(
+                        data[column],
+                        errors="coerce"
+                    )
+                    .fillna(0)
+                    .astype(int)
+                )
+
+        # Not out
+
+        if "how_out" in data.columns:
+
+            data["not_out"] = np.where(
+                data["how_out"].isin(
+                    [
+                        "not out",
+                        "retired not out",
+                        "did not bat"
+                    ]
+                ),
+                1,
+                0
+            )
+
+        return data
+
+    # ==========================================================
+    # STANDARDISE BOWLING
+    # ==========================================================
+
+    def _standardise_bowling(self, data):
+
+        if data.empty:
+            return data
+
+        data = data.copy()
+
+        for column in [
+            "runs",
+            "wickets",
+            "maidens",
+            "no_balls",
+            "wides"
+        ]:
+
+            if column in data.columns:
+
+                data[column] = (
+                    pd.to_numeric(
+                        data[column],
+                        errors="coerce"
+                    )
+                    .fillna(0)
+                    .astype(int)
+                )
+
+        # Convert overs to balls
+
+        if "overs" in data.columns:
+
+            data["balls"] = (
+                data["overs"]
+                .apply(self._count_balls)
+            )
+
+        return data
+
+    # ----------------------------------------------------------
+
+    @staticmethod
+    def _count_balls(overs):
+
+        if pd.isna(overs):
+            return 0
+
+        try:
+
+            overs = str(overs)
+
+            if "." in overs:
+
+                whole, remainder = (
+                    overs.split(".")
+                )
+
+                return (
+                    int(whole) * 6
+                    + int(remainder)
+                )
+
+            return int(overs) * 6
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            return 0
+
+    # ==========================================================
+    # PARTNERSHIPS
+    # ==========================================================
+
+    def _calculate_partnership_scores(
+        self,
+        data
+    ):
+
+        if data.empty:
+            return data
+
+        data = data.copy()
+
+        if "runs" not in data.columns:
+
+            return data
+
+        data["runs"] = (
+            pd.to_numeric(
+                data["runs"],
+                errors="coerce"
             )
         )
-   
-        # Notable performances / highlights
-        self.performances = self.get_performances()
-        
 
+        shifted = (
+            data
+            .groupby("innings")["runs"]
+            .shift(1)
+            .fillna(0)
+        )
 
-    # --------------------------------------------------
+        data["score_added"] = (
+            data["runs"] - shifted
+        )
+
+        return data
+
+    # ==========================================================
     # MATCH INFORMATION
-    # --------------------------------------------------
+    # ==========================================================
 
     def match_info(self):
 
         return self.match.iloc[0]
 
+    # ----------------------------------------------------------
+
     def teams(self):
-    
+
         row = self.match_info()
-    
+
         return {
             "home": (
                 f"{row['home_club_name']} "
@@ -106,174 +653,283 @@ class Scorecard:
             )
         }
 
-
-    # --------------------------------------------------
+    # ==========================================================
     # INNINGS
-    # --------------------------------------------------
+    # ==========================================================
 
-    def get_innings(self, innings_number):
+    def get_innings(
+        self,
+        innings_number
+    ):
+
+        if self.innings.empty:
+            return pd.DataFrame()
 
         return self.innings[
             self.innings["innings_number"]
             == innings_number
         ].copy()
 
-    # --------------------------------------------------
+    # ==========================================================
     # BATTING
-    # --------------------------------------------------
+    # ==========================================================
 
-    def get_batting(self, innings_number=None):
+    def get_batting(
+        self,
+        innings_number=None
+    ):
 
         data = self.batting.copy()
 
-        if innings_number is not None:
+        if (
+            innings_number is not None
+            and not data.empty
+        ):
+
             data = data[
-                data["innings"] == innings_number
+                data["innings"]
+                == innings_number
             ]
 
         return data
-    
-    # --------------------------------------------------
-    #       PRESENTATION BATTING TABLE
-    # --------------------------------------------------
-    
-    def batting_table(self, innings_number):
-    
-        data = self.get_batting(innings_number).copy()
-    
-        # Create a readable dismissal description
+
+    # ==========================================================
+    # BATTING TABLE
+    # ==========================================================
+
+    def batting_table(
+        self,
+        innings_number
+    ):
+
+        data = self.get_batting(
+            innings_number
+        ).copy()
+
+        if data.empty:
+            return data
+
         def dismissal(row):
-    
-            how_out = str(row["how_out"]).strip().lower()
-    
+
+            how_out = (
+                str(row.get("how_out", ""))
+                .strip()
+                .lower()
+            )
+
             if how_out == "not out":
                 return "not out"
-    
+
             if how_out == "did not bat":
                 return "did not bat"
-    
+
             if how_out == "ct":
-                return f"c {row['fielder_name']} b {row['bowler_name']}"
-    
+                return (
+                    f"c {row.get('fielder_name')} "
+                    f"b {row.get('bowler_name')}"
+                )
+
             if how_out == "run out":
-                return f"run out ({row['fielder_name']})"
-    
+                return (
+                    f"run out "
+                    f"({row.get('fielder_name')})"
+                )
+
             if how_out == "b":
-                return f"b {row['bowler_name']}"
-    
+                return (
+                    f"b {row.get('bowler_name')}"
+                )
+
             if how_out == "lbw":
-                return f"lbw b {row['bowler_name']}"
-    
+                return (
+                    f"lbw b "
+                    f"{row.get('bowler_name')}"
+                )
+
+            if how_out == "st":
+                return (
+                    f"st {row.get('fielder_name')} "
+                    f"b {row.get('bowler_name')}"
+                )
+
             return how_out
-    
+
         data["dismissal"] = data.apply(
             dismissal,
             axis=1
         )
-    
-        # Keep only the useful scorecard columns
-        data = data[
-            [
-                "position",
-                "batsman_name",
-                "dismissal",
-                "runs",
-                "balls",
-                "fours",
-                "sixes",
-                "batsman_id"
-            ]
+
+        columns = [
+            "position",
+            "batsman_name",
+            "dismissal",
+            "runs",
+            "balls",
+            "fours",
+            "sixes",
+            "batsman_id"
         ]
-    
-        return data
 
-    # --------------------------------------------------
+        columns = [
+            column
+            for column in columns
+            if column in data.columns
+        ]
+
+        return data[columns]
+
+    # ==========================================================
     # BOWLING
-    # --------------------------------------------------
+    # ==========================================================
 
-    def get_bowling(self, innings_number=None):
+    def get_bowling(
+        self,
+        innings_number=None
+    ):
 
         data = self.bowling.copy()
 
-        if innings_number is not None:
+        if (
+            innings_number is not None
+            and not data.empty
+        ):
+
             data = data[
-                data["innings"] == innings_number
+                data["innings"]
+                == innings_number
             ]
 
         return data
 
-    # --------------------------------------------------
-    #       PRESENTATION BOWLING TABLE
-    # --------------------------------------------------
+    # ==========================================================
+    # BOWLING TABLE
+    # ==========================================================
 
-    def bowling_table(self, innings_number):
+    def bowling_table(
+        self,
+        innings_number
+    ):
 
-        data = self.get_bowling(innings_number).copy()
+        data = self.get_bowling(
+            innings_number
+        ).copy()
 
-        data = data[
-            [
-                "bowler_name",
-                "overs",
-                "maidens",
-                "runs",
-                "wides",
-                "no_balls",
-                "wickets",
-                "bowler_id"
-            ]
+        if data.empty:
+            return data
+
+        columns = [
+            "bowler_name",
+            "overs",
+            "maidens",
+            "runs",
+            "wides",
+            "no_balls",
+            "wickets",
+            "bowler_id"
         ]
 
-        return data
+        columns = [
+            column
+            for column in columns
+            if column in data.columns
+        ]
 
-    # --------------------------------------------------
+        return data[columns]
+
+    # ==========================================================
     # DISMISSALS
-    # --------------------------------------------------
+    # ==========================================================
 
-    def get_dismissals(self, innings_number=None):
+    def get_dismissals(
+        self,
+        innings_number=None
+    ):
 
-        data = self.get_batting(innings_number)
+        data = self.get_batting(
+            innings_number
+        )
+
+        if data.empty:
+            return data
 
         return data[
             ~data["how_out"].isin(
-                ["not out", "did not bat"]
+                [
+                    "not out",
+                    "did not bat"
+                ]
             )
         ].copy()
 
-    # --------------------------------------------------
-    # FIELDING / CATCHES
-    # --------------------------------------------------
+    # ==========================================================
+    # CATCHES
+    # ==========================================================
 
-    def get_catches(self, innings_number=None):
+    def get_catches(
+        self,
+        innings_number=None
+    ):
 
-        data = self.get_dismissals(innings_number)
+        data = self.get_dismissals(
+            innings_number
+        )
 
-        return data[
-            data["how_out"].str.lower() == "ct"
-        ].copy()
-
-    # --------------------------------------------------
-    # FIELDING / RUN OUTS
-    # --------------------------------------------------
-
-    def get_run_outs(self, innings_number=None):
-
-        data = self.get_dismissals(innings_number)
+        if data.empty:
+            return data
 
         return data[
-            data["how_out"].str.lower() == "run out"
+            data["how_out"]
+            .astype(str)
+            .str.lower()
+            == "ct"
         ].copy()
-    
-    # --------------------------------------------------
-    #       FIELDING TABLE
-    # --------------------------------------------------
 
-    def fielding_table(self, innings_number):
+    # ==========================================================
+    # RUN OUTS
+    # ==========================================================
 
-        data = self.get_batting(innings_number).copy()
+    def get_run_outs(
+        self,
+        innings_number=None
+    ):
+
+        data = self.get_dismissals(
+            innings_number
+        )
+
+        if data.empty:
+            return data
+
+        return data[
+            data["how_out"]
+            .astype(str)
+            .str.lower()
+            == "run out"
+        ].copy()
+
+    # ==========================================================
+    # FIELDING TABLE
+    # ==========================================================
+
+    def fielding_table(
+        self,
+        innings_number
+    ):
+
+        data = self.get_batting(
+            innings_number
+        ).copy()
+
+        if data.empty:
+            return pd.DataFrame()
 
         # Catches
+
         catches = data[
-            data["how_out"].str.lower() == "ct"
+            data["how_out"]
+            .astype(str)
+            .str.lower()
+            == "ct"
         ][
             [
                 "fielder_name",
@@ -288,8 +944,12 @@ class Scorecard:
         catches["dismissal"] = "catch"
 
         # Run outs
+
         run_outs = data[
-            data["how_out"].str.lower() == "run out"
+            data["how_out"]
+            .astype(str)
+            .str.lower()
+            == "run out"
         ][
             [
                 "fielder_name",
@@ -303,31 +963,66 @@ class Scorecard:
 
         run_outs["dismissal"] = "run out"
 
+        # Stumpings
+
+        stumpings = data[
+            data["how_out"]
+            .astype(str)
+            .str.lower()
+            == "st"
+        ][
+            [
+                "fielder_name",
+                "fielder_id",
+                "batsman_name",
+                "batsman_id",
+                "bowler_name",
+                "bowler_id"
+            ]
+        ].copy()
+
+        stumpings["dismissal"] = "stumping"
+
         return pd.concat(
-            [catches, run_outs],
+            [
+                catches,
+                run_outs,
+                stumpings
+            ],
             ignore_index=True
-        )    
+        )
 
-    # --------------------------------------------------
+    # ==========================================================
     # PARTNERSHIPS
-    # --------------------------------------------------
+    # ==========================================================
 
-    def get_partnerships(self, innings_number=None):
+    def get_partnerships(
+        self,
+        innings_number=None
+    ):
 
         data = self.partnerships.copy()
 
-        if innings_number is not None:
+        if (
+            innings_number is not None
+            and not data.empty
+        ):
+
             data = data[
-                data["innings"] == innings_number
+                data["innings"]
+                == innings_number
             ]
 
         return data
-    
-    # --------------------------------------------------
-    # PARTNERSHIP TABLE
-    # --------------------------------------------------
 
-    def partnership_table(self, innings_number):
+    # ==========================================================
+    # PARTNERSHIP TABLE
+    # ==========================================================
+
+    def partnership_table(
+        self,
+        innings_number
+    ):
 
         data = self.get_partnerships(
             innings_number
@@ -336,42 +1031,49 @@ class Scorecard:
         if data.empty:
             return data
 
-        data = data[
-            [
-                "wickets",
-                "runs",
-                "batsman_out_name",
-                "batsman_in_name",
-                "batsman_in_runs",
-                "score_added"
-            ]
-        ].copy()
+        columns = [
+            "wickets",
+            "runs",
+            "batsman_out_name",
+            "batsman_in_name",
+            "batsman_in_runs",
+            "score_added"
+        ]
+
+        columns = [
+            column
+            for column in columns
+            if column in data.columns
+        ]
+
+        data = data[columns].copy()
 
         data = data.rename(
             columns={
                 "wickets": "wicket",
                 "runs": "score_after_wicket",
                 "batsman_out_name": "batsman_out",
-                "batsman_in_name": "batsman_in",
-                "batsman_in_runs": "batsman_in_runs"
+                "batsman_in_name": "batsman_in"
             }
         )
 
         return data
 
-    # --------------------------------------------------
+    # ==========================================================
     # RESULT
-    # --------------------------------------------------
+    # ==========================================================
 
     def get_result(self):
 
-        return self.playc.get_match_result_string(
-            self.match_id
+        return self.detail.get(
+            "result_description"
+        ) or self.detail.get(
+            "result"
         )
 
-    # --------------------------------------------------
+    # ==========================================================
     # SUMMARY
-    # --------------------------------------------------
+    # ==========================================================
 
     def summary(self):
 
@@ -379,109 +1081,106 @@ class Scorecard:
 
         return {
             "match_id": self.match_id,
-            "season": self.season,
-            "date": row["match_date"],
-            "competition": row["competition_name"],
-            "ground": row["ground_name"],
-            "home_team": row["home_team_name"],
-            "away_team": row["away_team_name"],
+            "date": row.get("match_date"),
+            "competition": row.get(
+                "competition_name"
+            ),
+            "ground": row.get(
+                "ground_name"
+            ),
+            "home_team": row.get(
+                "home_team_name"
+            ),
+            "away_team": row.get(
+                "away_team_name"
+            ),
             "result": self.get_result()
         }
 
-    # --------------------------------------------------
-    # DISPLAY SUMMARY
-    # --------------------------------------------------
-
-    def show(self):
-
-        row = self.match_info()
-
-        print("=" * 70)
-
-        teams = self.teams()
-    
-        print(
-            f"{teams['home']} vs {teams['away']}"
-        )
-
-        print("=" * 70)
-
-        print(
-            f"Competition: "
-            f"{row['competition_name']}"
-        )
-
-        print(
-            f"Date: "
-            f"{row['match_date']}"
-        )
-
-        print(
-            f"Ground: "
-            f"{row['ground_name']}"
-        )
-
-        print()
-
-        print(
-            f"Result: {self.get_result()}"
-        )
-
-        print()
-
-        for _, innings in self.innings.iterrows():
-
-            print(
-                f"{innings['team_batting_name']}: "
-                f"{innings['runs']}/"
-                f"{innings['wickets']} "
-                f"({innings['overs']} overs)"
-            )
-
-        print("=" * 70)
-    
-    # --------------------------------------------------
+    # ==========================================================
     # INNINGS SUMMARY
-    # --------------------------------------------------
+    # ==========================================================
 
-    def innings_summary(self, innings_number):
+    def innings_summary(
+        self,
+        innings_number
+    ):
 
-        data = self.get_innings(innings_number)
+        data = self.get_innings(
+            innings_number
+        )
 
         if data.empty:
+
             raise ValueError(
-                f"Innings {innings_number} not found."
+                f"Innings {innings_number} "
+                f"not found."
             )
 
         row = data.iloc[0]
 
-        summary = pd.DataFrame([{
-            "innings": innings_number,
-            "team": row["team_batting_name"],
-            "team_id": row["team_batting_id"],
-            "runs": row["runs"],
-            "wickets": row["wickets"],
-            "overs": row["overs"],
-            "balls": row["balls"],
-            "byes": row["extra_byes"],
-            "leg_byes": row["extra_leg_byes"],
-            "wides": row["extra_wides"],
-            "no_balls": row["extra_no_balls"],
-            "penalty_runs": row["extra_penalty_runs"],
-            "total_extras": row["total_extras"],
-            "declared": row["declared"],
-            "forfeited": row["forfeited_innings"]
-        }])
+        return pd.DataFrame([
+            {
+                "innings": innings_number,
+                "team": row.get(
+                    "team_batting_name"
+                ),
+                "team_id": row.get(
+                    "team_batting_id"
+                ),
+                "runs": row.get(
+                    "runs"
+                ),
+                "wickets": row.get(
+                    "wickets"
+                ),
+                "overs": row.get(
+                    "overs"
+                ),
+                "balls": row.get(
+                    "balls"
+                ),
+                "byes": row.get(
+                    "extra_byes"
+                ),
+                "leg_byes": row.get(
+                    "extra_leg_byes"
+                ),
+                "wides": row.get(
+                    "extra_wides"
+                ),
+                "no_balls": row.get(
+                    "extra_no_balls"
+                ),
+                "penalty_runs": row.get(
+                    "extra_penalty_runs"
+                ),
+                "total_extras": row.get(
+                    "total_extras"
+                ),
+                "declared": row.get(
+                    "declared"
+                ),
+                "forfeited": row.get(
+                    "forfeited_innings"
+                )
+            }
+        ])
 
-        return summary
-
-    # --------------------------------------------------
+    # ==========================================================
     # EXTRAS
-    # --------------------------------------------------
+    # ==========================================================
 
-    def extras_table(self, innings_number):
+    def extras_table(
+        self,
+        innings_number
+    ):
 
-        summary = self.innings_summary(innings_number).iloc[0]
+        summary = (
+            self.innings_summary(
+                innings_number
+            ).iloc[0]
+        )
 
         extras = pd.DataFrame([
             {
@@ -521,25 +1220,31 @@ class Scorecard:
             }
         ])
 
-        # Replace missing values with zero
-        extras["runs"] = extras["runs"].fillna(0).astype(int)
+        extras["runs"] = (
+            extras["runs"]
+            .fillna(0)
+            .astype(int)
+        )
 
-        # Only return extras that actually occurred
-        extras = extras[
+        return extras[
             extras["runs"] > 0
         ].reset_index(drop=True)
 
-        return extras
-
-    # --------------------------------------------------
+    # ==========================================================
     # FALL OF WICKETS
-    # --------------------------------------------------
+    # ==========================================================
 
-    def fall_of_wickets(self, innings_number):
+    def fall_of_wickets(
+        self,
+        innings_number
+    ):
 
-        data = self.get_partnerships(innings_number).copy()
+        data = self.get_partnerships(
+            innings_number
+        ).copy()
 
         if data.empty:
+
             return pd.DataFrame(
                 columns=[
                     "wicket",
@@ -549,16 +1254,16 @@ class Scorecard:
                 ]
             )
 
-        fow = data[
-            [
-                "wickets",
-                "runs",
-                "batsman_out_name",
-                "batsman_out_id"
-            ]
-        ].copy()
+        columns = [
+            "wickets",
+            "runs",
+            "batsman_out_name",
+            "batsman_out_id"
+        ]
 
-        fow = fow.rename(
+        data = data[columns].copy()
+
+        data = data.rename(
             columns={
                 "wickets": "wicket",
                 "runs": "score",
@@ -566,7 +1271,7 @@ class Scorecard:
             }
         )
 
-        return fow[
+        return data[
             [
                 "wicket",
                 "score",
@@ -575,9 +1280,9 @@ class Scorecard:
             ]
         ]
 
-    # --------------------------------------------------
+    # ==========================================================
     # COMPLETE STRUCTURED SCORECARD DATA
-    # --------------------------------------------------
+    # ==========================================================
 
     def get_data(self):
 
@@ -586,33 +1291,69 @@ class Scorecard:
             "innings": {}
         }
 
-        for innings_number in self.innings["innings_number"]:
+        if self.innings.empty:
+            return result
 
-            result["innings"][int(innings_number)] = {
-                "summary": self.innings_summary(innings_number),
-                "batting": self.batting_table(innings_number),
-                "bowling": self.bowling_table(innings_number),
-                "fielding": self.fielding_table(innings_number),
-                "extras": self.extras_table(innings_number),
-                "fall_of_wickets": self.fall_of_wickets(
-                    innings_number
-                ),
-                "partnerships": self.partnership_table(
-                    innings_number
-                )
+        for innings_number in (
+            self.innings[
+                "innings_number"
+            ].dropna().unique()
+        ):
+
+            innings_number = int(
+                innings_number
+            )
+
+            result["innings"][
+                innings_number
+            ] = {
+
+                "summary":
+                    self.innings_summary(
+                        innings_number
+                    ),
+
+                "batting":
+                    self.batting_table(
+                        innings_number
+                    ),
+
+                "bowling":
+                    self.bowling_table(
+                        innings_number
+                    ),
+
+                "fielding":
+                    self.fielding_table(
+                        innings_number
+                    ),
+
+                "extras":
+                    self.extras_table(
+                        innings_number
+                    ),
+
+                "fall_of_wickets":
+                    self.fall_of_wickets(
+                        innings_number
+                    ),
+
+                "partnerships":
+                    self.partnership_table(
+                        innings_number
+                    )
             }
 
         return result
 
-    # --------------------------------------------------
+    # ==========================================================
     # PRINTABLE SCORECARD
-    # --------------------------------------------------
+    # ==========================================================
 
     def print_scorecard(self):
 
         print("=" * 70)
 
-        # Match information
         match = self.match.iloc[0]
 
         home = (
@@ -625,48 +1366,84 @@ class Scorecard:
             f"{match['away_team_name']}"
         )
 
-        print(f"{home} vs {away}")
+        print(
+            f"{home} vs {away}"
+        )
+
         print("=" * 70)
 
         print(
-            f"Competition: {match['competition_name']}"
+            f"Competition: "
+            f"{match['competition_name']}"
         )
 
         print(
-            f"Date: {match['match_date']}"
+            f"Date: "
+            f"{match['match_date']}"
         )
 
         print(
-            f"Ground: {match['ground_name']}"
+            f"Ground: "
+            f"{match['ground_name']}"
+        )
+
+        print()
+
+        print(
+            f"Result: {self.get_result()}"
         )
 
         print()
 
         # --------------------------------------------------
+        # NO PLAY
+        # --------------------------------------------------
+
+        if self.innings.empty:
+
+            print(
+                "No innings recorded."
+            )
+
+            print("=" * 70)
+
+            return
+
+        # --------------------------------------------------
         # EACH INNINGS
         # --------------------------------------------------
 
-        for innings_number in self.innings[
-            "innings_number"
-        ]:
+        for innings_number in (
+            self.innings[
+                "innings_number"
+            ]
+        ):
 
-            summary = self.innings_summary(
-                innings_number
-            ).iloc[0]
+            summary = (
+                self.innings_summary(
+                    innings_number
+                ).iloc[0]
+            )
 
             print("-" * 70)
 
             print(
                 f"{summary['team']} "
-                f"{summary['runs']}/{summary['wickets']} "
+                f"{summary['runs']}/"
+                f"{summary['wickets']} "
                 f"({summary['overs']} overs)"
             )
 
             print()
 
-            # Batting
-            batting = self.batting_table(
-                innings_number
+            # ----------------------------------------------
+            # BATTING
+            # ----------------------------------------------
+
+            batting = (
+                self.batting_table(
+                    innings_number
+                )
             )
 
             print("BATTING")
@@ -675,29 +1452,37 @@ class Scorecard:
             for _, row in batting.iterrows():
 
                 print(
-                    f"{row['batsman_name']:<25} "
-                    f"{row['dismissal']:<30} "
-                    f"{row['runs']:>3} "
-                    f"{row['balls']:>3} "
-                    f"{row['fours']:>2} "
-                    f"{row['sixes']:>2}"
+                    f"{str(row.get('batsman_name', '')):<25} "
+                    f"{str(row.get('dismissal', '')):<30} "
+                    f"{row.get('runs', 0):>3} "
+                    f"{row.get('balls', 0):>3} "
+                    f"{row.get('fours', 0):>2} "
+                    f"{row.get('sixes', 0):>2}"
                 )
 
             print()
 
-            # Extras
-            extras = self.extras_table(
-                innings_number
+            # ----------------------------------------------
+            # EXTRAS
+            # ----------------------------------------------
+
+            extras = (
+                self.extras_table(
+                    innings_number
+                )
             )
 
             if not extras.empty:
 
                 extras_text = ", ".join(
                     f"{row['type']}: {row['runs']}"
-                    for _, row in extras.iterrows()
+                    for _, row
+                    in extras.iterrows()
                 )
 
-                total_extras = extras["runs"].sum()
+                total_extras = (
+                    extras["runs"].sum()
+                )
 
                 print(
                     f"Extras: {extras_text} "
@@ -705,34 +1490,48 @@ class Scorecard:
                 )
 
             print(
-                f"Total: {summary['runs']}/"
+                f"Total: "
+                f"{summary['runs']}/"
                 f"{summary['wickets']}"
             )
 
             print()
 
-            # Fall of wickets
-            fow = self.fall_of_wickets(
-                innings_number
+            # ----------------------------------------------
+            # FALL OF WICKETS
+            # ----------------------------------------------
+
+            fow = (
+                self.fall_of_wickets(
+                    innings_number
+                )
             )
 
             if not fow.empty:
 
                 fow_text = ", ".join(
-                    f"{row['wicket']}-{row['score']} "
+                    f"{row['wicket']}-"
+                    f"{row['score']} "
                     f"({row['batsman_out']})"
-                    for _, row in fow.iterrows()
+                    for _, row
+                    in fow.iterrows()
                 )
 
                 print(
-                    f"Fall of wickets: {fow_text}"
+                    f"Fall of wickets: "
+                    f"{fow_text}"
                 )
 
             print()
 
-            # Bowling
-            bowling = self.bowling_table(
-                innings_number
+            # ----------------------------------------------
+            # BOWLING
+            # ----------------------------------------------
+
+            bowling = (
+                self.bowling_table(
+                    innings_number
+                )
             )
 
             if not bowling.empty:
@@ -753,33 +1552,57 @@ class Scorecard:
             print()
 
         print("=" * 70)
-        
-    def get_performances(self):
-        """
-        Identify notable individual performances in this match.
 
-        Returns
-        -------
-        pandas.DataFrame
-            One row per notable performance.
-        """
+    # ==========================================================
+    # NOTABLE PERFORMANCES
+    # ==========================================================
+
+    def get_performances(self):
 
         performances = []
 
-        # ------------------------------------------------------------
+        # --------------------------------------------------
+        # NO PLAY
+        # --------------------------------------------------
+
+        if self.batting.empty and self.bowling.empty:
+
+            return pd.DataFrame(
+                columns=[
+                    "match_id",
+                    "player_id",
+                    "player_name",
+                    "team_id",
+                    "team_name",
+                    "opposition_id",
+                    "opposition_name",
+                    "innings",
+                    "performance_type",
+                    "achievement",
+                    "value",
+                    "detail",
+                    "description"
+                ]
+            )
+
+        # ==================================================
         # BATTING
-        # ------------------------------------------------------------
+        # ==================================================
 
         for innings_number in sorted(
-            self.batting["innings"].dropna().unique()
+            self.batting["innings"]
+            .dropna()
+            .unique()
         ):
 
-            batting = self.get_batting(innings_number)
+            batting = self.get_batting(
+                innings_number
+            )
 
             for _, row in batting.iterrows():
 
                 runs = pd.to_numeric(
-                    row["runs"],
+                    row.get("runs"),
                     errors="coerce"
                 )
 
@@ -803,34 +1626,62 @@ class Scorecard:
                 if achievement:
 
                     performances.append({
-                        "match_id": self.match_id,
-                        "player_id": row["batsman_id"],
-                        "player_name": row["batsman_name"],
-                        "team_id": row["team_id"],
-                        "team_name": row["team_name"],
-                        "opposition_id": row["opposition_id"],
-                        "opposition_name": row["opposition_name"],
-                        "innings": innings_number,
-                        "performance_type": "batting",
-                        "achievement": achievement,
-                        "value": int(runs),
-                        "detail": f"{int(runs)} runs",
+
+                        "match_id":
+                            self.match_id,
+
+                        "player_id":
+                            row.get("batsman_id"),
+
+                        "player_name":
+                            row.get("batsman_name"),
+
+                        "team_id":
+                            row.get("team_id"),
+
+                        "team_name":
+                            row.get("team_name"),
+
+                        "opposition_id":
+                            row.get("opposition_id"),
+
+                        "opposition_name":
+                            row.get("opposition_name"),
+
+                        "innings":
+                            innings_number,
+
+                        "performance_type":
+                            "batting",
+
+                        "achievement":
+                            achievement,
+
+                        "value":
+                            int(runs),
+
+                        "detail":
+                            f"{int(runs)} runs"
                     })
 
-        # ------------------------------------------------------------
+        # ==================================================
         # BOWLING
-        # ------------------------------------------------------------
+        # ==================================================
 
         for innings_number in sorted(
-            self.bowling["innings"].dropna().unique()
+            self.bowling["innings"]
+            .dropna()
+            .unique()
         ):
 
-            bowling = self.get_bowling(innings_number)
+            bowling = self.get_bowling(
+                innings_number
+            )
 
             for _, row in bowling.iterrows():
 
                 wickets = pd.to_numeric(
-                    row["wickets"],
+                    row.get("wickets"),
                     errors="coerce"
                 )
 
@@ -840,234 +1691,344 @@ class Scorecard:
                 achievement = None
 
                 if wickets >= 10:
-                    achievement = "10_wicket_match"
+                    achievement = (
+                        "10_wicket_match"
+                    )
 
                 elif wickets >= 7:
-                    achievement = "7_wicket_haul"
+                    achievement = (
+                        "7_wicket_haul"
+                    )
 
                 elif wickets >= 6:
-                    achievement = "6_wicket_haul"
+                    achievement = (
+                        "6_wicket_haul"
+                    )
 
                 elif wickets >= 5:
-                    achievement = "five_wicket_haul"
+                    achievement = (
+                        "five_wicket_haul"
+                    )
 
                 elif wickets >= 4:
-                    achievement = "four_wicket_haul"
+                    achievement = (
+                        "four_wicket_haul"
+                    )
 
                 elif wickets >= 3:
-                    achievement = "three_wicket_haul"
+                    achievement = (
+                        "three_wicket_haul"
+                    )
 
                 if achievement:
 
                     performances.append({
-                        "match_id": self.match_id,
-                        "player_id": row["bowler_id"],
-                        "player_name": row["bowler_name"],
-                        "team_id": row["team_id"],
-                        "team_name": row["team_name"],
-                        "opposition_id": row["opposition_id"],
-                        "opposition_name": row["opposition_name"],
-                        "innings": innings_number,
-                        "performance_type": "bowling",
-                        "achievement": achievement,
-                        "value": int(wickets),
-                        "detail": f"{int(wickets)} wickets",
+
+                        "match_id":
+                            self.match_id,
+
+                        "player_id":
+                            row.get("bowler_id"),
+
+                        "player_name":
+                            row.get("bowler_name"),
+
+                        "team_id":
+                            row.get("team_id"),
+
+                        "team_name":
+                            row.get("team_name"),
+
+                        "opposition_id":
+                            row.get("opposition_id"),
+
+                        "opposition_name":
+                            row.get("opposition_name"),
+
+                        "innings":
+                            innings_number,
+
+                        "performance_type":
+                            "bowling",
+
+                        "achievement":
+                            achievement,
+
+                        "value":
+                            int(wickets),
+
+                        "detail":
+                            f"{int(wickets)} wickets"
                     })
 
-        # ------------------------------------------------------------
+        # ==================================================
         # FIELDING
-        #
-        # Notable fielding performances:
-        #
-        #   - 5+ catches by any fielder
-        #   - 5+ total dismissals by a wicketkeeper
-        #     (catches + stumpings)
-        #
-        # Individual catches and run outs are NOT stored as
-        # performances.
-        # ------------------------------------------------------------
+        # ==================================================
 
         fielding = self.batting.copy()
 
-        fielding["how_out_clean"] = (
-            fielding["how_out"]
-            .fillna("")
-            .astype(str)
-            .str.lower()
-            .str.strip()
-        )
+        if not fielding.empty:
 
-        fielding = fielding[
-            fielding["fielder_name"].notna()
-            & (
-                fielding["fielder_name"]
+            fielding["how_out_clean"] = (
+                fielding["how_out"]
+                .fillna("")
                 .astype(str)
+                .str.lower()
                 .str.strip()
-                != ""
-            )
-        ].copy()
-
-        # ------------------------------------------------------------
-        # CATCHES
-        # ------------------------------------------------------------
-
-        catches = fielding[
-            fielding["how_out_clean"] == "ct"
-        ].copy()
-
-        catch_counts = (
-            catches
-            .groupby(
-                [
-                    "fielder_id",
-                    "fielder_name",
-                    "team_id",
-                    "team_name",
-                    "opposition_id",
-                    "opposition_name",
-                    "innings",
-                ],
-                dropna=False
-            )
-            .size()
-            .reset_index(name="catches")
-        )
-
-        # ------------------------------------------------------------
-        # STUMPINGS
-        # ------------------------------------------------------------
-
-        stumpings = fielding[
-            fielding["how_out_clean"] == "st"
-        ].copy()
-
-        stumping_counts = (
-            stumpings
-            .groupby(
-                [
-                    "fielder_id",
-                    "fielder_name",
-                    "team_id",
-                    "team_name",
-                    "opposition_id",
-                    "opposition_name",
-                    "innings",
-                ],
-                dropna=False
-            )
-            .size()
-            .reset_index(name="stumpings")
-        )
-
-        # ------------------------------------------------------------
-        # COMBINE CATCHES + STUMPINGS
-        # ------------------------------------------------------------
-
-        if not catch_counts.empty or not stumping_counts.empty:
-
-            fielding_counts = pd.merge(
-                catch_counts,
-                stumping_counts,
-                on=[
-                    "fielder_id",
-                    "fielder_name",
-                    "team_id",
-                    "team_name",
-                    "opposition_id",
-                    "opposition_name",
-                    "innings",
-                ],
-                how="outer"
             )
 
-            fielding_counts["catches"] = (
-                fielding_counts["catches"]
-                .fillna(0)
-                .astype(int)
-            )
+            fielding = fielding[
+                fielding["fielder_name"]
+                .notna()
+            ].copy()
 
-            fielding_counts["stumpings"] = (
-                fielding_counts["stumpings"]
-                .fillna(0)
-                .astype(int)
-            )
+            # ----------------------------------------------
+            # CATCHES
+            # ----------------------------------------------
 
-            fielding_counts["dismissals"] = (
-                fielding_counts["catches"]
-                + fielding_counts["stumpings"]
-            )
-
-            # --------------------------------------------------------
-            # WICKETKEEPER
-            #
-            # Anyone with a stumping is identified as a wicketkeeper.
-            #
-            # A notable wicketkeeping performance is 5 or more
-            # dismissals in the match, combining catches and stumpings.
-            # --------------------------------------------------------
-
-            wicketkeepers = fielding_counts[
-                fielding_counts["stumpings"] > 0
+            catches = fielding[
+                fielding["how_out_clean"]
+                == "ct"
             ]
 
-            notable_keepers = wicketkeepers[
-                wicketkeepers["dismissals"] >= 5
+            catch_counts = (
+                catches
+                .groupby(
+                    [
+                        "fielder_id",
+                        "fielder_name",
+                        "team_id",
+                        "team_name",
+                        "opposition_id",
+                        "opposition_name",
+                        "innings"
+                    ],
+                    dropna=False
+                )
+                .size()
+                .reset_index(
+                    name="catches"
+                )
+            )
+
+            # ----------------------------------------------
+            # STUMPINGS
+            # ----------------------------------------------
+
+            stumpings = fielding[
+                fielding["how_out_clean"]
+                == "st"
             ]
 
-            for _, row in notable_keepers.iterrows():
+            stumping_counts = (
+                stumpings
+                .groupby(
+                    [
+                        "fielder_id",
+                        "fielder_name",
+                        "team_id",
+                        "team_name",
+                        "opposition_id",
+                        "opposition_name",
+                        "innings"
+                    ],
+                    dropna=False
+                )
+                .size()
+                .reset_index(
+                    name="stumpings"
+                )
+            )
 
-                performances.append({
-                    "match_id": self.match_id,
-                    "player_id": row["fielder_id"],
-                    "player_name": row["fielder_name"],
-                    "team_id": row["team_id"],
-                    "team_name": row["team_name"],
-                    "opposition_id": row["opposition_id"],
-                    "opposition_name": row["opposition_name"],
-                    "innings": row["innings"],
-                    "performance_type": "fielding",
-                    "achievement": "wicketkeeper_dismissals",
-                    "value": int(row["dismissals"]),
-                    "detail": (
-                        f"{int(row['dismissals'])} dismissals "
-                        f"({int(row['catches'])} catches, "
-                        f"{int(row['stumpings'])} stumpings)"
-                    ),
-                })
+            if (
+                not catch_counts.empty
+                or not stumping_counts.empty
+            ):
 
-            # --------------------------------------------------------
-            # NON-WICKETKEEPER 5+ CATCHES
-            #
-            # Wicketkeepers are handled separately above.
-            # --------------------------------------------------------
+                fielding_counts = pd.merge(
+                    catch_counts,
+                    stumping_counts,
+                    on=[
+                        "fielder_id",
+                        "fielder_name",
+                        "team_id",
+                        "team_name",
+                        "opposition_id",
+                        "opposition_name",
+                        "innings"
+                    ],
+                    how="outer"
+                )
 
-            notable_catches = fielding_counts[
-                (fielding_counts["catches"] >= 5)
-                & (fielding_counts["stumpings"] == 0)
-            ]
+                fielding_counts["catches"] = (
+                    fielding_counts[
+                        "catches"
+                    ]
+                    .fillna(0)
+                    .astype(int)
+                )
 
-            for _, row in notable_catches.iterrows():
+                fielding_counts["stumpings"] = (
+                    fielding_counts[
+                        "stumpings"
+                    ]
+                    .fillna(0)
+                    .astype(int)
+                )
 
-                performances.append({
-                    "match_id": self.match_id,
-                    "player_id": row["fielder_id"],
-                    "player_name": row["fielder_name"],
-                    "team_id": row["team_id"],
-                    "team_name": row["team_name"],
-                    "opposition_id": row["opposition_id"],
-                    "opposition_name": row["opposition_name"],
-                    "innings": row["innings"],
-                    "performance_type": "fielding",
-                    "achievement": "five_catch_performance",
-                    "value": int(row["catches"]),
-                    "detail": (
-                        f"{int(row['catches'])} catches"
-                    ),
-                })
+                fielding_counts[
+                    "dismissals"
+                ] = (
+                    fielding_counts[
+                        "catches"
+                    ]
+                    +
+                    fielding_counts[
+                        "stumpings"
+                    ]
+                )
 
-        # ------------------------------------------------------------
-        # CREATE PERFORMANCE DATAFRAME
-        # ------------------------------------------------------------
+                # ------------------------------------------
+                # WICKETKEEPERS
+                # ------------------------------------------
+
+                wicketkeepers = (
+                    fielding_counts[
+                        fielding_counts[
+                            "stumpings"
+                        ] > 0
+                    ]
+                )
+
+                notable_keepers = (
+                    wicketkeepers[
+                        wicketkeepers[
+                            "dismissals"
+                        ] >= 5
+                    ]
+                )
+
+                for _, row in (
+                    notable_keepers.iterrows()
+                ):
+
+                    performances.append({
+
+                        "match_id":
+                            self.match_id,
+
+                        "player_id":
+                            row["fielder_id"],
+
+                        "player_name":
+                            row["fielder_name"],
+
+                        "team_id":
+                            row["team_id"],
+
+                        "team_name":
+                            row["team_name"],
+
+                        "opposition_id":
+                            row["opposition_id"],
+
+                        "opposition_name":
+                            row["opposition_name"],
+
+                        "innings":
+                            row["innings"],
+
+                        "performance_type":
+                            "fielding",
+
+                        "achievement":
+                            "wicketkeeper_dismissals",
+
+                        "value":
+                            int(
+                                row["dismissals"]
+                            ),
+
+                        "detail":
+                            (
+                                f"{int(row['dismissals'])} "
+                                f"dismissals "
+                                f"("
+                                f"{int(row['catches'])} "
+                                f"catches, "
+                                f"{int(row['stumpings'])} "
+                                f"stumpings)"
+                            )
+                    })
+
+                # ------------------------------------------
+                # NON-WICKETKEEPER CATCHES
+                # ------------------------------------------
+
+                notable_catches = (
+                    fielding_counts[
+                        (
+                            fielding_counts[
+                                "catches"
+                            ] >= 5
+                        )
+                        &
+                        (
+                            fielding_counts[
+                                "stumpings"
+                            ] == 0
+                        )
+                    ]
+                )
+
+                for _, row in (
+                    notable_catches.iterrows()
+                ):
+
+                    performances.append({
+
+                        "match_id":
+                            self.match_id,
+
+                        "player_id":
+                            row["fielder_id"],
+
+                        "player_name":
+                            row["fielder_name"],
+
+                        "team_id":
+                            row["team_id"],
+
+                        "team_name":
+                            row["team_name"],
+
+                        "opposition_id":
+                            row["opposition_id"],
+
+                        "opposition_name":
+                            row["opposition_name"],
+
+                        "innings":
+                            row["innings"],
+
+                        "performance_type":
+                            "fielding",
+
+                        "achievement":
+                            "five_catch_performance",
+
+                        "value":
+                            int(
+                                row["catches"]
+                            ),
+
+                        "detail":
+                            f"{int(row['catches'])} catches"
+                    })
+
+        # ==================================================
+        # CREATE DATAFRAME
+        # ==================================================
 
         columns = [
             "match_id",
@@ -1081,7 +2042,7 @@ class Scorecard:
             "performance_type",
             "achievement",
             "value",
-            "detail",
+            "detail"
         ]
 
         performances_df = pd.DataFrame(
@@ -1089,59 +2050,77 @@ class Scorecard:
             columns=columns
         )
 
-        # ------------------------------------------------------------
-        # READABLE DESCRIPTION
-        # ------------------------------------------------------------
+        # ==================================================
+        # DESCRIPTIONS
+        # ==================================================
 
         if not performances_df.empty:
 
             def make_description(row):
 
-                achievement = row["achievement"]
+                achievement = (
+                    row["achievement"]
+                )
+
                 value = row["value"]
 
-                if achievement == "half_century":
-                    return f"Half-century – {value} runs"
+                descriptions = {
 
-                elif achievement == "century":
-                    return f"Century – {value} runs"
+                    "half_century":
+                        f"Half-century – {value} runs",
 
-                elif achievement == "double_century":
-                    return f"Double-century – {value} runs"
+                    "century":
+                        f"Century – {value} runs",
 
-                elif achievement == "150":
-                    return f"150 runs – {value} runs"
+                    "double_century":
+                        f"Double-century – {value} runs",
 
-                elif achievement == "three_wicket_haul":
-                    return "3-wicket haul"
+                    "150":
+                        f"150 runs – {value} runs",
 
-                elif achievement == "four_wicket_haul":
-                    return "4-wicket haul"
+                    "three_wicket_haul":
+                        "3-wicket haul",
 
-                elif achievement == "five_wicket_haul":
-                    return "5-wicket haul"
+                    "four_wicket_haul":
+                        "4-wicket haul",
 
-                elif achievement == "six_wicket_haul":
-                    return "6-wicket haul"
+                    "five_wicket_haul":
+                        "5-wicket haul",
 
-                elif achievement == "7_wicket_haul":
-                    return "7-wicket haul"
+                    "six_wicket_haul":
+                        "6-wicket haul",
 
-                elif achievement == "10_wicket_match":
-                    return "10-wicket match"
+                    "7_wicket_haul":
+                        "7-wicket haul",
 
-                elif achievement == "five_catch_performance":
-                    return f"{value}-catch performance"
+                    "10_wicket_match":
+                        "10-wicket match",
 
-                elif achievement == "wicketkeeper_dismissals":
-                    return row["detail"]
+                    "five_catch_performance":
+                        f"{value}-catch performance",
 
-                else:
-                    return row["detail"]
+                    "wicketkeeper_dismissals":
+                        row["detail"]
+                }
 
-            performances_df["description"] = (
-                performances_df
-                .apply(make_description, axis=1)
+                return descriptions.get(
+                    achievement,
+                    row["detail"]
+                )
+
+            performances_df[
+                "description"
+            ] = performances_df.apply(
+                make_description,
+                axis=1
+            )
+
+        else:
+
+            performances_df[
+                "description"
+            ] = pd.Series(
+                dtype="object"
             )
 
         return performances_df
