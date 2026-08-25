@@ -7,8 +7,8 @@ data into a single queryable store:
    minimal number of API requests.
 2. **CricHQ PDF archive scorecards** — historical matches predating
    Play-Cricket, currently sitting in the club's PDF archive.
-3. **A legacy binary-format database** — an older archive format from a
-   previous stats system.
+3. **A legacy binary-format database** — CricketStatz `.csd` files, an
+   older desktop stats package used before Play-Cricket/CricHQ.
 
 Once merged, the goal is to support historical and career stats, records
 queryable by team/season/player, leaderboards, printable/frameable scorecard
@@ -70,6 +70,8 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
   storage schema in practice.
 - `ELPM 1st XI 2019.pdf` — a sample CricHQ-style archive scorecard, used as
   reference material for the PDF ingestion work below.
+- `ELPM2018.csd` — a CricketStatz database export, used as reference
+  material for the binary-format mapping work below.
 
 ### Not built yet
 
@@ -93,8 +95,24 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
 2. **CricHQ PDF ingestion** — Parser to extract scorecards from the archive
    PDFs into the same internal scorecard shape used by `Scorecard`, so
    downstream analysis code can be reused unchanged.
-3. **Binary archive ingestion** — Read the legacy binary format into the
-   same internal shape.
+3. **Binary archive ingestion (`.csd` mapping)** — Reverse-engineer the
+   CricketStatz `.csd` format and read it into the same internal shape.
+   `.csd` is a proprietary multi-table binary flat-file (no dBase/Paradox/
+   SQLite header — tables are just concatenated fixed-length records).
+   Mapped so far, from `ELPM2018.csd`:
+     - A **player table** starting at byte offset `0xbb0`, fixed
+       **648-byte records**, each holding a display name (e.g. `"F Daly"`),
+       separate padded surname/forename fields (`"Daly"` / `"Franny"`),
+       flag bytes, and reserved space — around 1,677 record slots (many
+       blank/unused).
+     - Immediately after it, a second table of short sequential records
+       (record-id followed by several int16 fields) — likely per-player
+       career aggregates (batting/bowling totals) keyed by player index.
+     - Further tables (matches, innings) are expected later in the file
+       and still need mapping.
+   Remaining work: map every table and field, then write a parser that
+   emits the same internal scorecard/player shape the other two sources
+   use.
 4. **Reconciliation layer** — Merge the three sources per match/player with
    conflict detection and a clear precedence rule (e.g. Play-Cricket wins on
    overlap, archives fill gaps).
