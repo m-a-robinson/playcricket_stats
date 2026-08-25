@@ -63,6 +63,14 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
   `PlayerPerformances`: qualification-based tables for top runs, batting
   average, strike rate, top scores, fifties, hundreds, wickets, bowling
   average, economy, bowling strike rate, catches, fielding, and highlights.
+- **`schema.sql`** / **`sqlite_store.py`** — Normalised SQLite store (clubs,
+  teams, players, matches, innings, batting/bowling innings), fed from the
+  JSON cache with no API calls. `PlayCricketDatabase`/JSON stays the sync
+  layer; SQLite is the canonical query/analysis layer, built for
+  cross-source reconciliation (each row carries `source`/`source_*_id`,
+  and player identity across sources is resolved through
+  `player_source_ids`). Run `python3 sqlite_store.py` to (re)build it from
+  `playcricket_database.json`.
 
 ### Sample data
 
@@ -89,9 +97,18 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
 
 ## Roadmap
 
-1. **Data foundation** — Player identity model (a canonical player across
-   seasons and sources, handling name variants), and either move to SQLite
-   or formalise the JSON schema so career stats can span seasons cleanly.
+1. **Data foundation** — *SQLite store built* (`schema.sql` /
+   `sqlite_store.py`): players, clubs, teams, matches, innings, batting and
+   bowling tables, with `source`/`source_*_id` columns on every fact table
+   and a `player_source_ids` mapping table so cross-source player identity
+   can be resolved without redesigning the schema later. Verified against
+   the existing pandas summary — and in doing so found that
+   `PlayerPerformances.summary()` splits a player's career totals by team
+   (a player who guests for another XI gets counted as a separate person
+   per team), which the SQLite build's player-level aggregation avoids.
+   Still to do: an explicit name-based reconciliation step for players who
+   only appear in the CricHQ/CricketStatz sources (no Play-Cricket id to
+   anchor on).
 2. **CricHQ PDF ingestion** — Parser to extract scorecards from the archive
    PDFs into the same internal scorecard shape used by `Scorecard`, so
    downstream analysis code can be reused unchanged.
@@ -125,4 +142,10 @@ MultiPlayerStats       (cross-player leaderboards/comparisons)
 7. **Social media formatting** — Templated short-form text/image output for
    individual milestone performances and weekend team-result round-ups.
 8. **Interface** — CLI (and/or lightweight web UI) tying sync, query, and
-   export together, plus scheduling for regular Play-Cricket syncs.
+   export together, plus scheduling for regular Play-Cricket syncs. If
+   published to the club's WordPress site, the SQLite database itself
+   won't run there (typical WordPress hosting is MySQL-only, often with a
+   read-only filesystem) — instead this stage would add an export/sync
+   step: either a small REST endpoint a WordPress shortcode/plugin calls,
+   or a scheduled export of computed tables (leaderboards, career stats,
+   results) to static JSON/HTML the site consumes.
