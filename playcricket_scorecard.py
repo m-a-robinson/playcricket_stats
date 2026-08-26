@@ -508,6 +508,7 @@ class Scorecard:
                     [
                         "not out",
                         "retired not out",
+                        "retired hurt",
                         "did not bat"
                     ]
                 ),
@@ -724,6 +725,12 @@ class Scorecard:
                 return "did not bat"
 
             if how_out == "ct":
+
+                if row.get("fielder_name") == row.get("bowler_name"):
+                    return (
+                        f"c & b {row.get('bowler_name')}"
+                    )
+
                 return (
                     f"c {row.get('fielder_name')} "
                     f"b {row.get('bowler_name')}"
@@ -750,6 +757,12 @@ class Scorecard:
                 return (
                     f"st {row.get('fielder_name')} "
                     f"b {row.get('bowler_name')}"
+                )
+
+            if how_out == "hit wicket":
+                return (
+                    f"hit wicket b "
+                    f"{row.get('bowler_name')}"
                 )
 
             return how_out

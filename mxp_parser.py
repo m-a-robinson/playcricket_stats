@@ -535,7 +535,7 @@ def _parse_match(lines):
 
         wickets_down = sum(
             1 for r in bat_rows
-            if r["how_out"] not in ("not out", "retired not out")
+            if r["how_out"] not in ("not out", "retired not out", "retired hurt")
         )
 
         result_innings.append({

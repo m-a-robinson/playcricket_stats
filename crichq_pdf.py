@@ -272,6 +272,21 @@ def _parse_dismissal(dismissal_text):
         return "not out", None, None
 
     if low.startswith("retired"):
+
+        # CricHQ's own vocabulary distinguishes "retired hurt" (not out --
+        # standard scoring convention), "retired out" (a genuine dismissal
+        # -- the fielding side declined the return, or the scorer marked
+        # it as out) and bare "retired" (a tactical not-out retirement,
+        # e.g. to let a partner bat on). Collapsing all three into one
+        # label previously hid a real "retired out" dismissal as a
+        # not-out -- see how_out's not-out vocabulary in
+        # playcricket_scorecard.py._standardise_batting().
+        if low.startswith("retired hurt"):
+            return "retired hurt", None, None
+
+        if low.startswith("retired out"):
+            return "retired out", None, None
+
         return "retired not out", None, None
 
     if low.startswith("c & b") or low.startswith("c and b"):
@@ -620,7 +635,7 @@ def _parse_match(header_match, body, match_index):
 
         wickets_down = sum(
             1 for r in bat_rows
-            if r["how_out"] not in ("not out", "retired not out")
+            if r["how_out"] not in ("not out", "retired not out", "retired hurt")
         )
 
         innings_list.append({
