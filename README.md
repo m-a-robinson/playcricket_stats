@@ -69,8 +69,19 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   clubs, and teams alike is resolved through a `*_source_ids` mapping table
   (`player_source_ids`, `club_source_ids`, `team_source_ids`) rather than
   reusing Play-Cricket's own numeric ids as primary keys — required once a
-  source (CricHQ) has no numeric ids of its own to reuse. Also carries
-  `find_players(name_like)` / `merge_players(keep_player_id, merge_player_id)`
+  source (CricHQ) has no numeric ids of its own to reuse. Clubs and teams get
+  a conservative **automatic** cross-source merge at insert time
+  (`_upsert_club()`/`_upsert_team()`): a casefolded, whitespace-collapsed,
+  one-trailing-"CC"/"Cricket Club"-suffix-stripped name is the dedup key for
+  clubs (e.g. Play-Cricket's "East Lancs Paper Mill CC" and CricHQ's "East
+  Lancs Paper Mill" resolve to one canonical club), scoped by the already-
+  resolved `club_id` for teams (so "1st XI" is still a different team per
+  club, just not split into two rows for the *same* club across sources).
+  Deliberately conservative — no fuzzy matching, no guessing at dropped
+  qualifiers — so it can't plausibly conflate two different real clubs;
+  anything it doesn't catch is a candidate for `reconcile_audit.py`/
+  `reconcile.py`'s `CLUB_MERGES`/`TEAM_MERGES` instead (see below). Also
+  carries `find_players(name_like)` / `merge_players(keep_player_id, merge_player_id)`
   — a pairwise manual player-identity merge, the same underlying repoint
   `reconcile.py` does (see below) but one pair at a time rather than from a
   registry. **The two overlap and haven't been reconciled with each other**
@@ -139,17 +150,60 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   (`batting_innings`/`bowling_innings`/`match_appearances` are untouched);
   pass `elpmcc_only=False` to include them in `career_stats()` too, e.g.
   to check one opposition player's record specifically against this club.
-- **`reconcile.py`** — Cross-source player identity merging (see roadmap
-  item 4). `merge_players(conn, source_refs)` repoints a confirmed list of
-  `(source, source_player_id)` refs, and every fact-table row that
-  references them, onto one surviving canonical `player_id`. `PLAYER_MERGES`
-  is the growable registry of confirmed groups — run
+- **`reconcile.py`** — Cross-source identity merging for players, clubs,
+  *and* teams (see roadmap item 4). `merge_players(conn, source_refs)` /
+  `merge_clubs(...)` / `merge_teams(...)` each repoint a confirmed list of
+  `(source, source_*_id)` refs, and every fact-table row that references
+  them, onto one surviving canonical row — sharing one generic
+  `_merge_entities()` implementation. `PLAYER_MERGES` / `CLUB_MERGES` /
+  `TEAM_MERGES` are the growable registries of confirmed groups — run
   `python3 reconcile.py --sqlite-db <path>` after ingesting (all) sources to
-  apply every entry; re-running is idempotent. No query-layer changes are
-  needed after a merge: `career_stats()`/`SQLPlayerStats` already aggregate
-  by `player_id` alone, across every source. Same underlying mechanism as
+  apply every entry; re-running is idempotent. Player identity gets no
+  automatic pass at all (names are too ambiguous — initials, nicknames, two
+  different people sharing a surname+initial — to guess at safely), so every
+  `PLAYER_MERGES` entry is a from-scratch human confirmation; clubs/teams get
+  a conservative automatic merge for the exact/near-exact case already
+  (`SQLiteStore._upsert_club()`/`._upsert_team()`, see above) — `CLUB_MERGES`/
+  `TEAM_MERGES` are for what that can't safely guess at. Candidates for all
+  three come from `reconcile_audit.py` (below), not from this module itself.
+  No query-layer changes are needed after a merge: `career_stats()`/
+  `SQLPlayerStats` already aggregate by `player_id` alone, across every
+  source. `merge_players()` shares its underlying mechanism with
   `SQLiteStore.merge_players()` above, built independently — see that
   bullet for the overlap.
+- **`reconcile_audit.py`** — Generates a Markdown report over an
+  already-built SQLite store: a data-quality scan (distinct competitions/
+  leagues/grounds/seasons, rarest-first so a likely typo surfaces near the
+  top, plus any crichq_pdf.py "Unknown (...)" placeholder rows) and
+  reconciliation candidates for clubs, teams, and players that look like the
+  same real thing split across canonical rows but aren't safe to merge
+  automatically. Read-only — it never writes to the database. Run
+  `python3 reconcile_audit.py --sqlite-db <path> --out
+  reconcile/data_quality_report.md` after ingesting (all) sources; a
+  confirmed candidate becomes a permanent decision by hand-copying its
+  `(source, source_*_id)` refs into `reconcile.py`'s `PLAYER_MERGES`/
+  `CLUB_MERGES`/`TEAM_MERGES`, then re-running `reconcile.py`. Club/team
+  candidate clustering is deliberately exact-equality-only (on a normalised
+  key looser than the automatic merge's — e.g. also drops a trailing
+  regional qualifier like "Bradshaw CC, **Lancs**") rather than fuzzy/
+  substring matching: a bare similarity/containment check was tried during
+  development and produced real false positives (short club names being
+  substrings of unrelated ones — "Shaw CC" / "Bradshaw CC" / "Walshaw CC"
+  are three different real clubs — and "Prestwich 2nd XI" / "Prestwich 3rd
+  XI" reading as near-identical text despite the differing ordinal being
+  exactly what makes them different teams), so anything that digit-conflicts
+  or merely resembles another name without matching it exactly is left out
+  rather than risking a wrong suggestion. Player-name candidates are looser
+  in exchange for being explicitly labelled non-authoritative — a shared
+  initial+surname, or the exact same name after stripping case/whitespace/
+  punctuation — sorted by combined appearance count so the highest-signal
+  groups surface first. See `reconcile/data_quality_report.md` — a committed
+  snapshot from the full three-source archive, itself a live example of what
+  running this finds (a "Bradshaw CC, Lancs"/"Bradshaw CC" club split, an
+  "Ian Wade"/"IW wade" pair that `PLAYER_MERGES`'s existing entry doesn't yet
+  cover, an "Add New Ground" placeholder value that leaked into real data,
+  and more) — regenerate it any time; it's disposable, derived output, not
+  a hand-maintained decision record like the `*_MERGES` lists it feeds.
 
 ### Retired
 
@@ -264,18 +318,21 @@ remains.
 
 ### Not built yet
 
-- **Automatic** reconciliation/merge logic across the three sources (dedup,
-  conflict resolution, player/club/team identity matching for sources with
-  no Play-Cricket id to anchor on). `reconcile.py` (see "Modules" above)
-  proves the merge *mechanism* works — for players, and only for the ones
-  named in its human-curated `PLAYER_MERGES` list — but finding those groups
-  automatically isn't built. Concretely: right now the same real
-  person/club/team gets a separate canonical row per source unless
-  explicitly merged (e.g. "East Lancs Paper Mill CC" exists as both
-  `club_id 1` from Play-Cricket and a different `club_id` from CricHQ, and
-  club/team identity has no merge tooling at all yet, unlike players) —
-  deliberately deferred to a dedicated reconciliation pass across all three
-  sources rather than guessed at during ingestion (see the "MR Robinson" /
+- **Automatic** reconciliation/merge logic across the three sources for the
+  *harder* cases (conflict resolution, and player/club/team identity
+  matching beyond exact/near-exact names). Clubs and teams now get an
+  automatic merge for the exact/near-exact case at insert time
+  (`SQLiteStore._upsert_club()`/`._upsert_team()` — e.g. "East Lancs Paper
+  Mill CC" no longer splits into a separate `club_id` per source the way it
+  used to), and `reconcile.py`/`reconcile_audit.py` (see "Modules" above)
+  cover the fuzzier remainder for clubs/teams and everything for players —
+  but only for groups a human has confirmed via `PLAYER_MERGES`/
+  `CLUB_MERGES`/`TEAM_MERGES`; finding those groups with no human in the
+  loop at all isn't built, and isn't attempted for players (see
+  `reconcile_audit.py`'s module notes for why a bare similarity/containment
+  check turned out to be actively unreliable even for clubs/teams, let alone
+  names). Deliberately deferred to a review step across all three sources
+  rather than guessed at during ingestion (see the "MR Robinson" /
   seven-Robinsons example this was scoped against).
 - **Two manual player-merge tools that overlap and need reconciling with
   each other**: `SQLiteStore.find_players()`/`.merge_players()` (pairwise)
@@ -466,13 +523,57 @@ in `PLAYER_MERGES`). Same underlying problem as the cross-source case
 only — just occurring *within* one source now that it has enough scorers to
 spell the same player two different ways. See "Not built yet"/roadmap item 4.
 
+That exact-string query actually **understates** the gap: there's a *third*,
+bigger unmerged identity, `"IW wade"` (48 games) — invisible to the query
+above because its `known_as` doesn't literally equal `"Ian Wade"`, even
+though it's obviously the same person. This is exactly why
+`reconcile_audit.py` (see "Modules") exists rather than relying on ad-hoc
+filtering to notice these: it buckets by first-initial + surname (and,
+separately, by name after stripping case/whitespace/punctuation) rather than
+requiring an exact string match, so `"I Wade"`/`"IW wade"`/`"Ian Wade"` all
+land in one reported group together — see
+`reconcile/data_quality_report.md`'s Players section.
+
 Adding another player means adding another entry to `PLAYER_MERGES` (find
 their refs with a query like the one in `reconcile.py`'s own investigation
 notes) — nothing else changes, including after importing further CricHQ
 PDFs: re-running `reconcile.py` is idempotent, and any *new* match for an
 already-merged ref resolves straight to the survivor.
 
-### 7. Poke at the raw tables directly
+### 7. Audit the database for data-quality issues and reconciliation candidates
+
+Run after ingesting (all) sources, ideally before trusting any stats off the
+result — a read-only scan, never writes to `demo.sqlite`:
+
+```bash
+python3 reconcile_audit.py --sqlite-db demo.sqlite --out reconcile/data_quality_report.md
+```
+
+```
+Wrote reconcile/data_quality_report.md
+```
+
+The report has two parts: a data-quality scan (distinct competitions,
+leagues, grounds, seasons, and any crichq_pdf.py "Unknown (...)" placeholder
+rows — rarest-first, so a likely typo surfaces near the top) and
+reconciliation candidates for clubs, teams, and players that look like the
+same real thing split across two or more canonical rows. Confirming a
+candidate means hand-copying its `(source, source_*_id)` refs into
+`reconcile.py`'s `PLAYER_MERGES`/`CLUB_MERGES`/`TEAM_MERGES`, then
+re-running `python3 reconcile.py --sqlite-db demo.sqlite` (step 6) to apply
+it — the report itself never edits anything, and is cheap enough to
+regenerate any time after ingesting a new source or fixing a parser bug.
+
+`reconcile/data_quality_report.md` in this repo is a committed snapshot from
+the full three-source archive, so it doubles as a worked example: an
+`"Add New Ground"` value that's obviously a leaked UI placeholder, a
+`"Bradshaw CC, Lancs"` vs `"Bradshaw CC"` club split (a dropped regional
+qualifier neither exact-match nor SQLiteStore's own automatic merge — see
+"Modules" — safely catches on its own), dozens of team-name splits (one
+source's `"1st XI"` vs another's club-prefixed `"ELPM 1st XI"`), and the
+`"I Wade"`/`"IW wade"`/`"Ian Wade"` gap from step 6 above.
+
+### 8. Poke at the raw tables directly
 
 For anything the query helpers don't cover yet, plain SQL against `demo.sqlite`
 works — the schema is in `schema.sql`:
@@ -743,20 +844,62 @@ throughout the walkthrough above, and keep it out of git.
    only blocks *entering new* matches. The v11 installer's own
    version-detection dialog (uninstalling 10.5.1 first) also isn't
    always raised above the main window — easy to mistake for a hang.
-4. **Reconciliation layer** — *Proof of concept done for players
-   (`reconcile.py` / `SQLiteStore.merge_players()`); automatic matching,
-   and club/team reconciliation, still not built.* Full automatic
-   matching across every player/club/team is the hard part (initials-only
-   names, no stable id across sources — see "Not built yet") and isn't
-   attempted. What exists instead is a small, real mechanism (now
-   duplicated by two independently-built tools, see "Not built yet"):
-   repoint a list of confirmed `(source, source_player_id)` refs — already
-   each resolving to their own canonical player from ingestion — onto one
-   surviving `player_id`, updating every fact-table column that
+4. **Reconciliation layer** — *Automatic exact/near-exact matching now done
+   for clubs and teams (`SQLiteStore._upsert_club()`/`._upsert_team()`);
+   manual, human-confirmed matching done for all three of players/clubs/
+   teams (`reconcile.py`); automatic matching for players, and full
+   automatic matching for the harder club/team cases, still not built* —
+   see below for what "harder" means here and why it's handled by a review
+   step rather than guessed at. Full automatic matching across every
+   player/club/team remains the hard part in general (initials-only names,
+   no stable id across sources — see "Not built yet") and isn't attempted
+   for players at all. What exists instead is a small, real mechanism (now
+   duplicated by two independently-built tools for players, see "Not built
+   yet"): repoint a list of confirmed `(source, source_player_id)` refs —
+   already each resolving to their own canonical player from ingestion —
+   onto one surviving `player_id`, updating every fact-table column that
    references it (`batting_innings.player_id`/`bowler_player_id`/
    `fielder_player_id`, `bowling_innings.player_id`,
    `match_appearances.player_id`) and `player_source_ids` itself, then
-   drops the now-unreferenced duplicate rows.
+   drops the now-unreferenced duplicate rows. `reconcile.py` generalises
+   this same repoint into `merge_clubs()`/`merge_teams()` too, for whatever
+   club/team splits the automatic merge below doesn't safely catch.
+
+   **Clubs and teams get an automatic merge where players don't**, because
+   a club/team roster is a much smaller, much less ambiguous namespace than
+   player names: `_upsert_club()` now dedups on a casefolded, whitespace-
+   collapsed, "CC"/"Cricket Club"-suffix-stripped name (catching e.g.
+   Play-Cricket's "East Lancs Paper Mill CC" and CricHQ's "East Lancs Paper
+   Mill"), and `_upsert_team()` does the same scoped to the already-resolved
+   club. Rebuilding the full three-source archive from scratch with this in
+   place took clubs from 164 rows down to 103 and fixed **East Lancs Paper
+   Mill CC itself** — the club this whole project is about — being split in
+   two. Deliberately conservative (no fuzzy matching): a first version tried
+   during development also treated similar-looking or one-substring-of-
+   another club/team names as matches, and that produced real false
+   positives — "Shaw CC" / "Bradshaw CC" / "Walshaw CC" (three different
+   real clubs, short names that are substrings of each other) and
+   "Prestwich 2nd XI" / "Prestwich 3rd XI" (different teams; only their
+   ordinal differs) both got wrongly suggested as the same thing. Anything
+   past exact/near-exact is instead surfaced by `reconcile_audit.py` (see
+   "Modules") as a candidate for a human to confirm via `CLUB_MERGES`/
+   `TEAM_MERGES`, never merged automatically.
+
+   Running `reconcile_audit.py` against the full three-source archive (see
+   `reconcile/data_quality_report.md`, committed as a live example) found,
+   among other things: 8 remaining club splits automatic merging didn't
+   catch (all a dropped regional qualifier, e.g. Play-Cricket's "Bradshaw
+   CC, Lancs" vs CricHQ's "Bradshaw CC"), dozens of team splits (one source
+   naming East Lancs Paper Mill's sides "1st XI"/"2nd XI", another
+   "ELPM 1st XI"/"ELPM 2nd XI", and many opposition clubs' teams named with
+   a club abbreviation prefix in one source but not another), a genuine
+   stray value in real match data (`ground_name` "Add New Ground" — a
+   leaked UI placeholder, one match), and — directly relevant to this
+   item's own Ian Wade example below — that his merge group is still
+   incomplete: `"IW wade"` (48 games) and `"Ian Wade"` (4 games) are both
+   separate, unmerged `crichq_pdf` identities alongside the `"I Wade"` ref
+   `PLAYER_MERGES` already covers. None of this is applied automatically;
+   it's each a line in the report for a human to confirm or reject.
 
    No query-layer changes were needed to prove this out: `career_stats()`
    already aggregates purely by `player_id`, so once a merge lands, a
@@ -771,10 +914,10 @@ throughout the walkthrough above, and keep it out of git.
    seven-season `crichq/ALL_CRICHQ_SCORECARDS.pdf` archive ingests, the same
    merge (still just the `"I Wade"` ref) gives **196 games, 4974 runs at
    30.5 (21 fifties, 9 hundreds), 151 wickets at 14.7 (8 five-fors), 85
-   catches** — see Basic usage step 6, including the still-unmerged second
-   `"Ian Wade"` `crichq_pdf` identity that surfaced along the way. Zero
-   foreign-key violations after merging either way — the mechanism itself
-   is unaffected by any of this.
+   catches** — see Basic usage step 6, including the two more unmerged
+   `crichq_pdf` identities (`"IW wade"`, `"Ian Wade"`) that surfaced along
+   the way. Zero foreign-key violations after merging either way — the
+   mechanism itself is unaffected by any of this.
 
    Two real data-quality issues turned up along the way, both worth
    recording:
@@ -791,14 +934,15 @@ throughout the walkthrough above, and keep it out of git.
        the full CricHQ archive ingests cleanly (item 2), this is worth
        revisiting — not yet done.
      - **A newly-surfaced gap, not yet fixed**: with the full seven-season
-       archive loaded, `"Ian Wade"` and `"I Wade"` now exist as two
-       separate `crichq_pdf` player identities (see Basic usage step 6) —
-       the same no-stable-id name-matching problem this item's merge
-       mechanism was built for, just occurring *within* one source rather
-       than across sources, since a bigger archive has more scorers
-       spelling the same player's name differently. `PLAYER_MERGES` only
-       lists the abbreviated `"I Wade"` ref today; the fuller name isn't
-       merged in.
+       archive loaded, `"I Wade"`, `"IW wade"`, and `"Ian Wade"` now exist as
+       three separate `crichq_pdf` player identities (see Basic usage step 6
+       and `reconcile_audit.py`'s report) — the same no-stable-id
+       name-matching problem this item's merge mechanism was built for,
+       just occurring *within* one source rather than across sources, since
+       a bigger archive has more scorers spelling the same player's name
+       differently. `PLAYER_MERGES` only lists the abbreviated `"I Wade"`
+       ref today; the other two (48 and 4 games respectively) aren't merged
+       in.
    Also see "**ELPMCC Millers**" under "Not built yet" — the T20 side, not
    yet checked for equal treatment once more sources bring it in.
 5. **Career & historical stats** — Extend `sqlite_queries.py` to operate
