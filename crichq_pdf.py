@@ -81,10 +81,19 @@ def _extract_text(pdf_path):
 # REGEX PATTERNS
 # ==================================================================
 
+# The "home vs away" line and the Date/Venue line layout both vary
+# across the report generator versions concatenated into the combined
+# archive PDF: most matches have "<home> vs <away>" immediately before
+# a single "Date: X Venue: Y" line, but an older report layout (seen
+# in the 2016 season pages) omits the "vs" line entirely and puts
+# "Date: X" and "Venue: Y ... Match Type: ..." on separate lines.
+# Both groups are matched loosely here so every match still gets its
+# own header -- see _parse_match()'s team-name fallback for the
+# "vs" line being absent.
 MATCH_HEADER = re.compile(
     r'^(?P<competition>.+)\n'
-    r'(?P<home>.+?) vs (?P<away>.+?)\n'
-    r'Date: (?P<datetext>.+?) Venue: (?P<venue>.+)$',
+    r'(?:(?P<home>.+?) vs (?P<away>.+?)\n)?'
+    r'Date: (?P<datetext>.+?)\s+Venue: (?P<venue>.+?)(?:\s+Match Type:.*)?$',
     re.MULTILINE
 )
 
@@ -370,8 +379,53 @@ def _split_team_name(full_name):
 
 def _parse_match(header_match, body, match_index):
 
-    home_full = header_match.group("home").strip()
-    away_full = header_match.group("away").strip()
+    home_full = header_match.group("home")
+    away_full = header_match.group("away")
+
+    home_full = home_full.strip() if home_full else None
+    away_full = away_full.strip() if away_full else None
+
+    if home_full is None:
+
+        # The header's "vs" line is missing (see MATCH_HEADER) -- recover
+        # team names from the "Batting: <team>"/"Bowling: <team>" lines
+        # instead, in the order they appear. Some matches from this era
+        # only ever recorded one team's innings (the opposition's batting
+        # card was never entered), so the *bowling* header is sometimes
+        # the only place the second team's name survives.
+        name_matches = sorted(
+            list(INNINGS_HEADER.finditer(body))
+            + list(BOWLING_HEADER.finditer(body)),
+            key=lambda m: m.start()
+        )
+
+        inferred = []
+
+        for nm in name_matches:
+
+            name = nm.group("team").strip()
+
+            if name not in inferred:
+                inferred.append(name)
+
+        placeholder = (
+            f"Unknown ({header_match.group('competition').strip()}, "
+            f"{header_match.group('datetext').strip()})"
+        )
+
+        if len(inferred) >= 2:
+            home_full, away_full = inferred[0], inferred[1]
+
+        elif len(inferred) == 1:
+            home_full, away_full = inferred[0], f"{placeholder} - Opponent"
+
+        else:
+            # No batting or bowling at all either (a genuinely abandoned
+            # match) -- there is no team name left anywhere in the text
+            # to recover, so synthesise a stable placeholder from the
+            # header fields so the match still gets an idempotent id
+            # rather than being silently merged into a neighbour.
+            home_full, away_full = f"{placeholder} - Team A", f"{placeholder} - Team B"
 
     home_club, home_team = _split_team_name(home_full)
     away_club, away_team = _split_team_name(away_full)

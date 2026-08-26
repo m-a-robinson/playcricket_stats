@@ -1593,7 +1593,7 @@ class Scorecard:
             self.batting["innings"]
             .dropna()
             .unique()
-        ):
+        ) if not self.batting.empty else []:
 
             batting = self.get_batting(
                 innings_number
@@ -1672,7 +1672,7 @@ class Scorecard:
             self.bowling["innings"]
             .dropna()
             .unique()
-        ):
+        ) if not self.bowling.empty else []:
 
             bowling = self.get_bowling(
                 innings_number

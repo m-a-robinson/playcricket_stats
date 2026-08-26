@@ -85,9 +85,16 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   `"run out (A/B)"` credited to the first-named fielder, etc.). Player
   identity is deliberately **not** matched against existing players — every
   CricHQ name becomes its own new canonical player for now (see "Not built
-  yet" below). Run `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>`
-  to ingest one or more PDFs — **currently broken** for
-  `crichq/ALL_CRICHQ_SCORECARDS.pdf` specifically, see "Sample data" below.
+  yet" below). Also copes with two report-generator layouts concatenated
+  into one archive PDF: most matches have a `"<home> vs <away>"` line
+  directly before a single `"Date: X Venue: Y"` line, but an older layout
+  (seen on 2016-season pages) omits the `"vs"` line entirely and splits
+  `"Date:"`/`"Venue:"` onto separate lines — recovered by inferring the two
+  team names from the innings' own `"Batting:"`/`"Bowling:"` headers instead
+  when the header's `"vs"` line isn't there (see "Sample data" and the
+  roadmap for how this was found). Run
+  `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
+  more PDFs.
 - **`mxp_parser.py`** — Parses CricketStatz `.MXP` exports (File →
   Export/Email Matches in the desktop app — see the roadmap below) into
   the same match-detail shape `Scorecard` expects, with
@@ -176,20 +183,39 @@ remains.
   storage schema in practice.
 - `crichq/ALL_CRICHQ_SCORECARDS.pdf` — the club's **complete** CricHQ
   archive in one file (703 pages), replacing the old single-season
-  `ELPM 1st XI 2019.pdf`. **339 matches** (294 played, 45 abandoned),
-  spanning **six seasons, 2018–2023**, across every level the club runs —
-  1st/2nd/3rd/4th XI, Sunday sides, league and cup competitions, and the
-  T20 side (see the "ELPMCC Millers" note under "Not built yet"). Parses
-  cleanly at the text level (5725 batting rows, 3225 bowling rows, 6658
-  team-sheet entries across all matches) but **SQLite ingestion currently
-  fails**: `python3 crichq_pdf.py crichq/ALL_CRICHQ_SCORECARDS.pdf
-  --sqlite-db <path>` raises `ValueError: You are trying to merge on str
-  and float64 columns for key 'opposition_id'` on the very first match, in
-  `Scorecard.get_performances()`'s fielding-count merge
-  (`playcricket_scorecard.py`) — a `catch_counts`/`stumping_counts` dtype
-  mismatch the old, smaller PDF never happened to trigger. Zero matches
-  reach the database before the crash. Not yet fixed — a new item, not a
-  side effect of the reorg.
+  `ELPM 1st XI 2019.pdf`. **381 matches** (328 played, 53 abandoned),
+  spanning **seven seasons, 2016 and 2018–2023** (see below — 2016 was
+  invisible until the header-splitting bug was fixed), across every level
+  the club runs — 1st/2nd/3rd/4th XI, Sunday sides, league and cup
+  competitions, and the T20 side (see the "ELPMCC Millers" note under "Not
+  built yet"). Parses cleanly at the text level (5725 batting rows, 3225
+  bowling rows, 6658 team-sheet entries across all matches) and now
+  **ingests cleanly end to end**: `python3 crichq_pdf.py
+  crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>` loads all 381
+  matches with zero foreign-key violations. It previously raised
+  `ValueError: You are trying to merge on str and float64 columns for key
+  'opposition_id'` on the first match, in `Scorecard.get_performances()`'s
+  fielding-count merge (`playcricket_scorecard.py`) — that turned out to be
+  a symptom, not the root cause. The real bug was in `crichq_pdf.py`'s
+  match-splitting: `MATCH_HEADER` required a `"<home> vs <away>"` line
+  before every match's `"Date:"/"Venue:"` line, but 42 matches — an entire
+  season (2016) exported by an older report-generator layout — omit that
+  line and put `"Date:"`/`"Venue:"` on separate lines instead. Every one of
+  those 42 unmatched headers meant its whole scorecard silently got
+  appended onto the *previous* successfully-matched match's body instead of
+  starting a new one, so e.g. one nominal "match" ended up 38,394 characters
+  long and contained parts of ~30 different real matches concatenated
+  together — wrong runs/wickets attributed to the wrong fixture, `innings`
+  numbers up to 30, and (for the one match that happened to crash first) an
+  `opposition_id` column that was all-`NaN` for one team because its
+  fabricated "batting team" name never matched the real match's `home`/
+  `away` ids. Fixed by loosening `MATCH_HEADER` to make the `"vs"` line and
+  the same-line-vs-split-line `Date`/`Venue` layout both optional, and
+  falling back to the team names from the innings' own `"Batting:"`/
+  `"Bowling:"` headers (in that order) when the `"vs"` line is missing — see
+  the roadmap for a second, smaller bug (`get_performances()` crashing on a
+  match with batting but zero recorded bowling) found once real matches
+  started reaching it.
 - `cricketstatz/ELPM2018.csd` — the club's live CricketStatz database
   export, format version **11**. Opens under CricketStatz build 11.2.49
   (installed under Wine — the installer itself has since been removed from
@@ -335,34 +361,25 @@ stats.career(team_id=1)                  # same, restricted to one team
 stats.career().query("player_name == 'Ian Wade'")   # look up one player
 ```
 
-### 4. Ingest a CricHQ PDF — currently broken, see below
+### 4. Ingest a CricHQ PDF
 
 ```bash
 python3 crichq_pdf.py "crichq/ALL_CRICHQ_SCORECARDS.pdf" --sqlite-db demo.sqlite
 ```
 
-This currently crashes on the very first match, before anything reaches
-`demo.sqlite`:
-
 ```
 Parsing crichq/ALL_CRICHQ_SCORECARDS.pdf ...
-Traceback (most recent call last):
-  ...
-  File ".../playcricket_scorecard.py", line 1848, in get_performances
-    fielding_counts = pd.merge(...)
-ValueError: You are trying to merge on str and float64 columns for key 'opposition_id'
+  381 matches found in this file.
+Done. Played: 328, Abandoned: 53
 ```
 
-This is a real bug in `Scorecard.get_performances()`'s fielding-count merge
-(`playcricket_scorecard.py`) that the old, smaller single-season PDF never
-happened to trigger — not caused by the folder reorganisation, and not yet
-fixed (see "Sample data" and "Not built yet" above). Until it is, this step
-— and the CricHQ leg of steps 6/7 below — can't be reproduced from what's
-currently in the repo. The numbers those steps quote for the CricHQ side
-(`I Wade`'s one CricHQ match, `career_stats()`'s opposition-player split)
-are a historical record from when `ELPM 1st XI 2019.pdf` (since removed,
-superseded by the file above) ingested cleanly; they're not reproducible
-again until this bug is fixed.
+This used to crash on the very first match with `ValueError: You are trying
+to merge on str and float64 columns for key 'opposition_id'` in
+`Scorecard.get_performances()`'s fielding-count merge
+(`playcricket_scorecard.py`) — see "Sample data" above for the real,
+upstream bug that caused it (a `crichq_pdf.py` match-splitting bug silently
+merging one season's worth of matches into their neighbours) and the
+roadmap for the fix.
 
 ### 5. Ingest a CricketStatz `.MXP` export and check it landed correctly
 
@@ -396,25 +413,15 @@ stats.top_wickets(top_n=10)
 ### 6. Reconcile a player across sources and pull their full career
 
 `reconcile.py` merges known player groups (`PLAYER_MERGES`) so a career
-query spans every source that contributed to a group. **Run as-is right
-now, this fails**: `PLAYER_MERGES`'s one entry (Ian Wade) includes a
-`crichq_pdf` ref, and step 4 means `demo.sqlite` never got any CricHQ data
-to resolve it against —
+query spans every source that contributed to a group:
 
 ```bash
 python3 reconcile.py --sqlite-db demo.sqlite
 ```
 
 ```
-Traceback (most recent call last):
-  ...
-ValueError: No player found for (source='crichq_pdf', source_player_id='I Wade')
+Merged: Ian Wade -> player_id 5
 ```
-
-— a direct, expected consequence of step 4's bug, not a new one. Comment
-out that one ref in `PLAYER_MERGES` (or fix step 4 first) to merge Ian
-Wade's remaining two identities (`play_cricket` + `cricketstatz`) and confirm
-the mechanism still works on what's actually loaded:
 
 ```python
 conn = sqlite3.connect("demo.sqlite")   # reconnect to pick up the merge
@@ -422,12 +429,23 @@ career = career_stats(conn, elpmcc_only=False)
 career[career["player_name"] == "Ian Wade"].T
 ```
 
-The three-source combined record this step originally demonstrated
-(**151 games, 3895 runs @ 31.7, 107 wickets @ 15.9, 63 catches**, spanning
-2005-2018 cricketstatz through the current play_cricket season, plus one
-2019 crichq_pdf match) is a historical result from before `ELPM 1st XI
-2019.pdf` was removed — see the roadmap for the full write-up. It'll be
-reproducible fresh again once step 4's bug is fixed.
+Against the full current archive this now gives a real four-source combined
+record: **196 games, 4974 runs @ 30.5 (21 fifties, 9 hundreds), 151 wickets
+@ 14.7 (8 five-fors), 85 catches**, spanning 2005-2018 (`cricketstatz`), the
+full 2016-2023 CricHQ archive (`crichq_pdf`), and the current `play_cricket`
+season — a fresh reproduction, superseding the old single-PDF-era figures
+this step used to quote (151 games/3895 runs/107 wickets/63 catches, from
+one 2019 `crichq_pdf` match rather than the full archive).
+
+One thing this run surfaces that `PLAYER_MERGES` doesn't cover yet: the full
+archive's greater variety of scorers means `career[career["player_name"] ==
+"Ian Wade"]` still returns **two** rows, not one — a second, separate
+`crichq_pdf` identity keyed on `"Ian Wade"` (the full first name, 4 games)
+alongside the merged group's `"I Wade"` (abbreviated, the ref actually listed
+in `PLAYER_MERGES`). Same underlying problem as the cross-source case
+`PLAYER_MERGES` already exists to solve — no stable id, name-based matching
+only — just occurring *within* one source now that it has enough scorers to
+spell the same player two different ways. See "Not built yet"/roadmap item 4.
 
 Adding another player means adding another entry to `PLAYER_MERGES` (find
 their refs with a query like the one in `reconcile.py`'s own investigation
@@ -491,11 +509,9 @@ Concretely, this means:
   an archive source needs **no ongoing maintenance at all**. That's the
   whole point of it being an archive.
 
-The one live caveat right now: `crichq/ALL_CRICHQ_SCORECARDS.pdf` can't
-actually be imported yet at all — see "Sample data" and the roadmap for
-the `get_performances()` crash blocking it. Once that's fixed, the CricHQ
-side follows the same "import once, done" model as CricketStatz already
-does.
+`crichq/ALL_CRICHQ_SCORECARDS.pdf` now imports cleanly (see "Sample data"
+and the roadmap for the match-splitting bug that used to block it) and
+follows the same "import once, done" model as CricketStatz already does.
 
 ### Play-Cricket — the one source that actually needs re-syncing
 
@@ -604,15 +620,51 @@ throughout the walkthrough above, and keep it out of git.
    with each other (see "Not built yet"), and an automatic reconciliation
    pass — neither manual tool scales to every player across many more
    CricHQ PDFs on its own.
-2. **CricHQ PDF ingestion** — *Done, but currently broken on the club's
-   full archive* — see "Sample data" above for the fielding-count dtype-
-   merge crash blocking `crichq/ALL_CRICHQ_SCORECARDS.pdf`. `crichq_pdf.py`
-   parses CricHQ's "Full Scorecard Report" PDF export into the same
-   internal shape `Scorecard` uses; historically validated end to end
-   against the club's old single-season export, `ELPM 1st XI 2019.pdf`
+2. **CricHQ PDF ingestion** — ***Done***, including on the club's full
+   six-season-turned-seven-season archive — see "Sample data" above for the
+   match-splitting bug that used to crash it and how it was found/fixed.
+   `crichq_pdf.py` parses CricHQ's "Full Scorecard Report" PDF export into
+   the same internal shape `Scorecard` uses; historically validated end to
+   end against the club's old single-season export, `ELPM 1st XI 2019.pdf`
    (23 matches, 295 batting rows, 147 bowling rows, no unmatched lines) —
-   since removed from the repo, superseded by the six-season combined
-   file above. Along the way, found and fixed a latent bug in
+   since removed from the repo, superseded by the seven-season combined
+   file above. Getting the full archive ingesting cleanly needed three more
+   fixes on top of that original validation:
+   - **The real blocker**: `MATCH_HEADER` (`crichq_pdf.py`) required a
+     `"<home> vs <away>"` line before every match's `"Date:"/"Venue:"`
+     line. An older report-generator layout, used for the entire 2016
+     season, omits that line and puts `"Date:"`/`"Venue:"` on separate
+     lines instead — 42 matches' worth. Every one of those missing headers
+     meant `parse_pdf()`'s header-to-header body slicing silently appended
+     that match's whole scorecard onto the *previous* match's body instead
+     of starting a new one (one nominal "match" ended up 38,394 characters
+     long, containing pieces of roughly 30 real matches with `innings`
+     numbers running up to 30) — which is what produced the `opposition_id`
+     dtype-mismatch crash below, on whichever match happened to hit it
+     first, not a bug in the merge itself. Fixed by loosening
+     `MATCH_HEADER` to make the `"vs"` line and the same-line-vs-split-line
+     `Date`/`Venue` layout both optional, and — when the `"vs"` line is
+     missing — inferring the two team names from the innings' own
+     `"Batting:"`/`"Bowling:"` headers instead (checking bowling headers
+     too, since a few of these older matches only ever recorded one team's
+     batting card).
+   - Once matches were split correctly, `Scorecard.get_performances()`
+     (`playcricket_scorecard.py`) crashed on a *different* match with a
+     `KeyError: 'innings'`: it guarded against a match with *no* batting
+     and *no* bowling at all, but not the case of one team recording
+     batting with the other side's bowling figures never entered (real for
+     a handful of 2016 matches) — `self.bowling` then being an empty
+     `DataFrame()` with no columns at all. Fixed by skipping the bowling
+     (and, symmetrically, the batting) achievement loop when that side is
+     empty, rather than assuming both are non-empty whenever either is.
+   - Building the Ian Wade career-record query above also surfaced that
+     the full archive's greater variety of scorers means `"I Wade"` and
+     `"Ian Wade"` now both exist as separate `crichq_pdf` player identities
+     — a `PLAYER_MERGES` gap, not a parser bug; see Basic usage step 6 and
+     roadmap item 4.
+
+   Earlier, against the old single-season file, this item also found and
+   fixed a latent bug in
    `sqlite_store.py`'s value-cleaning helpers: Play-Cricket's raw JSON
    always uses `""` for a missing fielder/bowler, so pandas never
    introduced `NaN` there, but a Python `None` (used by the new PDF
@@ -691,15 +743,19 @@ throughout the walkthrough above, and keep it out of git.
    already aggregates purely by `player_id`, so once a merge lands, a
    genuinely cross-source career total just falls out of the existing
    query. Proved against **Ian Wade**: merging his Play-Cricket id, CricHQ
-   PDF name, and two CricketStatz ids produced one combined career — **151
-   games, 3895 runs at 31.7 (18 fifties, 7 hundreds), 107 wickets at 15.9
-   (7 five-fors), 63 catches** — spanning 2005-2018 (cricketstatz, 138
-   matches), one 2019 match (crichq_pdf), and the 2026 season
-   (play_cricket, 12 matches). Zero foreign-key violations after merging.
-   This specific result predates the CricHQ archive being replaced by
-   `crichq/ALL_CRICHQ_SCORECARDS.pdf` and isn't reproducible again from
-   what's currently in the repo until item 2's crash is fixed (see Basic
-   usage step 6) — the mechanism itself is unaffected.
+   PDF name, and two CricketStatz ids produced one combined career.
+   Originally, against the old single-season `ELPM 1st XI 2019.pdf`, that
+   was **151 games, 3895 runs at 31.7 (18 fifties, 7 hundreds), 107 wickets
+   at 15.9 (7 five-fors), 63 catches** — spanning 2005-2018 (cricketstatz,
+   138 matches), one 2019 match (crichq_pdf), and the 2026 season
+   (play_cricket, 12 matches). Now that item 2's crash is fixed and the full
+   seven-season `crichq/ALL_CRICHQ_SCORECARDS.pdf` archive ingests, the same
+   merge (still just the `"I Wade"` ref) gives **196 games, 4974 runs at
+   30.5 (21 fifties, 9 hundreds), 151 wickets at 14.7 (8 five-fors), 85
+   catches** — see Basic usage step 6, including the still-unmerged second
+   `"Ian Wade"` `crichq_pdf` identity that surfaced along the way. Zero
+   foreign-key violations after merging either way — the mechanism itself
+   is unaffected by any of this.
 
    Two real data-quality issues turned up along the way, both worth
    recording:
@@ -712,9 +768,18 @@ throughout the walkthrough above, and keep it out of git.
        see item 2's fix (b). At the time `reconcile.py`'s Ian Wade merge
        group was built, that fix didn't exist yet, so the compound-name
        row was deliberately left out of the merge rather than
-       misattributing MR Robinson's share of the credit to Wade; it's
-       worth checking whether that exclusion is still needed once the
-       CricHQ archive can be re-ingested.
+       misattributing MR Robinson's share of the credit to Wade; now that
+       the full CricHQ archive ingests cleanly (item 2), this is worth
+       revisiting — not yet done.
+     - **A newly-surfaced gap, not yet fixed**: with the full seven-season
+       archive loaded, `"Ian Wade"` and `"I Wade"` now exist as two
+       separate `crichq_pdf` player identities (see Basic usage step 6) —
+       the same no-stable-id name-matching problem this item's merge
+       mechanism was built for, just occurring *within* one source rather
+       than across sources, since a bigger archive has more scorers
+       spelling the same player's name differently. `PLAYER_MERGES` only
+       lists the abbreviated `"I Wade"` ref today; the fuller name isn't
+       merged in.
    Also see "**ELPMCC Millers**" under "Not built yet" — the T20 side, not
    yet checked for equal treatment once more sources bring it in.
 5. **Career & historical stats** — Extend `sqlite_queries.py` to operate
