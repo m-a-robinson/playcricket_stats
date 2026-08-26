@@ -37,6 +37,7 @@ and call the same insert_match() method with a different `source`.
 
 import json
 import os
+import re
 import sqlite3
 from datetime import datetime
 
