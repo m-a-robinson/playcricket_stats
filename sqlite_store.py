@@ -51,6 +51,18 @@ SCHEMA_PATH = os.path.join(
 
 SOURCE_PLAY_CRICKET = "play_cricket"
 
+# Strips one trailing "CC"/"C.C."/"Cricket Club" (optionally preceded by
+# a comma) so e.g. "East Lancs Paper Mill CC" (play_cricket) and "East
+# Lancs Paper Mill" (crichq_pdf) normalise to the same key. Deliberately
+# conservative -- only a suffix strip plus casefold/whitespace collapse,
+# nothing that guesses at abbreviations or dropped qualifiers (e.g.
+# "Bradshaw CC, Lancs" vs "Bradshaw CC" does NOT normalise to the same
+# key here) -- so an auto-merge triggered by this can't plausibly
+# conflate two different real clubs. Fuzzier cases are surfaced by
+# reconcile_audit.py for a human to confirm via reconcile.py's
+# CLUB_MERGES/TEAM_MERGES instead of being guessed at here.
+_CLUB_SUFFIX_RE = re.compile(r"\s*,?\s*(cricket club|c\.?c\.?)\s*$", re.IGNORECASE)
+
 
 class SQLiteStore:
 
@@ -66,6 +78,21 @@ class SQLiteStore:
         self.conn.execute("PRAGMA foreign_keys = ON")
 
         self._apply_schema()
+
+        # In-memory dedup indexes, keyed by normalised name, so a club/
+        # team already created (by this source or an earlier one) is
+        # reused instead of split into a second row -- see
+        # _normalise_club_name()/_normalise_team_name(). Seeded from
+        # whatever is already in the tables so this also converges a
+        # store that already has split rows, one rebuild at a time.
+        self._club_index = {}
+        self._team_index = {}
+
+        for club_id, club_name in self.conn.execute("SELECT club_id, club_name FROM clubs"):
+            self._club_index.setdefault(self._normalise_club_name(club_name), club_id)
+
+        for team_id, team_name, club_id in self.conn.execute("SELECT team_id, team_name, club_id FROM teams"):
+            self._team_index.setdefault((club_id, self._normalise_team_name(team_name)), team_id)
 
     def _apply_schema(self):
 
@@ -155,6 +182,25 @@ class SQLiteStore:
 
         return str(value)
 
+    @classmethod
+    def _normalise_club_name(cls, name):
+        """Dedup key for club names across sources -- see _CLUB_SUFFIX_RE."""
+
+        name = re.sub(r"\s+", " ", (name or "").strip())
+        name = _CLUB_SUFFIX_RE.sub("", name)
+        return name.strip().casefold()
+
+    @classmethod
+    def _normalise_team_name(cls, name):
+        """
+        Dedup key for team names -- scoped by club_id by the caller,
+        since e.g. "1st XI" is legitimately shared by many different
+        clubs. Just case/whitespace here: team names ("1st XI", "2nd
+        XI", ...) don't carry the club-suffix variation club names do.
+        """
+
+        return re.sub(r"\s+", " ", (name or "").strip()).casefold()
+
     # ==========================================================
     # DIMENSION UPSERTS
     # ==========================================================
@@ -165,6 +211,15 @@ class SQLiteStore:
         a normalised club name for sources with no numeric id) to a
         canonical club_id, creating both the canonical row and the
         mapping row the first time this (source, source_club_id) is seen.
+
+        Before creating a brand new club row, checks self._club_index for
+        an existing club whose name normalises to the same
+        _normalise_club_name() key -- e.g. play_cricket's "East Lancs
+        Paper Mill CC" and crichq_pdf's "East Lancs Paper Mill" both
+        resolve to the same canonical club instead of splitting into two.
+        This is a deliberately conservative, automatic merge; anything
+        it doesn't catch is a candidate for reconcile_audit.py /
+        reconcile.py's CLUB_MERGES instead.
         """
 
         source_club_id = self._clean_text(source_club_id)
@@ -180,12 +235,20 @@ class SQLiteStore:
         if row:
             return row[0]
 
-        cursor = self.conn.execute(
-            "INSERT INTO clubs (club_name) VALUES (?)",
-            (self._clean_text(club_name) or source_club_id,)
-        )
+        club_name = self._clean_text(club_name) or source_club_id
+        norm_key = self._normalise_club_name(club_name)
 
-        club_id = cursor.lastrowid
+        club_id = self._club_index.get(norm_key)
+
+        if club_id is None:
+
+            cursor = self.conn.execute(
+                "INSERT INTO clubs (club_name) VALUES (?)",
+                (club_name,)
+            )
+
+            club_id = cursor.lastrowid
+            self._club_index[norm_key] = club_id
 
         self.conn.execute(
             "INSERT INTO club_source_ids (source, source_club_id, club_id) VALUES (?, ?, ?)",
@@ -197,7 +260,10 @@ class SQLiteStore:
     def _upsert_team(self, source, source_team_id, team_name, club_id):
         """
         Resolve a source-specific team id to a canonical team_id, the
-        same way _upsert_club() resolves clubs.
+        same way _upsert_club() resolves clubs -- via self._team_index,
+        keyed by (club_id, _normalise_team_name()) so e.g. "1st XI" is
+        still a different team per club, but not split into two rows
+        for the same club across sources.
         """
 
         source_team_id = self._clean_text(source_team_id)
@@ -213,12 +279,20 @@ class SQLiteStore:
         if row:
             return row[0]
 
-        cursor = self.conn.execute(
-            "INSERT INTO teams (team_name, club_id) VALUES (?, ?)",
-            (self._clean_text(team_name) or source_team_id, club_id)
-        )
+        team_name = self._clean_text(team_name) or source_team_id
+        index_key = (club_id, self._normalise_team_name(team_name))
 
-        team_id = cursor.lastrowid
+        team_id = self._team_index.get(index_key)
+
+        if team_id is None:
+
+            cursor = self.conn.execute(
+                "INSERT INTO teams (team_name, club_id) VALUES (?, ?)",
+                (team_name, club_id)
+            )
+
+            team_id = cursor.lastrowid
+            self._team_index[index_key] = team_id
 
         self.conn.execute(
             "INSERT INTO team_source_ids (source, source_team_id, team_id) VALUES (?, ?, ?)",
