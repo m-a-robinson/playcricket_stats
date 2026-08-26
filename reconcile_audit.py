@@ -16,7 +16,15 @@ already-built SQLite store:
    canonical rows, but aren't safe to merge automatically. SQLiteStore
    already auto-merges exact/near-exact club and team names at insert
    time (see its docstring); what's left here is the fuzzier residue,
-   plus players, which get no automatic merging at all.
+   plus players, which get no automatic merging at all. Player
+   candidates are restricted to players who *exclusively* appear for
+   one club (ELPMCC_NAME from sqlite_queries.py, by default) -- the
+   only players career_stats() tracks by default anyway. A shared name
+   across different clubs is excluded rather than suggested: more
+   likely two different real people (or a guest/opposition appearance)
+   than the same person reconciled across clubs. Different *teams*
+   within that one club (1st XI, 2nd XI, ...) are fine -- that's still
+   one club, and exactly the case this is meant to catch.
 
 This script never writes to the database. It only reads and reports.
 Confirmed candidates are turned into permanent decisions by hand, added
@@ -46,6 +54,7 @@ from datetime import datetime, timezone
 from difflib import SequenceMatcher
 
 from sqlite_store import SQLiteStore
+from sqlite_queries import ELPMCC_NAME
 
 
 # ==================================================================
@@ -332,6 +341,38 @@ def _player_appearance_count(conn, player_id):
     return row[0] if row else 0
 
 
+def _elpmcc_exclusive_player_ids(conn, elpmcc_name):
+    """
+    player_ids whose match_appearances are ALL for a team belonging to
+    `elpmcc_name` -- i.e. every real club they've turned out for, on any
+    team (1st XI, 2nd XI, ...), is this one club. Career stats here are
+    only tracked for this club's own players (see sqlite_queries.py's
+    ELPMCC_NAME/elpmcc_only), and only they should ever be reconciled: a
+    name that also appears for a genuinely different club is more likely
+    two different real people (or a guest/opposition appearance) than
+    the same person, and merging it in would pull a different club's
+    appearances into what's meant to be one club's player record.
+
+    A player who never has a match_appearances row at all (shouldn't
+    happen given the schema, but not guaranteed) is excluded rather than
+    assumed to qualify.
+    """
+
+    rows = conn.execute(
+        """
+        SELECT ma.player_id
+        FROM match_appearances ma
+        JOIN teams t ON t.team_id = ma.team_id
+        JOIN clubs c ON c.club_id = t.club_id
+        GROUP BY ma.player_id
+        HAVING SUM(CASE WHEN c.club_name != ? THEN 1 ELSE 0 END) = 0
+        """,
+        (elpmcc_name,)
+    ).fetchall()
+
+    return {row[0] for row in rows}
+
+
 def render_club_candidates(conn):
 
     lines = ["### Clubs", ""]
@@ -491,7 +532,7 @@ def render_team_candidates(conn):
     return lines
 
 
-def render_player_candidates(conn):
+def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME):
 
     lines = ["### Players", ""]
     lines.append(
@@ -501,8 +542,25 @@ def render_player_candidates(conn):
         "check appearance counts, dates, and sources before confirming."
     )
     lines.append("")
+    lines.append(
+        f"Restricted to players who **exclusively** appear for "
+        f"`{elpmcc_name}` (on any of its teams -- 1st XI, 2nd XI, ... all "
+        "count as the same club) -- the only players career_stats()/"
+        "SQLPlayerStats track by default anyway (see sqlite_queries.py's "
+        "`elpmcc_only`). A name also appearing for a genuinely different "
+        "club is excluded rather than suggested: that's more likely two "
+        "different real people (or a guest/opposition appearance) than "
+        "the same person, and merging would pull another club's "
+        "appearances into what should be a single-club player record."
+    )
+    lines.append("")
 
-    players = conn.execute("SELECT player_id, known_as FROM players").fetchall()
+    elpmcc_ids = _elpmcc_exclusive_player_ids(conn, elpmcc_name)
+
+    players = [
+        row for row in conn.execute("SELECT player_id, known_as FROM players")
+        if row[0] in elpmcc_ids
+    ]
 
     # ---- Section A: identical after stripping case/whitespace/punctuation ----
 
@@ -594,7 +652,7 @@ def render_player_candidates(conn):
 # ENTRY POINT
 # ==================================================================
 
-def generate_report(conn):
+def generate_report(conn, elpmcc_name=ELPMCC_NAME):
 
     lines = ["# Data Quality & Reconciliation Report", ""]
     lines.append(
@@ -622,7 +680,7 @@ def generate_report(conn):
     lines.append("")
     lines.extend(render_club_candidates(conn))
     lines.extend(render_team_candidates(conn))
-    lines.extend(render_player_candidates(conn))
+    lines.extend(render_player_candidates(conn, elpmcc_name))
 
     return "\n".join(lines) + "\n"
 
@@ -634,13 +692,17 @@ if __name__ == "__main__":
     )
     parser.add_argument("--sqlite-db", default="playcricket_stats.sqlite")
     parser.add_argument("--out", default="reconcile/data_quality_report.md")
+    parser.add_argument(
+        "--elpmcc-name", default=ELPMCC_NAME,
+        help="Club name player candidates are restricted to (see sqlite_queries.py's ELPMCC_NAME)."
+    )
 
     args = parser.parse_args()
 
     conn = sqlite3.connect(args.sqlite_db)
     conn.execute("PRAGMA foreign_keys = ON")
 
-    report = generate_report(conn)
+    report = generate_report(conn, elpmcc_name=args.elpmcc_name)
 
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(report)
