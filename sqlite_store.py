@@ -37,6 +37,7 @@ and call the same insert_match() method with a different `source`.
 
 import json
 import os
+import re
 import sqlite3
 from datetime import datetime
 
@@ -135,9 +136,35 @@ class SQLiteStore:
 
     @classmethod
     def _clean_text(cls, value):
+        """
+        A source id used as text (source_player_id etc.) must come back
+        identical every time the same underlying id is seen, or the same
+        real player/club/team splits into multiple canonical rows. A
+        numeric id is at risk here: pandas silently upgrades an int
+        column to float64 the moment any row in it is missing (the same
+        NaN-upgrade behaviour documented on _is_missing() above), so the
+        very same Play-Cricket player id can arrive as the int 6216362
+        in one match's DataFrame and the float 6216362.0 in another's,
+        str()'d into two different-looking ids for one real person.
+        Whole-number floats (real or already str()'d) are normalised
+        back to their plain integer form so this can't happen.
+        """
 
         if cls._is_missing(value):
             return None
+
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+
+        if isinstance(value, str):
+
+            try:
+                as_float = float(value)
+            except ValueError:
+                as_float = None
+
+            if as_float is not None and as_float.is_integer() and re.fullmatch(r"-?\d+\.0+", value):
+                return str(int(as_float))
 
         return str(value)
 

@@ -124,6 +124,15 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   (`batting_innings`/`bowling_innings`/`match_appearances` are untouched);
   pass `elpmcc_only=False` to include them in `career_stats()` too, e.g.
   to check one opposition player's record specifically against this club.
+- **`reconcile.py`** — Cross-source player identity merging (see roadmap
+  item 4). `merge_players(conn, source_refs)` repoints a confirmed list of
+  `(source, source_player_id)` refs, and every fact-table row that
+  references them, onto one surviving canonical `player_id`. `PLAYER_MERGES`
+  is the growable registry of confirmed groups — run
+  `python3 reconcile.py --sqlite-db <path>` after ingesting (all) sources to
+  apply every entry; re-running is idempotent. No query-layer changes are
+  needed after a merge: `career_stats()`/`SQLPlayerStats` already aggregate
+  by `player_id` alone, across every source.
 
 ### Retired
 
@@ -187,17 +196,19 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
 
 ### Not built yet
 
-- Reconciliation/merge logic across the three sources (dedup, conflict
-  resolution, player/club/team identity matching for sources with no
-  Play-Cricket id to anchor on). The `*_source_ids` mapping tables are ready
-  for this; the matching logic itself isn't written yet. Concretely: right
-  now the same real person/club/team gets a separate canonical row per
-  source (e.g. "East Lancs Paper Mill CC" exists as both `club_id 1`
-  from Play-Cricket and a different `club_id` from CricHQ), and CricHQ
-  player names are matched against nothing — deliberately deferred to a
-  dedicated reconciliation pass across all three sources rather than
-  guessed at during ingestion (see the "MR Robinson" / seven-Robinsons
-  example this was scoped against).
+- **Automatic** reconciliation/merge logic across the three sources (dedup,
+  conflict resolution, player/club/team identity matching for sources with
+  no Play-Cricket id to anchor on). `reconcile.py` (see "Modules" above)
+  proves the merge *mechanism* works — for players, and only for the ones
+  named in its human-curated `PLAYER_MERGES` list — but finding those groups
+  automatically isn't built. Concretely: right now the same real
+  person/club/team gets a separate canonical row per source unless
+  explicitly merged (e.g. "East Lancs Paper Mill CC" exists as both
+  `club_id 1` from Play-Cricket and a different `club_id` from CricHQ, and
+  club/team identity has no merge tooling at all yet, unlike players) —
+  deliberately deferred to a dedicated reconciliation pass across all three
+  sources rather than guessed at during ingestion (see the "MR Robinson" /
+  seven-Robinsons example this was scoped against).
 - Formatted scorecard export (image/PDF) for printing or framing.
 - Social-media formatting for player performances and weekend results.
 - Any CLI/UI entry point — everything today is a library.
@@ -341,7 +352,37 @@ stats.top_runs(top_n=10)
 stats.top_wickets(top_n=10)
 ```
 
-### 6. Poke at the raw tables directly
+### 6. Reconcile a player across sources and pull their full career
+
+`demo.sqlite` now holds the same real person under three different
+identities — a Play-Cricket numeric id, a CricHQ PDF name, and two
+CricketStatz ids. `reconcile.py` merges known groups (`PLAYER_MERGES`)
+so a career query spans all of them:
+
+```bash
+python3 reconcile.py --sqlite-db demo.sqlite
+```
+
+```
+Merged: Ian Wade -> player_id 5
+```
+
+```python
+conn = sqlite3.connect("demo.sqlite")   # reconnect to pick up the merge
+career = career_stats(conn, elpmcc_only=False)
+career[career["player_id"] == 5].T
+# games_played 151, runs 3895 @ 31.7 (18 fifties, 7 hundreds),
+# 107 wickets @ 15.9, 63 catches -- 2005-2018 (cricketstatz) through
+# the current season (play_cricket), with one 2019 match from crichq_pdf
+```
+
+Adding another player means adding another entry to `PLAYER_MERGES` (find
+their refs with a query like the one in `reconcile.py`'s own investigation
+notes) — nothing else changes, including after importing further CricHQ
+PDFs: re-running `reconcile.py` is idempotent, and any *new* match for an
+already-merged ref resolves straight to the survivor.
+
+### 7. Poke at the raw tables directly
 
 For anything the query helpers don't cover yet, plain SQL against `demo.sqlite`
 works — the schema is in `schema.sql`:
@@ -441,12 +482,58 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
        installer's bundled `sample.csd` (format version 2005). The
        CricketStatz app refuses to open a file newer than itself.
 
-4. **Reconciliation layer** — Merge the three sources per match/player/club/
-   team with conflict detection and a clear precedence rule (e.g.
-   Play-Cricket wins on overlap, archives fill gaps). Player matching is the
-   hard part (initials-only names, no stable id — see "Not built yet");
-   club/team matching should be far more reliable since names are close to
-   exact strings across sources.
+4. **Reconciliation layer** — *Proof of concept done for players
+   (`reconcile.py`); automatic matching, and club/team reconciliation,
+   still not built.* Full automatic matching across every player/club/
+   team is the hard part (initials-only names, no stable id across
+   sources — see "Not built yet") and isn't attempted. What exists
+   instead is a small, real mechanism: `merge_players()` repoints a
+   list of confirmed `(source, source_player_id)` refs — already each
+   resolving to their own canonical player from ingestion — onto one
+   surviving `player_id`, updating every fact-table column that
+   references it (`batting_innings.player_id`/`bowler_player_id`/
+   `fielder_player_id`, `bowling_innings.player_id`,
+   `match_appearances.player_id`) and `player_source_ids` itself, then
+   drops the now-unreferenced duplicate rows. A human-curated
+   `PLAYER_MERGES` list in the same file is the growable registry of
+   confirmed groups — this is the intended path to add more reconciled
+   players later (e.g. after importing further CricHQ PDFs), not a
+   replacement for automatic matching.
+
+   No query-layer changes were needed to prove this out:
+   `career_stats()` already aggregates purely by `player_id`, so once
+   a merge lands, a genuinely cross-source career total just falls out
+   of the existing query. Proved against **Ian Wade**: merging his
+   Play-Cricket id, CricHQ PDF name, and two CricketStatz ids (see
+   below) produces one combined career — **151 games, 3895 runs at
+   31.7 (18 fifties, 7 hundreds), 107 wickets at 15.9 (7 five-fors),
+   63 catches** — spanning 2005-2018 (cricketstatz, 138 matches), one
+   2019 match (crichq_pdf), and the current 2026 season (play_cricket,
+   12 matches). Zero foreign-key violations after merging.
+
+   Two real data-quality issues turned up along the way, both worth
+   recording:
+     - **A genuine bug, fixed**: Play-Cricket's own numeric player ids
+       were splitting into two canonical rows for the same person
+       (`"6216362"` vs `"6216362.0"`). Cause: `pd.json_normalize()`
+       upgrades a whole int column to float64 the moment *any* row in
+       it is missing (the same NaN-upgrade behaviour already
+       documented in `sqlite_store.py` for fielder/bowler ids), so the
+       same real id str()'d differently match to match, depending on
+       whether some *other* player in that particular match had a gap.
+       Fixed centrally in `SQLiteStore._clean_text()` (whole-number
+       floats, real or already stringified, normalise back to plain
+       int form) — affects every source, not just Play-Cricket, and
+       every id-like text column, not just players.
+     - **A parser edge case, deliberately left unmerged**: CricHQ
+       credits a joint run-out to both fielders as one combined dismissal
+       string (`"run out (I Wade/MR Robinson)"`); `crichq_pdf.py` keeps
+       that as a single fielder name rather than splitting it (the
+       schema only has one `fielder_player_id` slot per dismissal
+       either way). That row was deliberately left out of Ian Wade's
+       merge group — including it would misattribute MR Robinson's
+       share of the credit to Wade, which is a worse error than
+       under-counting his run-out assists by one.
 5. **Career & historical stats** — Extend `sqlite_queries.py` to operate
    across the merged multi-source database (all-time leaderboards, career
    milestones, team/season filtering already work for the Play-Cricket-only
