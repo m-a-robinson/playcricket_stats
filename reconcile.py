@@ -70,16 +70,17 @@ PLAYER_MERGES = [
             ("play_cricket", "6216362"),
             ("crichq_pdf", "I Wade"),
             ("cricketstatz", "4"),
-            # A second, single-match "I Wade" (cricketstatz id 1062,
-            # 74 off the bowling on 09/08/2015, no other appearance
-            # under that id) -- almost certainly the same player
-            # re-entered under a second internal id at some point in
-            # 13 years of manual club data entry, not a different
-            # person. cricketstatz id 34 ("Wade,J") is a DIFFERENT
-            # real person (different initial) and is correctly not
-            # included here.
-            ("cricketstatz", "1062"),
         ]
+        # NOT included: cricketstatz id 1062 -- a single-match "I Wade"
+        # (74 off the bowling on 09/08/2015) playing for Swinton
+        # Moorside, the opposition that day. Originally assumed to be
+        # this Ian Wade re-entered under a second internal id (no other
+        # appearance under that id, so no independent record to check
+        # against) -- confirmed wrong: it's his father, a different real
+        # person who happens to share the name and played for a
+        # different club. cricketstatz id 34 ("Wade,J") is also a
+        # DIFFERENT real person (different initial) and is correctly
+        # not included here either.
         # NOT included: crichq_pdf "I Wade/MR Robinson". That row only
         # ever appears as a fielder credit for one joint run-out ("run
         # out (I Wade/MR Robinson)") -- crichq_pdf.py's dismissal

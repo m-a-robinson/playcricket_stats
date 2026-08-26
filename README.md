@@ -505,13 +505,17 @@ career = career_stats(conn, elpmcc_only=False)
 career[career["player_name"] == "Ian Wade"].T
 ```
 
-Against the full current archive this now gives a real four-source combined
-record: **196 games, 4974 runs @ 30.5 (21 fifties, 9 hundreds), 151 wickets
+Against the full current archive this now gives a real three-source combined
+record: **195 games, 4900 runs @ 30.2 (20 fifties, 9 hundreds), 151 wickets
 @ 14.7 (8 five-fors), 85 catches**, spanning 2005-2018 (`cricketstatz`), the
 full 2016-2023 CricHQ archive (`crichq_pdf`), and the current `play_cricket`
 season — a fresh reproduction, superseding the old single-PDF-era figures
 this step used to quote (151 games/3895 runs/107 wickets/63 catches, from
-one 2019 `crichq_pdf` match rather than the full archive).
+one 2019 `crichq_pdf` match rather than the full archive). One `cricketstatz`
+ref originally in this group (id `1062`, a single-match "I Wade" playing for
+the opposition, Swinton Moorside) turned out on inspection to be his
+father — a different real person who happens to share the name — and has
+been removed from `PLAYER_MERGES`; see roadmap item 4.
 
 One thing this run surfaces that `PLAYER_MERGES` doesn't cover yet: the full
 archive's greater variety of scorers means `career[career["player_name"] ==
@@ -905,19 +909,32 @@ throughout the walkthrough above, and keep it out of git.
    already aggregates purely by `player_id`, so once a merge lands, a
    genuinely cross-source career total just falls out of the existing
    query. Proved against **Ian Wade**: merging his Play-Cricket id, CricHQ
-   PDF name, and two CricketStatz ids produced one combined career.
+   PDF name, and one CricketStatz id produced one combined career.
    Originally, against the old single-season `ELPM 1st XI 2019.pdf`, that
    was **151 games, 3895 runs at 31.7 (18 fifties, 7 hundreds), 107 wickets
    at 15.9 (7 five-fors), 63 catches** — spanning 2005-2018 (cricketstatz,
    138 matches), one 2019 match (crichq_pdf), and the 2026 season
    (play_cricket, 12 matches). Now that item 2's crash is fixed and the full
    seven-season `crichq/ALL_CRICHQ_SCORECARDS.pdf` archive ingests, the same
-   merge (still just the `"I Wade"` ref) gives **196 games, 4974 runs at
-   30.5 (21 fifties, 9 hundreds), 151 wickets at 14.7 (8 five-fors), 85
+   merge (still just the `"I Wade"` ref) gives **195 games, 4900 runs at
+   30.2 (20 fifties, 9 hundreds), 151 wickets at 14.7 (8 five-fors), 85
    catches** — see Basic usage step 6, including the two more unmerged
    `crichq_pdf` identities (`"IW wade"`, `"Ian Wade"`) that surfaced along
    the way. Zero foreign-key violations after merging either way — the
    mechanism itself is unaffected by any of this.
+
+   A second `cricketstatz` ref (id `1062`, a single-match "I Wade" playing
+   for the opposition, Swinton Moorside) was originally included in this
+   group too — assumed to be the same player re-entered under a second
+   internal id, since there was no independent record under that id to
+   check the assumption against. **Confirmed wrong and removed**: it's his
+   father, a different real person who happens to share the name and
+   played for a different club — caught only once `reconcile_audit.py`'s
+   club-exclusivity check (see below) flagged that this "Ian Wade" had an
+   appearance for a second club at all, which prompted asking rather than
+   assuming. A reminder that "no contradicting evidence" isn't the same as
+   "confirmed," even for a single-match ref that looks like the obvious
+   explanation.
 
    Two real data-quality issues turned up along the way, both worth
    recording:
