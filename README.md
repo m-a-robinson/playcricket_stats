@@ -422,65 +422,47 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
    `value in (None, "")` checks couldn't catch, since `NaN` compares
    unequal to everything, including itself. Fixed once, centrally, so any
    future source hits the same safety net.
-3. **CricketStatz `.csd` ingestion** — *Done, via `.MXP` rather than the
-   raw binary format.* `.csd` is a proprietary multi-table binary
-   flat-file (no dBase/Paradox/SQLite header — tables are just
-   concatenated fixed-length records), written by a VB6 desktop app
-   (CricketStatz, Red Axe Pty Ltd) using fixed-length random-access record
-   I/O — which is why the player table (partially mapped below, now
-   superseded) is uniform 648-byte records.
+3. **CricketStatz `.csd` ingestion** — ***Done.*** `.csd` itself is a
+   proprietary multi-table binary flat-file (no dBase/Paradox/SQLite
+   header, no public documentation) written by a VB6 desktop app
+   (CricketStatz, Red Axe Pty Ltd). Reverse-engineering that binary
+   format byte-by-byte directly was the original plan (see git history
+   for the partial player-table mapping that work reached) — but turned
+   out to be unnecessary and has been **abandoned**: the app itself has a
+   **File → Export/Email Matches** feature that writes `.MXP`, a
+   plain, fully documented `Key=Value` text format (`MXP Format.doc`),
+   which is what's actually ingested. `mxp_parser.py` parses `.MXP`
+   into the same internal shape `Scorecard` expects, exactly like
+   `crichq_pdf.py` does for CricHQ PDFs — see "Modules" above for what
+   it does and does not model (the `fow`/`fowpos` fields turned out not
+   to be trustworthy fall-of-wickets data — verified, not assumed).
 
-   What actually shipped is `mxp_parser.py`, parsing the app's own
-   **File → Export/Email Matches** output (`.MXP` — plain, fully
-   documented `Key=Value` text, see `MXP Format.doc`) into the same
-   internal shape `Scorecard` expects, exactly like `crichq_pdf.py` does
-   for CricHQ PDFs. Validated end to end against the club's complete
-   real archive (`ELPM2018_all_matches.mxp`, 304 matches, 2005-04-23 to
-   2018-07-21): zero foreign-key violations, and batting/bowling figures
-   for the bundled Bodyline Test demo data match real cricket history
-   exactly (Larwood 5/96, McCabe's 187\*, all five 1932-33 Test results).
-   See "Modules" above for what the parser does and does not model (the
-   `fow`/`fowpos` fields turned out not to be trustworthy fall-of-wickets
-   data — verified, not assumed).
+   Validated end to end against the club's complete real archive
+   (`ELPM2018_all_matches.mxp`, 304 matches, 2005-04-23 to 2018-07-21):
+   zero foreign-key violations, and batting/bowling figures for the
+   bundled Bodyline Test demo data match real cricket history exactly
+   (Larwood 5/96, McCabe's 187\*, all five 1932-33 Test results).
 
-   Getting there required reverse-engineering-adjacent detective work
-   more than binary parsing: the CricketStatz `.exe` installers
-   (`cstatz05.exe`/`cstatz10.exe`/`cricketstatz11.exe`) run under Wine
-   (wine32/wine64 + a Wine virtual desktop — needed for the custom-drawn
-   VB6 popups/menus to render at all; without one they paint solid
-   black), registered with a purchased club-wide license, opening each
-   of the four `.csd` backups in the repo in turn and using File →
-   Export/Email Matches. The 2018 archive specifically needed
-   `cricketstatz11.exe` (build 11.2.49) — CricketStatz refuses to open a
-   file newer than the installed version, and `ELPM2018.csd`'s version
-   tag (`"11  4\0"`, format version **11**) was newer than the first
-   installer tried (10.5.1, format version 10-era, matching the
-   `"2005\x04\0"` tag in the installer's own bundled `sample.csd`).
-   Registering v11 with the same code that worked for v10 failed ("still
-   unregistered" — may need a v11-specific code), but that turned out not
-   to matter: opening and exporting existing data works fine in trial
-   mode; the 10-match limit only blocks *entering new* matches. The
-   v11 installer's own version-detection dialog (uninstalling 10.5.1
-   first) also isn't always raised above the main window — easy to
-   mistake for a hang.
-
-   The raw-binary mapping below is now superseded (`.MXP` covers
-   everything needed) but kept as a record of what was found, in case a
-   `.csd` ever needs reading without the app available:
-     - A **player table** starting at byte offset `0xbb0`, fixed
-       **648-byte records**, each holding a display name (e.g. `"F Daly"`),
-       separate padded surname/forename fields (`"Daly"` / `"Franny"`),
-       flag bytes, and reserved space — around 1,677 record slots (many
-       blank/unused).
-     - Immediately after it, a second table of short sequential records
-       (record-id followed by several int16 fields) — likely per-player
-       career aggregates (batting/bowling totals) keyed by player index.
-     - Further tables (matches, innings) are expected later in the file
-       and still need mapping.
-     - The first bytes of the file are a version tag: `ELPM2018.csd` starts
-       `"11  4\0"` (format version **11**), vs. `"2005\x04\0"` in the
-       installer's bundled `sample.csd` (format version 2005). The
-       CricketStatz app refuses to open a file newer than itself.
+   Getting the export required reverse-engineering-adjacent detective
+   work more than binary parsing, worth keeping a note of in case
+   another `.csd` ever turns up: the CricketStatz `.exe` installers
+   (`cstatz05.exe`/`cstatz10.exe`/`cricketstatz11.exe`, all in the repo)
+   run under Wine (wine32/wine64 + a Wine virtual desktop — needed for
+   the custom-drawn VB6 popups/menus to render at all; without one they
+   paint solid black), registered with a purchased club-wide license,
+   opening each `.csd` backup in turn and using File → Export/Email
+   Matches. `ELPM2018.csd` specifically needed `cricketstatz11.exe`
+   (build 11.2.49) — CricketStatz refuses to open a file newer than the
+   installed version, and its version tag (`"11  4\0"`, format version
+   **11**) was newer than the first installer tried (10.5.1, format
+   version 10-era, matching the `"2005\x04\0"` tag in that installer's
+   own bundled `sample.csd`). Registering v11 with the same code that
+   worked for v10 failed ("still unregistered" — may need a
+   v11-specific code), but that turned out not to matter: opening and
+   exporting existing data works fine in trial mode; the 10-match limit
+   only blocks *entering new* matches. The v11 installer's own
+   version-detection dialog (uninstalling 10.5.1 first) also isn't
+   always raised above the main window — easy to mistake for a hang.
 
 4. **Reconciliation layer** — *Proof of concept done for players
    (`reconcile.py`); automatic matching, and club/team reconciliation,
