@@ -256,7 +256,10 @@ remains.
   a different kind of work to the other three parsers.
 - Formatted scorecard export (image/PDF) for printing or framing.
 - Social-media formatting for player performances and weekend results.
-- Any CLI/UI entry point — everything today is a library.
+- Any CLI/UI entry point — everything today is a library, including the
+  Play-Cricket sync itself (`playcricket_api.py`/`playcricket_database.py`
+  have no `__main__` — see "Maintaining the database" above for the
+  snippet a `sync_playcricket.py` wrapper would replace).
 
 ## Basic usage (verifying progress in ipython)
 
@@ -445,6 +448,140 @@ conn.execute("PRAGMA foreign_key_check").fetchall()   # should always be []
 
 Delete `demo.sqlite` and re-run steps 1/5 any time to rebuild from scratch —
 nothing in the pipeline is destructive to the source JSON/PDF/`.MXP` files.
+
+## Maintaining the database
+
+`demo.sqlite` above is a throwaway name for the walkthrough. In real use
+there's one persistent file — `playcricket_stats.sqlite` (or whatever you
+call it) — that every query in this project reads from, built once and
+then kept up to date rather than rebuilt from scratch each time. The two
+source *types* need completely different maintenance rhythms, because one
+is closed and one isn't:
+
+### Archive sources (CricHQ, CricketStatz) — import once, then leave alone
+
+`crichq/ALL_CRICHQ_SCORECARDS.pdf` and `cricketstatz/ELPM2018_all_matches.mxp`
+describe matches that have already happened and been fully scored — they
+are not going to change. Play-Cricket's own scorecards *can* be edited
+after the fact (that's exactly why the live source needs re-syncing, see
+below); a CricHQ PDF or a CricketStatz export is a static snapshot someone
+generated once and isn't going to be regenerated.
+
+This is why `insert_match()` writes with
+`ON CONFLICT(source, source_match_id) DO NOTHING` (`sqlite_store.py`): a
+match already in the database, from a given source, is never overwritten.
+Concretely, this means:
+
+- **Re-running `crichq_pdf.py`/`mxp_parser.py` against a file you've
+  already ingested is always a safe no-op.** Nothing duplicates, nothing
+  changes. There's no harm in doing it "just in case" — you'll never need
+  to, but it won't corrupt anything if you do.
+- **You only need to run them again when there's a genuinely new file** —
+  another old CricHQ PDF turns up, another `.csd` backup gets found, etc.
+  — or **after a parser bug fix you want reflected in already-loaded
+  data**. `ON CONFLICT DO NOTHING` means a bugfix re-import *won't*
+  update rows already sitting in the database, so that second case needs
+  the old rows removed first:
+  `DELETE FROM matches WHERE source = 'crichq_pdf'` (or `'cricketstatz'`)
+  before re-running the ingestion script — `ON DELETE CASCADE` on
+  `innings`/`batting_innings`/`bowling_innings`/`match_appearances` cleans
+  up everything downstream of that match automatically. There's no CLI
+  flag for this today; it's a manual SQL statement.
+- Once ingested (and reconciled, see below, for any player that needs it),
+  an archive source needs **no ongoing maintenance at all**. That's the
+  whole point of it being an archive.
+
+The one live caveat right now: `crichq/ALL_CRICHQ_SCORECARDS.pdf` can't
+actually be imported yet at all — see "Sample data" and the roadmap for
+the `get_performances()` crash blocking it. Once that's fixed, the CricHQ
+side follows the same "import once, done" model as CricketStatz already
+does.
+
+### Play-Cricket — the one source that actually needs re-syncing
+
+This is the only source still generating new matches — new fixtures get
+added and scored throughout the season, and Play-Cricket lets scorers edit
+a scorecard after the original result was entered (which is exactly what
+the API's `last_updated` field, and `sync_season()`'s comparison against
+it, exist to detect). Keeping this source current is a two-step,
+recurring job — pull the latest from the API into the local JSON cache,
+then rebuild that source's rows in the SQLite store from the refreshed
+cache:
+
+```python
+from playcricket_api import PlayCricketAPI
+from playcricket_database import PlayCricketDatabase
+
+api = PlayCricketAPI(site_id=9653)   # ELPMCC's Play-Cricket site id
+# api_key comes from the PLAY_CRICKET_API_KEY env var by default,
+# or pass api_key="..." explicitly here instead
+
+db = PlayCricketDatabase(api=api, filename="playcricket_2026.json")
+db.sync_season(2026)   # fetches new/changed matches, saves the JSON cache
+```
+
+```bash
+python3 sqlite_store.py --json-db playcricket_2026.json --sqlite-db playcricket_stats.sqlite
+```
+
+(`playcricket_2026.json` is the name already in the repo — despite the
+name, one JSON cache file can hold every season, keyed internally by
+season number; see the backfill loop below. There's nothing 2026-specific
+about the file format, only the current filename.)
+
+`sync_season()` always requests the current match list (one API call) but
+only re-downloads match *detail* for matches that are new, changed
+(`last_updated` moved on), or incomplete locally — so a routine re-sync is
+cheap regardless of how large the season gets. `sqlite_store.py`'s rebuild
+step makes no API calls at all: it deletes and reinserts every
+`play_cricket` match from whatever's currently in the JSON cache, so it's
+safe and cheap to run after every sync, every time.
+
+**To get the club's full Play-Cricket history**, not just the current
+season, call `sync_season()` once per season, back to whenever ELPMCC
+started using Play-Cricket:
+
+```python
+for season in range(2018, 2027):   # adjust the start year to when it began
+    db.sync_season(season)
+```
+
+Older seasons won't have `last_updated` changes to pick up, so this is a
+one-time backfill — after that, only the current season needs a routine
+re-sync (a scheduled job, run manually before a stats update, etc. —
+nothing in this project schedules it automatically yet, see "Not built
+yet"/roadmap item 8).
+
+**Directly answering "do I just run the API-connect and database
+files?"**: not quite as they stand — `playcricket_api.py` and
+`playcricket_database.py` are libraries with no CLI entry point (only
+`sqlite_store.py` has one, and it deliberately never touches the API — see
+its own module docstring). The snippet above is what running them
+actually looks like today. A small `sync_playcricket.py` wrapping both
+steps into one command (`python3 sync_playcricket.py --season 2026`)
+would be a natural, easy addition if this becomes a routine task —
+not built yet, flagged in "Not built yet" below rather than assumed.
+
+### Reconciliation is a separate, occasional pass
+
+`reconcile.py` (or `SQLiteStore.merge_players()`) only needs re-running
+when a **new** source is ingested for the first time, or a freshly-added
+archive file introduces a player who needs merging into an existing
+identity. A routine Play-Cricket re-sync doesn't need it re-applied:
+`player_source_ids` permanently remembers which source ids already point
+at which canonical player, so a player merged once stays merged across
+every future sync of a source already known to the database.
+
+### If in doubt: everything here is safely rebuildable from scratch
+
+Every step above is idempotent and none of them mutate the source JSON/
+PDF/`.MXP`/`.csd` files or `PLAYER_MERGES` — only the derived `.sqlite`
+file. So if the database ever ends up in a state you don't trust, deleting
+it and re-running ingestion (archives) + a fresh sync (Play-Cricket) +
+`reconcile.py`, in that order, always gets back to the same result. The
+`.sqlite` file itself doesn't need to be committed to version control —
+treat it as a derived build artifact, the same way `demo.sqlite` is
+throughout the walkthrough above, and keep it out of git.
 
 ## Roadmap
 
