@@ -355,6 +355,46 @@ conn.execute("PRAGMA foreign_key_check").fetchall()   # should always be []
 Delete `demo.sqlite` and re-run steps 1/4 any time to rebuild from scratch —
 nothing in the pipeline is destructive to the source JSON/PDF files.
 
+### 6. Get one player's career record across sources
+
+Cross-source player reconciliation isn't automated (see "Not built yet") —
+each source creates its own player the first time it sees a name, so the
+same real person can show up as two different `player_id`s (e.g. Play-Cricket's
+"Ian Wade" and CricHQ's "I Wade") until you tell the store they're the same
+person. `find_players()` / `merge_players()` on `SQLiteStore` do that
+manual linking step, after which `career_stats()` covers every source with
+no further work:
+
+```python
+from sqlite_store import SQLiteStore
+from sqlite_queries import career_stats
+
+store = SQLiteStore("demo.sqlite")
+
+store.find_players("Wade")
+# [{'player_id': 5, 'known_as': 'Ian Wade', 'sources': [('play_cricket', '6216362')]},
+#  {'player_id': 553, 'known_as': 'I Wade', 'sources': [('crichq_pdf', 'I Wade')]}, ...]
+
+store.merge_players(keep_player_id=5, merge_player_id=553)   # same person -> one record
+
+career_stats(store.conn, elpmcc_only=False).query("player_id == 5")
+# games_played 13, runs 348, catches 6 -- both sources combined
+```
+
+`merge_players()` only touches the derived `.sqlite` file (re-points every
+`player_source_ids`/`batting_innings`/`bowling_innings`/`match_appearances`
+row from the duplicate onto the one you keep, then deletes the duplicate) —
+nothing about the source JSON/PDF changes, so a wrong merge is always
+recoverable by deleting the `.sqlite` file and rebuilding. This is the tool
+to reach for as more CricHQ PDFs get imported and more of these split
+identities turn up.
+
+**CricketStatz is not part of this yet.** No `.csd` parser has been written
+— roadmap item 3 has only mapped the binary format's table layout so far,
+not built an ingester. A "combined" career record today can only draw on
+whatever's actually been imported (Play-Cricket + CricHQ); it can't include
+CricketStatz data until that ingestion exists.
+
 ## Roadmap
 
 1. **Data foundation** — *Done.* SQLite store built (`schema.sql` /
@@ -367,8 +407,12 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
    (`sqlite_queries.py`) built and verified against the old pandas pipeline,
    which has now been retired (`player_performances.py`,
    `multi_player_stats.py`, and the redundant query methods on
-   `PlayCricketDatabase` — see "Retired" above). Still to do: the
-   cross-source reconciliation pass itself (see "Not built yet").
+   `PlayCricketDatabase` — see "Retired" above). `SQLiteStore.find_players()`/
+   `merge_players()` now give a manual reconciliation path (see Basic usage
+   step 6) — used to unify Ian Wade's Play-Cricket and CricHQ identities
+   into one career record. Still to do: an automatic reconciliation pass
+   (see "Not built yet") — the manual tool doesn't scale to every player
+   across ~20 more CricHQ PDFs on its own.
 2. **CricHQ PDF ingestion** — *Done.* `crichq_pdf.py` parses CricHQ's "Full
    Scorecard Report" PDF export into the same internal shape `Scorecard`
    uses, validated end to end against `ELPM 1st XI 2019.pdf` (23 matches,
@@ -380,52 +424,22 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
    pandas whenever it shares a column with strings — which the old
    `value in (None, "")` checks couldn't catch, since `NaN` compares
    unequal to everything, including itself. Fixed once, centrally, so any
-   future source hits the same safety net.
-3. **CricketStatz `.csd` ingestion** — *Done, via `.MXP` rather than the
-   raw binary format.* `.csd` is a proprietary multi-table binary
-   flat-file (no dBase/Paradox/SQLite header — tables are just
-   concatenated fixed-length records), written by a VB6 desktop app
-   (CricketStatz, Red Axe Pty Ltd) using fixed-length random-access record
-   I/O — which is why the player table (partially mapped below, now
-   superseded) is uniform 648-byte records.
-
-   What actually shipped is `mxp_parser.py`, parsing the app's own
-   **File → Export/Email Matches** output (`.MXP` — plain, fully
-   documented `Key=Value` text, see `MXP Format.doc`) into the same
-   internal shape `Scorecard` expects, exactly like `crichq_pdf.py` does
-   for CricHQ PDFs. Validated end to end against the club's complete
-   real archive (`ELPM2018_all_matches.mxp`, 304 matches, 2005-04-23 to
-   2018-07-21): zero foreign-key violations, and batting/bowling figures
-   for the bundled Bodyline Test demo data match real cricket history
-   exactly (Larwood 5/96, McCabe's 187\*, all five 1932-33 Test results).
-   See "Modules" above for what the parser does and does not model (the
-   `fow`/`fowpos` fields turned out not to be trustworthy fall-of-wickets
-   data — verified, not assumed).
-
-   Getting there required reverse-engineering-adjacent detective work
-   more than binary parsing: the CricketStatz `.exe` installers
-   (`cstatz05.exe`/`cstatz10.exe`/`cricketstatz11.exe`) run under Wine
-   (wine32/wine64 + a Wine virtual desktop — needed for the custom-drawn
-   VB6 popups/menus to render at all; without one they paint solid
-   black), registered with a purchased club-wide license, opening each
-   of the four `.csd` backups in the repo in turn and using File →
-   Export/Email Matches. The 2018 archive specifically needed
-   `cricketstatz11.exe` (build 11.2.49) — CricketStatz refuses to open a
-   file newer than the installed version, and `ELPM2018.csd`'s version
-   tag (`"11  4\0"`, format version **11**) was newer than the first
-   installer tried (10.5.1, format version 10-era, matching the
-   `"2005\x04\0"` tag in the installer's own bundled `sample.csd`).
-   Registering v11 with the same code that worked for v10 failed ("still
-   unregistered" — may need a v11-specific code), but that turned out not
-   to matter: opening and exporting existing data works fine in trial
-   mode; the 10-match limit only blocks *entering new* matches. The
-   v11 installer's own version-detection dialog (uninstalling 10.5.1
-   first) also isn't always raised above the main window — easy to
-   mistake for a hang.
-
-   The raw-binary mapping below is now superseded (`.MXP` covers
-   everything needed) but kept as a record of what was found, in case a
-   `.csd` ever needs reading without the app available:
+   future source hits the same safety net. Two more identity bugs turned up
+   while building the Ian Wade career-record query above and are fixed too:
+   (a) the same pandas-NaN-coercion trap also turns a *present* whole-number
+   Play-Cricket id into `"6216362.0"` instead of `"6216362"` whenever that
+   id's column has a missing value on any other row — silently splitting
+   one real Play-Cricket player into two canonical players; `_clean_text()`
+   now normalises whole-number floats back to plain integers; (b) CricHQ's
+   `"run out (A/B)"` two-fielder credit was being stored as one bogus
+   compound player named `"A/B"` — now credits the first-named fielder only
+   (matching Play-Cricket's own one-fielder-per-dismissal data model) and
+   correctly adds them to the team sheet.
+3. **Binary archive ingestion (`.csd` mapping)** — Reverse-engineer the
+   CricketStatz `.csd` format and read it into the same internal shape.
+   `.csd` is a proprietary multi-table binary flat-file (no dBase/Paradox/
+   SQLite header — tables are just concatenated fixed-length records).
+   Mapped so far, from `ELPM2018.csd`:
      - A **player table** starting at byte offset `0xbb0`, fixed
        **648-byte records**, each holding a display name (e.g. `"F Daly"`),
        separate padded surname/forename fields (`"Daly"` / `"Franny"`),
