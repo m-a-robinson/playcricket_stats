@@ -128,6 +128,12 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   match appearances, zero unmatched lines, zero foreign-key violations.
 - `ELPM2018.csd` — a CricketStatz database export, used as reference
   material for the binary-format mapping work below.
+- `bodyline_sample.mxp` — a Cricket Statz `.MXP` export (via File →
+  Export/Email Matches, run under Wine), covering all 5 matches of the
+  bundled `sample.csd` demo database ("The Bodyline Test Series"). Reference
+  material for the plain-text export format described below — a much
+  easier ingestion path than the raw binary once a compatible version can
+  open a given `.csd`.
 
 ### Not built yet
 
@@ -298,10 +304,12 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
    `value in (None, "")` checks couldn't catch, since `NaN` compares
    unequal to everything, including itself. Fixed once, centrally, so any
    future source hits the same safety net.
-3. **Binary archive ingestion (`.csd` mapping)** — Reverse-engineer the
-   CricketStatz `.csd` format and read it into the same internal shape.
-   `.csd` is a proprietary multi-table binary flat-file (no dBase/Paradox/
-   SQLite header — tables are just concatenated fixed-length records).
+3. **Binary archive ingestion (`.csd` mapping)** — Read CricketStatz `.csd`
+   files into the same internal shape. `.csd` is a proprietary multi-table
+   binary flat-file (no dBase/Paradox/SQLite header — tables are just
+   concatenated fixed-length records), written by a VB6 desktop app
+   (CricketStatz, Red Axe Pty Ltd) using fixed-length random-access record
+   I/O — which is why the player table is uniform 648-byte records.
    Mapped so far, from `ELPM2018.csd`:
      - A **player table** starting at byte offset `0xbb0`, fixed
        **648-byte records**, each holding a display name (e.g. `"F Daly"`),
@@ -313,9 +321,39 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
        career aggregates (batting/bowling totals) keyed by player index.
      - Further tables (matches, innings) are expected later in the file
        and still need mapping.
-   Remaining work: map every table and field, then write a parser that
-   emits the same internal scorecard/player shape the other two sources
-   use.
+     - The first bytes of the file are a version tag: `ELPM2018.csd` starts
+       `"11  4\0"` (format version **11**), vs. `"2005\x04\0"` in the
+       installer's bundled `sample.csd` (format version 2005). The
+       CricketStatz app refuses to open a file newer than itself.
+
+   **A much better path than finishing the raw-binary mapping**: the actual
+   CricketStatz app (`cstatz05.exe`/`cstatz10.exe` installers, added to the
+   repo) runs under Wine and has a built-in **File → Export/Email
+   Matches** feature that writes a `.MXP` file — plain, fully
+   self-describing `Key=Value` text, not binary. See
+   `bodyline_sample.mxp` for a real example (exported from the bundled
+   `sample.csd` under build 10.5.1, "Club Edition", after registering with
+   a purchased club-wide license). Per match, it gives: `Ground`/`Grade`/
+   `Club1`/`Club2`/`Team1`/`Team2`/`Captain`/`Keeper`/`Umpires`/`Result`,
+   then per innings a `Batsman1..11` line
+   (`playerId;name;dismissalCode;fielderId;fielderName;bowlerId;bowlerName;
+   runs;teamScoreAtFall;wicketNumber`), a `Bowler1..N` line
+   (`playerId;name;overs;maidens;wickets;runsConceded`), and extras
+   (`LegByes`/`Byes`/`Wides`/`NoBalls`/`Penalties`).
+
+   The catch: the installed app tops out at build 10.5.1 (format version
+   10-era, "2005"-tagged files), so it can open `sample.csd` but not
+   `ELPM2018.csd` (format version 11) — a newer CricketStatz installer is
+   needed to export the club's actual archive this way. If one can't be
+   found, the raw-binary mapping above is the fallback, now with a much
+   better idea of the field shapes to expect (dismissal codes, fall-of-
+   wicket, overs-as-decimal bowling figures) from having seen the real
+   export schema.
+
+   Remaining work: get a compatible (v11+) CricketStatz build to export
+   `ELPM2018.csd` via `.MXP`, then write a parser for the `.MXP` format
+   (or, failing that, finish the raw-binary table mapping) that emits the
+   same internal scorecard/player shape the other two sources use.
 4. **Reconciliation layer** — Merge the three sources per match/player/club/
    team with conflict detection and a clear precedence rule (e.g.
    Play-Cricket wins on overlap, archives fill gaps). Player matching is the
