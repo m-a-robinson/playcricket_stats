@@ -32,6 +32,7 @@ PlayCricketDatabase   (local JSON cache + sync)
 Scorecard              (one match -> batting/bowling/partnerships/FoW)
       ^
       |                CricHQ PDF -> crichq_pdf.py (parses to the same shape)
+      |                CricketStatz .MXP -> mxp_parser.py (same shape)
       |
 SQLiteStore            (schema.sql + sqlite_store.py: the normalised store)
       |
@@ -82,6 +83,33 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   canonical player for now (see "Not built yet" below). Run
   `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
   more PDFs.
+- **`mxp_parser.py`** — Parses CricketStatz `.MXP` exports (File →
+  Export/Email Matches in the desktop app — see the roadmap below) into
+  the same match-detail shape `Scorecard` expects, with
+  `source="cricketstatz"`. Unlike the other two sources, `.MXP` is a
+  plain, fully-documented `Key=Value` text format (`MXP Format.doc`) and
+  carries real numeric ids for players/clubs/teams/grounds, so identity
+  is stronger here than the CricHQ PDF's name-derived ids — reused
+  directly as source ids. Handles the CricketStatz `howout` code
+  vocabulary (18 dismissal types, including caught-and-bowled and
+  caught-behind, each with their own fielder/bowler attribution rules)
+  and anonymous ("id 0, name `?`") opposition batting performances,
+  which are kept as real batting rows under a match/position-scoped
+  synthetic id rather than merged into one shared "unknown player" (see
+  the module docstring). Deliberately does **not** attempt to derive
+  fall-of-wickets from the batsman rows' `fow`/`fowpos` fields — checked
+  against the bundled Bodyline Test demo data and they don't reliably
+  correspond to an increasing wicket sequence, matching the format doc's
+  own caveat that they aren't necessarily tied to the batsman on that
+  row. Validated against the club's full real archive (304 matches,
+  `ELPM2018_all_matches.mxp`): zero foreign-key violations, batting/
+  bowling figures cross-checked against the bundled historical demo data
+  match real cricket records exactly (Larwood 5/96, McCabe's 187\*, and
+  all five 1932-33 Bodyline Test results), and career stats for a known
+  player (`I Wade`) come back as a plausible multi-season all-rounder
+  record end to end through the existing `sqlite_queries.py` layer. Run
+  `python3 mxp_parser.py <mxp-file>... --sqlite-db <path>` to ingest one
+  or more `.MXP` exports.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
@@ -159,7 +187,6 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
 
 ### Not built yet
 
-- Binary-archive-format reader/converter.
 - Reconciliation/merge logic across the three sources (dedup, conflict
   resolution, player/club/team identity matching for sources with no
   Play-Cricket id to anchor on). The `*_source_ids` mapping tables are ready
@@ -286,7 +313,35 @@ stats.career().shape[0]                                    # 116   -- ELPMCC onl
 stats.career(elpmcc_only=False).shape[0]                   # 736   -- lift the filter to see everyone
 ```
 
-### 5. Poke at the raw tables directly
+### 5. Ingest a CricketStatz `.MXP` export and check it landed correctly
+
+```bash
+python3 mxp_parser.py ELPM2018_all_matches.mxp --sqlite-db demo.sqlite
+```
+
+```
+Parsing ELPM2018_all_matches.mxp ...
+  304 matches found in this file.
+Done. Played: 304, Abandoned: 0
+```
+
+This source's own club name is `"East Lancs Paper Mill"` (no `"CC"` —
+identity reconciliation across sources, see the roadmap, hasn't run
+yet), so pass it explicitly to see the club's own players rather than
+the default `ELPMCC_NAME`:
+
+```python
+conn = sqlite3.connect("demo.sqlite")
+stats = SQLPlayerStats(conn, elpmcc_name="East Lancs Paper Mill")
+
+conn.execute("SELECT source, COUNT(*) FROM matches GROUP BY source").fetchall()
+# [('cricketstatz', 304), ('crichq_pdf', 23), ('play_cricket', 70)]
+
+stats.top_runs(top_n=10)
+stats.top_wickets(top_n=10)
+```
+
+### 6. Poke at the raw tables directly
 
 For anything the query helpers don't cover yet, plain SQL against `demo.sqlite`
 works — the schema is in `schema.sql`:
@@ -326,13 +381,51 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
    `value in (None, "")` checks couldn't catch, since `NaN` compares
    unequal to everything, including itself. Fixed once, centrally, so any
    future source hits the same safety net.
-3. **Binary archive ingestion (`.csd` mapping)** — Read CricketStatz `.csd`
-   files into the same internal shape. `.csd` is a proprietary multi-table
-   binary flat-file (no dBase/Paradox/SQLite header — tables are just
+3. **CricketStatz `.csd` ingestion** — *Done, via `.MXP` rather than the
+   raw binary format.* `.csd` is a proprietary multi-table binary
+   flat-file (no dBase/Paradox/SQLite header — tables are just
    concatenated fixed-length records), written by a VB6 desktop app
    (CricketStatz, Red Axe Pty Ltd) using fixed-length random-access record
-   I/O — which is why the player table is uniform 648-byte records.
-   Mapped so far, from `ELPM2018.csd`:
+   I/O — which is why the player table (partially mapped below, now
+   superseded) is uniform 648-byte records.
+
+   What actually shipped is `mxp_parser.py`, parsing the app's own
+   **File → Export/Email Matches** output (`.MXP` — plain, fully
+   documented `Key=Value` text, see `MXP Format.doc`) into the same
+   internal shape `Scorecard` expects, exactly like `crichq_pdf.py` does
+   for CricHQ PDFs. Validated end to end against the club's complete
+   real archive (`ELPM2018_all_matches.mxp`, 304 matches, 2005-04-23 to
+   2018-07-21): zero foreign-key violations, and batting/bowling figures
+   for the bundled Bodyline Test demo data match real cricket history
+   exactly (Larwood 5/96, McCabe's 187\*, all five 1932-33 Test results).
+   See "Modules" above for what the parser does and does not model (the
+   `fow`/`fowpos` fields turned out not to be trustworthy fall-of-wickets
+   data — verified, not assumed).
+
+   Getting there required reverse-engineering-adjacent detective work
+   more than binary parsing: the CricketStatz `.exe` installers
+   (`cstatz05.exe`/`cstatz10.exe`/`cricketstatz11.exe`) run under Wine
+   (wine32/wine64 + a Wine virtual desktop — needed for the custom-drawn
+   VB6 popups/menus to render at all; without one they paint solid
+   black), registered with a purchased club-wide license, opening each
+   of the four `.csd` backups in the repo in turn and using File →
+   Export/Email Matches. The 2018 archive specifically needed
+   `cricketstatz11.exe` (build 11.2.49) — CricketStatz refuses to open a
+   file newer than the installed version, and `ELPM2018.csd`'s version
+   tag (`"11  4\0"`, format version **11**) was newer than the first
+   installer tried (10.5.1, format version 10-era, matching the
+   `"2005\x04\0"` tag in the installer's own bundled `sample.csd`).
+   Registering v11 with the same code that worked for v10 failed ("still
+   unregistered" — may need a v11-specific code), but that turned out not
+   to matter: opening and exporting existing data works fine in trial
+   mode; the 10-match limit only blocks *entering new* matches. The
+   v11 installer's own version-detection dialog (uninstalling 10.5.1
+   first) also isn't always raised above the main window — easy to
+   mistake for a hang.
+
+   The raw-binary mapping below is now superseded (`.MXP` covers
+   everything needed) but kept as a record of what was found, in case a
+   `.csd` ever needs reading without the app available:
      - A **player table** starting at byte offset `0xbb0`, fixed
        **648-byte records**, each holding a display name (e.g. `"F Daly"`),
        separate padded surname/forename fields (`"Daly"` / `"Franny"`),
@@ -348,44 +441,6 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
        installer's bundled `sample.csd` (format version 2005). The
        CricketStatz app refuses to open a file newer than itself.
 
-   **A much better path than finishing the raw-binary mapping**: the actual
-   CricketStatz app (`cstatz05.exe`/`cstatz10.exe` installers, added to the
-   repo, run under Wine — wine32/wine64 + a Wine virtual desktop were
-   needed for the custom-drawn VB6 popups/menus to render at all; without
-   a virtual desktop they paint solid black) has a built-in **File →
-   Export/Email Matches** feature that writes a `.MXP` file — plain, fully
-   self-describing `Key=Value` text, not binary, and fully documented in
-   `MXP Format.doc` (the official Red Axe spec — see "Sample data" above
-   for the field list and dismissal/result codes). Confirmed against real
-   data, not just the bundled demo: with the app registered (club-wide
-   license), both `ELPM2009 - backup 2015.csd` and `ELPM2015_backup
-   20170903.csd` (format version 10) opened directly and exported cleanly
-   via File → Export/Email Matches — 169 and 274 matches respectively,
-   see `ELPM2005-2015_all_matches.mxp` / `ELPM2009-2017_all_matches.mxp`
-   in "Sample data" above.
-
-   The catch, until now: the installed app topped out at build 10.5.1
-   (format version 10-era), so it couldn't open `ELPM2018.csd` (format
-   version 11) — CricketStatz refuses to open a file newer than itself.
-   **Resolved**: `cricketstatz11.exe` (Cricket Statz build 11.2.49,
-   installed under Wine over the top of 10.5.1 — the installer detects
-   the older version and uninstalls it first, prompting via a dialog that
-   isn't always raised above the main window, easy to miss) opens
-   `ELPM2018.csd` directly. File → Export/Email Matches on all 304
-   matches produced `ELPM2018_all_matches.mxp` — the club's **complete**
-   real archive, 2005-04-23 to 2018-07-21, exported cleanly (304
-   `Record=Match`/`Endmatch=True` pairs, no errors). Registration under
-   v11 with the same club-wide code that worked for v10 failed ("still
-   unregistered" — may need a v11-specific code), but that turned out not
-   to matter: opening and exporting existing data works fine in trial
-   mode, same as v10; the 10-match limit only blocks *entering new*
-   matches.
-
-   Remaining work: write a parser for the `.MXP` format that emits the
-   same internal scorecard/player shape the other two sources use (the
-   raw-binary table mapping above is no longer the critical path, now
-   that every archive we have opens and exports cleanly through the real
-   app).
 4. **Reconciliation layer** — Merge the three sources per match/player/club/
    team with conflict detection and a clear precedence rule (e.g.
    Play-Cricket wins on overlap, archives fill gaps). Player matching is the
