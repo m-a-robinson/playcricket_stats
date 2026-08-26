@@ -127,13 +127,15 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   `crichq_pdf.py`. Ingests cleanly: 295 batting rows, 147 bowling rows, 348
   match appearances, zero unmatched lines, zero foreign-key violations.
 - `ELPM2018.csd` — the club's live CricketStatz database export, format
-  version **11**. Not yet openable by any installer we have (see below) —
-  reference material for the raw-binary mapping work only, for now.
+  version **11**. Opens under CricketStatz build 11.2.49 (`cricketstatz11.exe`,
+  installed under Wine) — see `ELPM2018_all_matches.mxp` below for the
+  full export.
 - `ELPM2009 - backup 2015.csd` / `ELPM2015_backup 20170903.csd` — earlier
-  club backups, format version **10**, openable by the installed 10.5.1
-  build. Both are real ELPMCC archive data (not demo data): 169 matches
+  club backups, format version **10**, openable by CricketStatz 10.5.1.
+  Both are real ELPMCC archive data (not demo data): 169 matches
   (2005-04-23 to 2015-04-25) and 274 matches (2005-04-23 to 2017-09-02)
-  respectively — the 2017 backup is a superset of the 2015 one.
+  respectively — the 2017 backup is a superset of the 2015 one, and
+  `ELPM2018.csd` a superset of that again.
 - `MXP Format.doc` — the official Red Axe/CricketStatz `.MXP` export
   format specification (a Word doc; read with `antiword` — LibreOffice's
   headless converter failed to load it in this environment for unclear
@@ -146,10 +148,12 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
 - `bodyline_sample.mxp` — a Cricket Statz `.MXP` export (via File →
   Export/Email Matches, run under Wine), covering all 5 matches of the
   bundled `sample.csd` demo database ("The Bodyline Test Series").
-- `ELPM2005-2015_all_matches.mxp` / `ELPM2009-2017_all_matches.mxp` — full
-  `.MXP` exports of the two real club backups above (169 and 274 matches
-  respectively, verified by counting `Record=Match`/`Endmatch=True` pairs
-  in each file). This is real ELPMCC scorecard history 2005-2017 in the
+- `ELPM2005-2015_all_matches.mxp` / `ELPM2009-2017_all_matches.mxp` /
+  `ELPM2018_all_matches.mxp` — full `.MXP` exports of the three real club
+  backups above (169, 274, and **304** matches respectively, each
+  verified by counting `Record=Match`/`Endmatch=True` pairs — 304/304 for
+  the full archive, no errors). `ELPM2018_all_matches.mxp` is the
+  complete ELPMCC scorecard history, 2005-04-23 to 2018-07-21, in the
   same plain-text format described below — the actual ingestion target
   for the `.MXP` parser still to be written.
 
@@ -363,17 +367,25 @@ nothing in the pipeline is destructive to the source JSON/PDF files.
    The catch, until now: the installed app topped out at build 10.5.1
    (format version 10-era), so it couldn't open `ELPM2018.csd` (format
    version 11) — CricketStatz refuses to open a file newer than itself.
-   `cricketstatz11.exe` has since been added to the repo as a candidate
-   v11 installer; next step is trying it the same way (install under
-   Wine, register, open `ELPM2018.csd`, File → Export/Email Matches) to
-   get the club's actual current archive out.
+   **Resolved**: `cricketstatz11.exe` (Cricket Statz build 11.2.49,
+   installed under Wine over the top of 10.5.1 — the installer detects
+   the older version and uninstalls it first, prompting via a dialog that
+   isn't always raised above the main window, easy to miss) opens
+   `ELPM2018.csd` directly. File → Export/Email Matches on all 304
+   matches produced `ELPM2018_all_matches.mxp` — the club's **complete**
+   real archive, 2005-04-23 to 2018-07-21, exported cleanly (304
+   `Record=Match`/`Endmatch=True` pairs, no errors). Registration under
+   v11 with the same club-wide code that worked for v10 failed ("still
+   unregistered" — may need a v11-specific code), but that turned out not
+   to matter: opening and exporting existing data works fine in trial
+   mode, same as v10; the 10-match limit only blocks *entering new*
+   matches.
 
-   Remaining work: confirm `cricketstatz11.exe` opens `ELPM2018.csd` and
-   export it via `.MXP`, then write a parser for the `.MXP` format (or,
-   failing that, finish the raw-binary table mapping — now with a much
-   better idea of the field shapes to expect, from having seen the real
-   export schema) that emits the same internal scorecard/player shape the
-   other two sources use.
+   Remaining work: write a parser for the `.MXP` format that emits the
+   same internal scorecard/player shape the other two sources use (the
+   raw-binary table mapping above is no longer the critical path, now
+   that every archive we have opens and exports cleanly through the real
+   app).
 4. **Reconciliation layer** — Merge the three sources per match/player/club/
    team with conflict detection and a clear precedence rule (e.g.
    Play-Cricket wins on overlap, archives fill gaps). Player matching is the
