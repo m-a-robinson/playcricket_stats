@@ -158,7 +158,7 @@ to run.
 
 ### 1. Build the SQLite store from the sample Play-Cricket data
 
-This is usually run from the shell, not ipython, since it's a one-shot
+This is usually run from the Terminal, not ipython, since it's a one-shot
 build step:
 
 ```bash
