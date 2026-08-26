@@ -94,7 +94,9 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   when the header's `"vs"` line isn't there (see "Sample data" and the
   roadmap for how this was found). Run
   `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
-  more PDFs.
+  more PDFs; add `--json-out <path>` to also write every parsed match-detail
+  dict to a JSON file — see `crichq/crichq_pdf.json` under "Sample data"
+  below for what this is for.
 - **`mxp_parser.py`** — Parses CricketStatz `.MXP` exports (File →
   Export/Email Matches in the desktop app — see the roadmap below) into
   the same match-detail shape `Scorecard` expects, with
@@ -216,6 +218,23 @@ remains.
   the roadmap for a second, smaller bug (`get_performances()` crashing on a
   match with batting but zero recorded bowling) found once real matches
   started reaching it.
+- `crichq/crichq_pdf.json` — a **permanent, git-tracked backup of
+  `parse_pdf()`'s output** for the file above: all 381 match-detail dicts
+  (Play-Cricket shaped), generated with
+  `python3 crichq_pdf.py crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>
+  --json-out crichq/crichq_pdf.json`. Plays the same role for the CricHQ
+  side that `playcricket_2026.json` plays for Play-Cricket — a parsed,
+  human-readable/greppable cache one layer above the raw source and below
+  SQLite — except with no seasons/versioning wrapper, since the PDF is a
+  closed archive parsed once rather than something synced incrementally.
+  The point isn't just convenience: it means a future change to
+  `crichq_pdf.py`'s regexes shows up as a `git diff` against known-good
+  parsed output, rather than only surfacing (if at all) as silently wrong
+  stats downstream — exactly the failure mode the header-splitting bug
+  above was. Regenerate it (with the same command) any time the PDF is
+  re-parsed after a parser fix; nothing currently reads this file back in
+  (SQLite ingestion still runs directly off the PDF), so it's a backup/diff
+  target today, not (yet) an alternate input path.
 - `cricketstatz/ELPM2018.csd` — the club's live CricketStatz database
   export, format version **11**. Opens under CricketStatz build 11.2.49
   (installed under Wine — the installer itself has since been removed from

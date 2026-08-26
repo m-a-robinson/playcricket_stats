@@ -725,7 +725,9 @@ def parse_pdf(pdf_path):
 if __name__ == "__main__":
 
     import argparse
+    import json
     import sys
+    from datetime import datetime, timezone
 
     from sqlite_store import SQLiteStore
 
@@ -734,6 +736,17 @@ if __name__ == "__main__":
     )
     parser.add_argument("pdf_paths", nargs="+", help="CricHQ PDF file(s) to parse.")
     parser.add_argument("--sqlite-db", default="playcricket_stats.sqlite")
+    parser.add_argument(
+        "--json-out",
+        help=(
+            "Also write every parsed match-detail dict to this JSON file -- "
+            "an indexed, greppable/diffable backup of what the PDF parsed "
+            "to, independent of re-running the regex parser against the "
+            "PDF again. Unlike playcricket_2026.json this has no "
+            "seasons/versioning wrapper: the PDF is a closed archive, "
+            "parsed once, not something synced incrementally."
+        )
+    )
 
     args = parser.parse_args()
 
@@ -741,11 +754,13 @@ if __name__ == "__main__":
 
     total_played = 0
     total_abandoned = 0
+    all_matches = []
 
     for pdf_path in args.pdf_paths:
 
         print(f"Parsing {pdf_path} ...")
         matches = parse_pdf(pdf_path)
+        all_matches.extend(matches)
 
         for match in matches:
 
@@ -765,3 +780,20 @@ if __name__ == "__main__":
     store.close()
 
     print(f"Done. Played: {total_played}, Abandoned: {total_abandoned}")
+
+    if args.json_out:
+
+        with open(args.json_out, "w") as f:
+            json.dump(
+                {
+                    "source": "crichq_pdf",
+                    "source_pdfs": args.pdf_paths,
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "match_count": len(all_matches),
+                    "matches": all_matches
+                },
+                f,
+                indent=2
+            )
+
+        print(f"Wrote {len(all_matches)} matches to {args.json_out}")
