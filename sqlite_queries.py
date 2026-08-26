@@ -30,7 +30,7 @@ MultiPlayerStats):
    match_appearances are untouched -- but aren't wanted as tracked
    "players" with their own career stats/leaderboard entries. By
    default career_stats() only includes players who have ever had a
-   match_appearances row for HOME_CLUB_NAME; pass home_club_only=False
+   match_appearances row for ELPMCC_NAME; pass elpmcc_only=False
    to see everyone (e.g. to check how one specific opposition player
    has fared against this club).
 
@@ -196,14 +196,14 @@ WHERE (
         + COALESCE(field.run_outs, 0) > 0
 )
 AND (
-    :home_club_only = 0
+    :elpmcc_only = 0
     OR EXISTS (
         SELECT 1
-        FROM match_appearances home_ma
-        JOIN teams home_t ON home_t.team_id = home_ma.team_id
-        JOIN clubs home_c ON home_c.club_id = home_t.club_id
-        WHERE home_ma.player_id = p.player_id
-          AND home_c.club_name = :home_club_name
+        FROM match_appearances elpmcc_ma
+        JOIN teams elpmcc_t ON elpmcc_t.team_id = elpmcc_ma.team_id
+        JOIN clubs elpmcc_c ON elpmcc_c.club_id = elpmcc_t.club_id
+        WHERE elpmcc_ma.player_id = p.player_id
+          AND elpmcc_c.club_name = :elpmcc_name
     )
 )
 """
@@ -213,12 +213,12 @@ AND (
 # about ingestion changes) but, by default, career_stats() excludes anyone
 # who has never had a match_appearances row for this club: their stats
 # aren't tracked as a "player record" the way this club's own players are.
-# Pass home_club_only=False to lift the filter (e.g. to look up how a
+# Pass elpmcc_only=False to lift the filter (e.g. to look up how a
 # specific opposition player has fared against this club specifically).
-HOME_CLUB_NAME = "East Lancs Paper Mill CC"
+ELPMCC_NAME = "East Lancs Paper Mill CC"
 
 
-def career_stats(conn, season=None, team_id=None, home_club_only=True, home_club_name=HOME_CLUB_NAME):
+def career_stats(conn, season=None, team_id=None, elpmcc_only=True, elpmcc_name=ELPMCC_NAME):
     """
     Return one row per player with career (or, if team_id is given,
     per-team) batting/bowling/fielding/appearance totals.
@@ -227,8 +227,8 @@ def career_stats(conn, season=None, team_id=None, home_club_only=True, home_club
     player has turned out for -- unlike PlayerPerformances.summary(),
     which always splits a player's totals by team.
 
-    By default (home_club_only=True) only players who have ever
-    appeared for `home_club_name` are included -- opposition players
+    By default (elpmcc_only=True) only players who have ever
+    appeared for `elpmcc_name` are included -- opposition players
     still appear in full within scorecard data (batting_innings,
     bowling_innings, match_appearances), just not as tracked "players"
     with their own career stats/leaderboard entries.
@@ -237,8 +237,8 @@ def career_stats(conn, season=None, team_id=None, home_club_only=True, home_club
     params = {
         "season": int(season) if season is not None else None,
         "team_id": int(team_id) if team_id is not None else None,
-        "home_club_only": 1 if home_club_only else 0,
-        "home_club_name": home_club_name
+        "elpmcc_only": 1 if elpmcc_only else 0,
+        "elpmcc_name": elpmcc_name
     }
 
     return pd.read_sql_query(_CAREER_SQL, conn, params=params)
@@ -259,18 +259,18 @@ class SQLPlayerStats:
     PlayerPerformances.summary()).
     """
 
-    def __init__(self, conn, home_club_only=True, home_club_name=HOME_CLUB_NAME):
+    def __init__(self, conn, elpmcc_only=True, elpmcc_name=ELPMCC_NAME):
         self.conn = conn
-        self.home_club_only = home_club_only
-        self.home_club_name = home_club_name
+        self.elpmcc_only = elpmcc_only
+        self.elpmcc_name = elpmcc_name
 
     # ----------------------------------------------------------
 
-    def career(self, season=None, team_id=None, home_club_only=None):
+    def career(self, season=None, team_id=None, elpmcc_only=None):
         return career_stats(
             self.conn, season=season, team_id=team_id,
-            home_club_only=self.home_club_only if home_club_only is None else home_club_only,
-            home_club_name=self.home_club_name
+            elpmcc_only=self.elpmcc_only if elpmcc_only is None else elpmcc_only,
+            elpmcc_name=self.elpmcc_name
         )
 
     # ----------------------------------------------------------
