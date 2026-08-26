@@ -25,6 +25,15 @@ MultiPlayerStats):
    career_stats() computes fifties/hundreds/double_hundreds/
    five_wicket_hauls/notable_performances directly from the data.
 
+3. Opposition players (from CricHQ PDFs, or any other source) appear
+   fully in scorecard data -- batting_innings, bowling_innings,
+   match_appearances are untouched -- but aren't wanted as tracked
+   "players" with their own career stats/leaderboard entries. By
+   default career_stats() only includes players who have ever had a
+   match_appearances row for HOME_CLUB_NAME; pass home_club_only=False
+   to see everyone (e.g. to check how one specific opposition player
+   has fared against this club).
+
 SQLPlayerStats mirrors MultiPlayerStats' public method names and
 qualification thresholds (same defaults) so it is a like-for-like
 comparison, not a redesign of the leaderboard rules -- only the data
@@ -179,15 +188,37 @@ LEFT JOIN appearances app ON app.player_id = p.player_id
 LEFT JOIN batting_agg bat ON bat.player_id = p.player_id
 LEFT JOIN bowling_agg bowl ON bowl.player_id = p.player_id
 LEFT JOIN fielding_agg field ON field.player_id = p.player_id
-WHERE COALESCE(app.games_played, 0) > 0
-   OR COALESCE(bat.batting_innings, 0) > 0
-   OR COALESCE(bowl.bowling_innings, 0) > 0
-   OR COALESCE(field.catches, 0) + COALESCE(field.stumpings, 0)
+WHERE (
+    COALESCE(app.games_played, 0) > 0
+    OR COALESCE(bat.batting_innings, 0) > 0
+    OR COALESCE(bowl.bowling_innings, 0) > 0
+    OR COALESCE(field.catches, 0) + COALESCE(field.stumpings, 0)
         + COALESCE(field.run_outs, 0) > 0
+)
+AND (
+    :home_club_only = 0
+    OR EXISTS (
+        SELECT 1
+        FROM match_appearances home_ma
+        JOIN teams home_t ON home_t.team_id = home_ma.team_id
+        JOIN clubs home_c ON home_c.club_id = home_t.club_id
+        WHERE home_ma.player_id = p.player_id
+          AND home_c.club_name = :home_club_name
+    )
+)
 """
 
+# The club these career stats are FOR. Opposition players appear fully in
+# scorecards (batting_innings/bowling_innings/match_appearances -- nothing
+# about ingestion changes) but, by default, career_stats() excludes anyone
+# who has never had a match_appearances row for this club: their stats
+# aren't tracked as a "player record" the way this club's own players are.
+# Pass home_club_only=False to lift the filter (e.g. to look up how a
+# specific opposition player has fared against this club specifically).
+HOME_CLUB_NAME = "East Lancs Paper Mill CC"
 
-def career_stats(conn, season=None, team_id=None):
+
+def career_stats(conn, season=None, team_id=None, home_club_only=True, home_club_name=HOME_CLUB_NAME):
     """
     Return one row per player with career (or, if team_id is given,
     per-team) batting/bowling/fielding/appearance totals.
@@ -195,11 +226,19 @@ def career_stats(conn, season=None, team_id=None):
     With no filters this is a TRUE career total across every team the
     player has turned out for -- unlike PlayerPerformances.summary(),
     which always splits a player's totals by team.
+
+    By default (home_club_only=True) only players who have ever
+    appeared for `home_club_name` are included -- opposition players
+    still appear in full within scorecard data (batting_innings,
+    bowling_innings, match_appearances), just not as tracked "players"
+    with their own career stats/leaderboard entries.
     """
 
     params = {
         "season": int(season) if season is not None else None,
-        "team_id": int(team_id) if team_id is not None else None
+        "team_id": int(team_id) if team_id is not None else None,
+        "home_club_only": 1 if home_club_only else 0,
+        "home_club_name": home_club_name
     }
 
     return pd.read_sql_query(_CAREER_SQL, conn, params=params)
@@ -220,13 +259,19 @@ class SQLPlayerStats:
     PlayerPerformances.summary()).
     """
 
-    def __init__(self, conn):
+    def __init__(self, conn, home_club_only=True, home_club_name=HOME_CLUB_NAME):
         self.conn = conn
+        self.home_club_only = home_club_only
+        self.home_club_name = home_club_name
 
     # ----------------------------------------------------------
 
-    def career(self, season=None, team_id=None):
-        return career_stats(self.conn, season=season, team_id=team_id)
+    def career(self, season=None, team_id=None, home_club_only=None):
+        return career_stats(
+            self.conn, season=season, team_id=team_id,
+            home_club_only=self.home_club_only if home_club_only is None else home_club_only,
+            home_club_name=self.home_club_name
+        )
 
     # ----------------------------------------------------------
 

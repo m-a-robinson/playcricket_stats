@@ -88,7 +88,14 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   leaderboards — top runs, average, strike rate, wickets, economy, catches,
   milestones, etc). This is now the only stats/leaderboard layer in the
   project — see "Retired" below. Source-agnostic: works the same whether the
-  store holds Play-Cricket data, CricHQ data, or both.
+  store holds Play-Cricket data, CricHQ data, or both. Excludes opposition
+  players by default (`home_club_only=True`) — a PDF import brings in every
+  player from both teams, but only `HOME_CLUB_NAME`'s own players are
+  wanted as tracked "players" with career stats/leaderboard entries.
+  Opposition players still appear in full within the scorecard tables
+  (`batting_innings`/`bowling_innings`/`match_appearances` are untouched);
+  pass `home_club_only=False` to include them in `career_stats()` too, e.g.
+  to check one opposition player's record specifically against this club.
 
 ### Retired
 
@@ -237,6 +244,18 @@ conn.execute("SELECT source, COUNT(*) FROM matches GROUP BY source").fetchall()
 # [('crichq_pdf', 23), ('play_cricket', 70)]
 
 stats.career(season=2019).sort_values("wickets", ascending=False).head(10)
+```
+
+A CricHQ PDF brings in every player from **both** teams (opposition included) —
+`players` will have far more rows than `stats.career()` returns, since
+`career_stats()` only tracks `HOME_CLUB_NAME`'s own players by default.
+Opposition players are still fully present in the scorecard tables, just
+excluded from career stats/leaderboards:
+
+```python
+conn.execute("SELECT COUNT(*) FROM players").fetchone()   # (736,) -- everyone who appears anywhere
+stats.career().shape[0]                                     # 116   -- home club only (the default)
+stats.career(home_club_only=False).shape[0]                  # 736   -- lift the filter to see everyone
 ```
 
 ### 5. Poke at the raw tables directly
