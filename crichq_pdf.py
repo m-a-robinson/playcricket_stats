@@ -296,7 +296,12 @@ def _parse_dismissal(dismissal_text):
     if low.startswith("run out"):
         m = re.match(r"^run out(?:\s*\((?P<fielders>.+)\))?$", text, re.IGNORECASE)
         fielders = m.group("fielders") if m else None
-        return "run out", None, fielders
+        # "run out (A/B)" credits a relay between two fielders. Play-Cricket's
+        # own schema (and ours) only has one fielder_id per dismissal, so
+        # credit the first named fielder -- the "/B" part must NOT be kept
+        # as part of the name, or "A/B" becomes one bogus compound player.
+        fielder = fielders.split("/")[0].strip() if fielders else None
+        return "run out", None, fielder
 
     if low.startswith("b "):
         return "b", text[2:].strip(), None
@@ -494,7 +499,7 @@ def _parse_match(header_match, body, match_index):
 
             if bowler_clean:
                 _sheet_entry(bowling_team_full, bowler_clean)
-            if fielder_clean and how_out in ("ct", "st"):
+            if fielder_clean and how_out in ("ct", "st", "run out"):
                 _sheet_entry(bowling_team_full, fielder_clean)
 
             bat_rows.append({

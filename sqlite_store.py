@@ -137,17 +137,14 @@ class SQLiteStore:
     @classmethod
     def _clean_text(cls, value):
         """
-        A source id used as text (source_player_id etc.) must come back
-        identical every time the same underlying id is seen, or the same
-        real player/club/team splits into multiple canonical rows. A
-        numeric id is at risk here: pandas silently upgrades an int
-        column to float64 the moment any row in it is missing (the same
-        NaN-upgrade behaviour documented on _is_missing() above), so the
-        very same Play-Cricket player id can arrive as the int 6216362
-        in one match's DataFrame and the float 6216362.0 in another's,
-        str()'d into two different-looking ids for one real person.
-        Whole-number floats (real or already str()'d) are normalised
-        back to their plain integer form so this can't happen.
+        Same NaN-column trap as _is_missing() documents, one step
+        further: a whole-number id (e.g. a Play-Cricket player_id)
+        that survives as a *present* value in a column pandas has
+        upgraded to float64 -- because some OTHER row in that same
+        column was missing -- comes through as 6216362.0, not 6216362.
+        Left alone, that turns into a second, spurious source_player_id
+        for the exact same real person (str(6216362) != str(6216362.0)).
+        Normalise whole-number floats back to plain integer text.
         """
 
         if cls._is_missing(value):
@@ -155,16 +152,6 @@ class SQLiteStore:
 
         if isinstance(value, float) and value.is_integer():
             return str(int(value))
-
-        if isinstance(value, str):
-
-            try:
-                as_float = float(value)
-            except ValueError:
-                as_float = None
-
-            if as_float is not None and as_float.is_integer() and re.fullmatch(r"-?\d+\.0+", value):
-                return str(int(as_float))
 
         return str(value)
 
@@ -670,6 +657,109 @@ class SQLiteStore:
         self.conn.commit()
 
         return matches_built
+
+    # ==========================================================
+    # MANUAL PLAYER RECONCILIATION
+    # ==========================================================
+
+    def find_players(self, name_like):
+        """
+        Look up players by a case-insensitive substring of known_as,
+        showing every source identity for each -- the usual first step
+        before merge_players(). Returns a list of
+        {player_id, known_as, sources: [(source, source_player_id), ...]}.
+        """
+
+        rows = self.conn.execute(
+            "SELECT player_id, known_as FROM players WHERE known_as LIKE ? ORDER BY player_id",
+            (f"%{name_like}%",)
+        ).fetchall()
+
+        results = []
+
+        for player_id, known_as in rows:
+
+            sources = self.conn.execute(
+                "SELECT source, source_player_id FROM player_source_ids WHERE player_id = ?",
+                (player_id,)
+            ).fetchall()
+
+            results.append({
+                "player_id": player_id,
+                "known_as": known_as,
+                "sources": sources
+            })
+
+        return results
+
+    def merge_players(self, keep_player_id, merge_player_id):
+        """
+        Merge merge_player_id into keep_player_id: the same real person,
+        currently split across sources because cross-source player
+        reconciliation (roadmap item 4) is a manual/deliberate step, not
+        an automatic one -- see README "Not built yet" for why.
+
+        Re-points every player_source_ids row and every fact-table
+        reference (batting_innings.player_id/bowler_player_id/
+        fielder_player_id, bowling_innings.player_id,
+        match_appearances.player_id) from merge_player_id onto
+        keep_player_id, then deletes the now-orphaned merge_player_id
+        row from players. After this, career_stats() for keep_player_id
+        covers both sources with no further steps needed.
+
+        This mutates the derived SQLite file only -- the source JSON/PDF
+        files are untouched, so if a merge turns out to be wrong the fix
+        is simply to delete the .sqlite file and rebuild from source.
+        """
+
+        if keep_player_id == merge_player_id:
+            raise ValueError("keep_player_id and merge_player_id must differ")
+
+        self.conn.execute(
+            "UPDATE player_source_ids SET player_id = ? WHERE player_id = ?",
+            (keep_player_id, merge_player_id)
+        )
+
+        self.conn.execute(
+            "UPDATE batting_innings SET player_id = ? WHERE player_id = ?",
+            (keep_player_id, merge_player_id)
+        )
+        self.conn.execute(
+            "UPDATE batting_innings SET bowler_player_id = ? WHERE bowler_player_id = ?",
+            (keep_player_id, merge_player_id)
+        )
+        self.conn.execute(
+            "UPDATE batting_innings SET fielder_player_id = ? WHERE fielder_player_id = ?",
+            (keep_player_id, merge_player_id)
+        )
+        self.conn.execute(
+            "UPDATE bowling_innings SET player_id = ? WHERE player_id = ?",
+            (keep_player_id, merge_player_id)
+        )
+
+        # match_appearances has UNIQUE(match_id, player_id) -- a match
+        # where both identities somehow already have a row (shouldn't
+        # normally happen, since they come from different sources/
+        # matches) would violate it. Drop the merge-side duplicate
+        # rather than fail the whole merge.
+        self.conn.execute(
+            """
+            DELETE FROM match_appearances
+            WHERE player_id = ?
+              AND match_id IN (
+                  SELECT match_id FROM match_appearances WHERE player_id = ?
+              )
+            """,
+            (merge_player_id, keep_player_id)
+        )
+        self.conn.execute(
+            "UPDATE match_appearances SET player_id = ? WHERE player_id = ?",
+            (keep_player_id, merge_player_id)
+        )
+
+        self.conn.execute("DELETE FROM players WHERE player_id = ?", (merge_player_id,))
+
+        self.conn.commit()
 
     # ==========================================================
     # REPRESENTATION
