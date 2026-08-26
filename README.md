@@ -235,8 +235,22 @@ and their partial `.MXP` exports, and the three CricketStatz installer
 been removed from the repo; only the current, complete file per source
 remains.
 
-- `playcricket_2026.json` — a synced local database (70 matches) showing the
-  storage schema in practice.
+- `playcricket/playcricket_2026_demo.json` — a synced local database
+  (70 matches, season 2026 only) showing the storage schema in practice; the
+  fixed, small dataset the "Basic usage" walkthrough below runs against.
+  Frozen as a tutorial sample rather than kept in sync going forward — see
+  `playcricket_24_25_26.json` below for the real, maintained cache.
+- `playcricket/playcricket_24_25_26.json` — the club's Play-Cricket history
+  for seasons 2024–2026, synced via `PlayCricketDatabase.sync_season()`
+  (see "Maintaining the database" below): **248 matches** (101 in 2024, 77
+  in 2025, 70 in 2026 so far), full scorecards downloaded for every one
+  (zero failed downloads). Builds into **48 clubs, 93 teams, 1241 players**
+  with zero foreign-key violations. ELPMCC fielded six sides across the
+  period (1st/2nd/3rd XI, a one-off Friendly XI, Under 11s, Under 9s) across
+  GMCL league divisions (moving division each year), junior sections, and a
+  handful of cup competitions. This is the file to rebuild the SQLite store
+  from for real reconciliation work, rather than the smaller 2026-only demo
+  above.
 - `crichq/ALL_CRICHQ_SCORECARDS.pdf` — the club's **complete** CricHQ
   archive in one file (703 pages), replacing the old single-season
   `ELPM 1st XI 2019.pdf`. **381 matches** (328 played, 53 abandoned),
@@ -277,7 +291,7 @@ remains.
   (Play-Cricket shaped), generated with
   `python3 crichq_pdf.py crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>
   --json-out crichq/crichq_pdf.json`. Plays the same role for the CricHQ
-  side that `playcricket_2026.json` plays for Play-Cricket — a parsed,
+  side that `playcricket/playcricket_24_25_26.json` plays for Play-Cricket — a parsed,
   human-readable/greppable cache one layer above the raw source and below
   SQLite — except with no seasons/versioning wrapper, since the PDF is a
   closed archive parsed once rather than something synced incrementally.
@@ -376,8 +390,8 @@ ipython
 ```
 
 The examples below all use the files already in the repo
-(`playcricket_2026.json`, `crichq/ALL_CRICHQ_SCORECARDS.pdf`) — nothing
-needs an API key to run.
+(`playcricket/playcricket_2026_demo.json`, `crichq/ALL_CRICHQ_SCORECARDS.pdf`)
+— nothing needs an API key to run.
 
 ### 1. Build the SQLite store from the sample Play-Cricket data
 
@@ -385,7 +399,7 @@ This is usually run from the Terminal, not ipython, since it's a one-shot
 build step:
 
 ```bash
-python3 sqlite_store.py --json-db playcricket_2026.json --sqlite-db demo.sqlite
+python3 sqlite_store.py --json-db playcricket/playcricket_2026_demo.json --sqlite-db demo.sqlite
 ```
 
 ```
@@ -401,7 +415,7 @@ of the game:
 from playcricket_database import PlayCricketDatabase
 from playcricket_scorecard import Scorecard
 
-db = PlayCricketDatabase(api=None, filename="playcricket_2026.json")
+db = PlayCricketDatabase(api=None, filename="playcricket/playcricket_2026_demo.json")
 
 # db.match_details(season=2026) lists every match; db.match(match_id) gets
 # one. Both return the raw stored API response, so unwrap ["match_details"][0]
@@ -656,18 +670,21 @@ api = PlayCricketAPI(site_id=9653)   # ELPMCC's Play-Cricket site id
 # api_key comes from the PLAY_CRICKET_API_KEY env var by default,
 # or pass api_key="..." explicitly here instead
 
-db = PlayCricketDatabase(api=api, filename="playcricket_2026.json")
+db = PlayCricketDatabase(api=api, filename="playcricket/playcricket_24_25_26.json")
 db.sync_season(2026)   # fetches new/changed matches, saves the JSON cache
 ```
 
 ```bash
-python3 sqlite_store.py --json-db playcricket_2026.json --sqlite-db playcricket_stats.sqlite
+python3 sqlite_store.py --json-db playcricket/playcricket_24_25_26.json --sqlite-db playcricket_stats.sqlite
 ```
 
-(`playcricket_2026.json` is the name already in the repo — despite the
-name, one JSON cache file can hold every season, keyed internally by
-season number; see the backfill loop below. There's nothing 2026-specific
-about the file format, only the current filename.)
+(`playcricket/playcricket_24_25_26.json` is the real, maintained cache —
+currently seasons 2024-2026, 248 matches. One JSON cache file can hold every
+season, keyed internally by season number; see the backfill loop below. The
+similarly-named `playcricket/playcricket_2026_demo.json` is a separate,
+deliberately frozen file — the small fixed dataset the "Basic usage"
+walkthrough above runs against — and isn't meant to be kept in sync the way
+this one is.)
 
 `sync_season()` always requests the current match list (one API call) but
 only re-downloads match *detail* for matches that are new, changed
@@ -679,7 +696,11 @@ safe and cheap to run after every sync, every time.
 
 **To get the club's full Play-Cricket history**, not just the current
 season, call `sync_season()` once per season, back to whenever ELPMCC
-started using Play-Cricket:
+started using Play-Cricket. Seasons 2024-2026 are already in
+`playcricket/playcricket_24_25_26.json`; earlier seasons (Play-Cricket
+presumably starts sometime in the 2018-2023 range CricHQ already covers,
+exact start year not yet confirmed) are still a gap if full Play-Cricket
+history is wanted rather than relying on CricHQ for that period:
 
 ```python
 for season in range(2018, 2027):   # adjust the start year to when it began

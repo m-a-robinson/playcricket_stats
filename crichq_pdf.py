@@ -742,7 +742,7 @@ if __name__ == "__main__":
             "Also write every parsed match-detail dict to this JSON file -- "
             "an indexed, greppable/diffable backup of what the PDF parsed "
             "to, independent of re-running the regex parser against the "
-            "PDF again. Unlike playcricket_2026.json this has no "
+            "PDF again. Unlike playcricket/playcricket_24_25_26.json this has no "
             "seasons/versioning wrapper: the PDF is a closed archive, "
             "parsed once, not something synced incrementally."
         )
