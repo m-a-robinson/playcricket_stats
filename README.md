@@ -16,6 +16,29 @@ exports for milestone achievements (centuries, five-wicket hauls, career
 milestones), and social-media-formatted summaries of individual performances
 and weekend results.
 
+## Milestone: all original data now imported (2026-08-26)
+
+Every data source this project set out to ingest is now in the store, at
+once, end to end: the **complete Play-Cricket history currently reachable**
+(seasons 2024-2026, live-synced via the API and kept that way — see
+"Maintaining the database"), the **complete CricHQ PDF archive** (2016 and
+2018-2023), and the **complete CricketStatz archive** (2005-2018). That's
+**933 matches across all three sources** (248 Play-Cricket + 304 CricketStatz
++ 381 CricHQ) built into one normalised SQLite store with **zero
+foreign-key violations**. Roadmap items 1-3 below (data foundation, CricHQ
+ingestion, CricketStatz ingestion) are accordingly all *Done*, together, not
+just individually — this is the point the project moves from "get the data
+in" to "make the data trustworthy": reconciling identity across sources
+(roadmap item 4, in progress — see `reconcile_audit.py`) and, beyond that,
+the actual stats/exports the project exists for (roadmap items 5-8).
+
+Play-Cricket's own history isn't necessarily fully backfilled yet — 2024-2026
+is what's been synced so far; earlier seasons (however far back the club's
+Play-Cricket presence goes, likely somewhere in the 2018-2023 range CricHQ
+already covers) remain a possible future backfill, see "Maintaining the
+database" below. CricHQ and CricketStatz, being closed archives, are
+complete by definition once ingested.
+
 ## Current state
 
 The project is a Python library (pandas/numpy/requests, no framework yet)
@@ -198,12 +221,13 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   initial+surname, or the exact same name after stripping case/whitespace/
   punctuation — sorted by combined appearance count so the highest-signal
   groups surface first. See `reconcile/data_quality_report.md` — a committed
-  snapshot from the full three-source archive, itself a live example of what
-  running this finds (a "Bradshaw CC, Lancs"/"Bradshaw CC" club split, an
+  snapshot from the full 933-match, three-source archive (see the milestone
+  note at the top of this README), itself a live example of what running
+  this finds (a "Bradshaw CC, Lancs"/"Bradshaw CC" club split, one of 9; an
   "Ian Wade"/"IW wade" pair that `PLAYER_MERGES`'s existing entry doesn't yet
-  cover, an "Add New Ground" placeholder value that leaked into real data,
-  and more) — regenerate it any time; it's disposable, derived output, not
-  a hand-maintained decision record like the `*_MERGES` lists it feeds.
+  cover; an "Add New Ground" placeholder value on 47 matches; and more) —
+  regenerate it any time; it's disposable, derived output, not a
+  hand-maintained decision record like the `*_MERGES` lists it feeds.
 
 ### Retired
 
@@ -583,12 +607,17 @@ it — the report itself never edits anything, and is cheap enough to
 regenerate any time after ingesting a new source or fixing a parser bug.
 
 `reconcile/data_quality_report.md` in this repo is a committed snapshot from
-the full three-source archive, so it doubles as a worked example: an
-`"Add New Ground"` value that's obviously a leaked UI placeholder, a
-`"Bradshaw CC, Lancs"` vs `"Bradshaw CC"` club split (a dropped regional
-qualifier neither exact-match nor SQLiteStore's own automatic merge — see
-"Modules" — safely catches on its own), dozens of team-name splits (one
-source's `"1st XI"` vs another's club-prefixed `"ELPM 1st XI"`), and the
+the **full 933-match archive** (see the milestone note at the top of this
+README — all three sources, Play-Cricket via the real, live-synced
+`playcricket_24_25_26.json` rather than the small demo file this walkthrough
+otherwise uses), so it doubles as a worked example: an `"Add New Ground"`
+value that's obviously a leaked UI placeholder, on 47 matches — common
+enough to be a real gap in 2024's league-fixture ground data, not just a
+one-off typo; a `"Bradshaw CC, Lancs"` vs `"Bradshaw CC"` club split (a
+dropped regional qualifier neither exact-match nor SQLiteStore's own
+automatic merge — see "Modules" — safely catches on its own, one of 9 such
+club splits); dozens of team-name splits (one source's `"1st XI"` vs
+another's club-prefixed `"ELPM 1st XI"`, 56 in total); and the
 `"I Wade"`/`"IW wade"`/`"Ian Wade"` gap from step 6 above.
 
 ### 8. Poke at the raw tables directly
@@ -746,8 +775,11 @@ throughout the walkthrough above, and keep it out of git.
 
 ## Roadmap
 
-1. **Data foundation** — *Done.* SQLite store built (`schema.sql` /
-   `sqlite_store.py`): players, clubs, teams, matches, innings,
+1. **Data foundation** — *Done, and now proven against every original
+   source at once* (see the milestone note at the top of this README: 933
+   matches, zero foreign-key violations, all three sources live in the
+   store together, not just individually validated). SQLite store built
+   (`schema.sql` / `sqlite_store.py`): players, clubs, teams, matches, innings,
    batting/bowling, match appearances (team sheets), and milestone views,
    with `source` on every fact table and canonical identity for players,
    clubs, *and* teams resolved through `*_source_ids` mapping tables (not
@@ -896,10 +928,13 @@ throughout the walkthrough above, and keep it out of git.
    collapsed, "CC"/"Cricket Club"-suffix-stripped name (catching e.g.
    Play-Cricket's "East Lancs Paper Mill CC" and CricHQ's "East Lancs Paper
    Mill"), and `_upsert_team()` does the same scoped to the already-resolved
-   club. Rebuilding the full three-source archive from scratch with this in
-   place took clubs from 164 rows down to 103 and fixed **East Lancs Paper
-   Mill CC itself** — the club this whole project is about — being split in
-   two. Deliberately conservative (no fuzzy matching): a first version tried
+   club. Rebuilding the three-source archive from scratch with this in
+   place took clubs from 164 rows down to 103 (against the demo-scale
+   Play-Cricket data this was developed against; **107** against the full
+   933-match archive — see the milestone note at the top of this README)
+   and fixed **East Lancs Paper Mill CC itself** — the club this whole
+   project is about — being split in two. Deliberately conservative (no
+   fuzzy matching): a first version tried
    during development also treated similar-looking or one-substring-of-
    another club/team names as matches, and that produced real false
    positives — "Shaw CC" / "Bradshaw CC" / "Walshaw CC" (three different
@@ -910,19 +945,24 @@ throughout the walkthrough above, and keep it out of git.
    "Modules") as a candidate for a human to confirm via `CLUB_MERGES`/
    `TEAM_MERGES`, never merged automatically.
 
-   Running `reconcile_audit.py` against the full three-source archive (see
-   `reconcile/data_quality_report.md`, committed as a live example) found,
-   among other things: 8 remaining club splits automatic merging didn't
-   catch (all a dropped regional qualifier, e.g. Play-Cricket's "Bradshaw
-   CC, Lancs" vs CricHQ's "Bradshaw CC"), dozens of team splits (one source
-   naming East Lancs Paper Mill's sides "1st XI"/"2nd XI", another
-   "ELPM 1st XI"/"ELPM 2nd XI", and many opposition clubs' teams named with
-   a club abbreviation prefix in one source but not another), a genuine
-   stray value in real match data (`ground_name` "Add New Ground" — a
-   leaked UI placeholder, one match), and — directly relevant to this
-   item's own Ian Wade example below — that his merge group is still
-   incomplete: `"IW wade"` (48 games) and `"Ian Wade"` (4 games) are both
-   separate, unmerged `crichq_pdf` identities alongside the `"I Wade"` ref
+   Running `reconcile_audit.py` against the full 933-match archive — all
+   three sources, Play-Cricket included via the real `playcricket_24_25_26.json`
+   cache rather than the smaller demo file (see `reconcile/data_quality_report.md`,
+   committed as a live example) — found, among other things: 9 remaining
+   club splits automatic merging didn't catch (all a dropped regional
+   qualifier, e.g. Play-Cricket's "Bradshaw CC, Lancs" vs CricHQ's
+   "Bradshaw CC"), 56 team splits (one source naming East Lancs Paper
+   Mill's sides "1st XI"/"2nd XI", another "ELPM 1st XI"/"ELPM 2nd XI", and
+   many opposition clubs' teams named with a club abbreviation prefix in
+   one source but not another), a genuine data gap hiding in plain sight
+   (`ground_name` "Add New Ground" — a leaked UI placeholder — on **47**
+   matches, not the 1 it showed against the smaller sample; mostly 2024's
+   GMCL Division 4/5 league fixtures, common enough now that it no longer
+   surfaces near the top of the report's rarest-first Grounds table the way
+   a true one-off would), and — directly relevant to this item's own Ian
+   Wade example below — that his merge group is still incomplete:
+   `"IW wade"` (48 games) and `"Ian Wade"` (4 games) are both separate,
+   unmerged `crichq_pdf` identities alongside the `"I Wade"` ref
    `PLAYER_MERGES` already covers. None of this is applied automatically;
    it's each a line in the report for a human to confirm or reject.
 
@@ -939,10 +979,21 @@ throughout the walkthrough above, and keep it out of git.
    seven-season `crichq/ALL_CRICHQ_SCORECARDS.pdf` archive ingests, the same
    merge (still just the `"I Wade"` ref) gives **195 games, 4900 runs at
    30.2 (20 fifties, 9 hundreds), 151 wickets at 14.7 (8 five-fors), 85
-   catches** — see Basic usage step 6, including the two more unmerged
-   `crichq_pdf` identities (`"IW wade"`, `"Ian Wade"`) that surfaced along
-   the way. Zero foreign-key violations after merging either way — the
-   mechanism itself is unaffected by any of this.
+   catches** against the `demo.sqlite` build Basic usage step 6 walks
+   through (CricHQ + CricketStatz + the small, single-season Play-Cricket
+   demo file) — including the two more unmerged `crichq_pdf` identities
+   (`"IW wade"`, `"Ian Wade"`) that surfaced along the way. Against the real,
+   full archive (`playcricket/playcricket_24_25_26.json` in place of the
+   demo file — see the milestone note at the top of this README), the same
+   merge instead gives **213 games, 5199 runs at 29.9 (22 fifties, 9
+   hundreds), 151 wickets at 14.8 (8 five-fors), 97 catches** — the extra
+   Play-Cricket seasons (2024-2025, beyond the single 2026 season the demo
+   file has) add real games, runs, and catches; the wickets tally happens
+   to land on the same 151 either way, coincidentally, not because he
+   didn't bowl in those extra matches (bowling innings did rise, 89 to 91).
+   Zero foreign-key
+   violations after merging either way — the mechanism itself is unaffected
+   by any of this.
 
    A second `cricketstatz` ref (id `1062`, a single-match "I Wade" playing
    for the opposition, Swinton Moorside) was originally included in this
