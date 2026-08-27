@@ -6,30 +6,59 @@
 # home grounds and the vague-venue overrides those enable.
 #
 # This file IS the decision -- reconcile.py applies it exactly as
-# written, nothing more. Candidates are found by reconcile_audit.py
-# (read-only, never writes here); turning a candidate into a decision
-# means copying its (source, id) refs from that report into the right
-# section below, by hand, with your own reasoning in `reason:`.
+# written, nothing more. Candidates are found by reconcile_audit.py,
+# which never writes to the database but DOES write here: every run
+# appends anything new it finds into `pending:` below, each with a
+# suggested `canonical_name` and `status: pending` -- nothing to
+# hand-copy out of the Markdown report any more.
+#
+# THE REVIEW WORKFLOW
+# --------------------
+# 1. Run reconcile_audit.py. New candidates land in `pending:`, grouped
+#    the same way as the real sections (pending: players:, pending:
+#    clubs:, ...). Re-running it again later only adds genuinely new
+#    candidates -- it never touches canonical_name/status on a pending:
+#    entry you've already started editing, and a cluster that grows a
+#    new ref (a third spelling surfaces) gets that ref merged into the
+#    existing entry rather than creating a duplicate.
+# 2. Work through `pending:` at your own pace: correct `canonical_name`
+#    (the suggestion is a starting guess, not a fact -- reconcile_audit.py
+#    has no way to know East Lancs Paper Mill CC's ground is actually
+#    called "Croft Lane", for instance), and set `status: confirmed`
+#    (or `audited`) on each you agree with. Leave `status: pending` on
+#    anything you haven't decided yet -- it's safe to leave for as long
+#    as you like.
+# 3. When you're done with the current batch, run
+#    `python3 reconcile.py --promote`. This drains `pending:` entirely:
+#    every `confirmed`/`audited` entry moves up into the real merge
+#    section below (players:/clubs:/teams:/grounds:) -- a decision, from
+#    here on applied like any other entry in this file; everything else
+#    (still `pending`, or explicitly `rejected`) moves down into
+#    `rejected:` instead, so it's remembered without being lost, and
+#    reconcile_audit.py won't suggest it again as if it were new. Only
+#    run --promote once you've actually finished a review pass --
+#    anything still untouched at `status: pending` when it runs falls
+#    into `rejected:` (as `status: pending` there) the same as something
+#    you looked at and weren't sure about.
+# 4. Run `python3 reconcile.py --sqlite-db <path>` to actually apply
+#    whatever --promote just confirmed.
 #
 # HOW TO EDIT THIS FILE
 # ----------------------
 # - A merge entry (players/clubs/teams/grounds) says "these refs are
-#   the same real thing" and gives it a `canonical_name`. That name is
-#   yours to write -- reconcile_audit.py can suggest a candidate
-#   grouping, but it has no way to know what the *correct* name is
-#   (e.g. it cannot know East Lancs Paper Mill CC's ground is actually
-#   called "Croft Lane"). Editing `canonical_name` on an existing entry
-#   and re-running reconcile.py renames the survivor everywhere.
+#   the same real thing" and gives it a `canonical_name` that's yours to
+#   write, promoted from `pending:` or added directly. Editing
+#   `canonical_name` on an existing entry and re-running reconcile.py
+#   renames the survivor everywhere.
 # - `club_home_grounds` records a club's own ground -- a fact, not a
 #   merge -- which `ground_overrides` then uses to fix a source whose
 #   own per-match venue text is too vague to be useful (see the CricHQ
-#   example below).
-# - Not sure yet, or looked at it and decided it's NOT a match? Add it
-#   under `rejected:` instead, with `status: rejected` (confirmed
-#   different -- stop suggesting this pair) or `status: pending` (undecided
-#   -- keep flagging it, but separately from brand-new candidates, so it
-#   doesn't get lost or re-merged by accident). See the two examples
-#   below.
+#   example below). Neither is auto-populated into `pending:` -- write
+#   these directly, they need more context than a candidate cluster
+#   alone can suggest.
+# - `rejected:` entries can also be added directly, not only via
+#   --promote -- e.g. a candidate you're confident is wrong the moment
+#   you see it, with `status: rejected` and your reasoning in `reason:`.
 # - Changing your mind later: edit or delete the entry here, then
 #   rebuild the .sqlite from scratch (delete it, re-ingest every
 #   source, re-run reconcile.py). A merge deletes rows in the database,
@@ -47,7 +76,7 @@ players:
     decided: 2026-08-26
     refs:
       - {source: play_cricket, id: "6216362"}
-      - {source: crichq_pdf,   id: "I Wade"}
+      - {source: crichq_pdf, id: "I Wade"}
       - {source: cricketstatz, id: "4"}
     reason: >
       Confirmed the same player across all three sources by season
@@ -170,3 +199,1221 @@ rejected:
   teams: []
 
   grounds: []
+
+# ==================================================================
+# PENDING
+# ==================================================================
+#
+# Newly-found candidates, written here by reconcile_audit.py --
+# nothing to hand-copy out of its report. Work through these (edit
+# canonical_name, set status: confirmed/audited) and run
+# `python3 reconcile.py --promote` -- see "THE REVIEW WORKFLOW" up top.
+# Empty until reconcile_audit.py has been run at least once.
+
+pending:
+  clubs:
+    - canonical_name: Radcliffe CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '9372'
+        - source: crichq_pdf
+          id: Radcliffe CC
+        - source: cricketstatz
+          id: '47'
+    - canonical_name: Swinton Moorside CC, Salford
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6211'
+        - source: cricketstatz
+          id: '33'
+    - canonical_name: Elton CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '2564'
+        - source: crichq_pdf
+          id: Elton CC
+        - source: cricketstatz
+          id: '11'
+    - canonical_name: Thornham CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6331'
+        - source: crichq_pdf
+          id: Thornham CC
+        - source: cricketstatz
+          id: '21'
+    - canonical_name: Clifton CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '1925'
+        - source: crichq_pdf
+          id: Clifton CC
+        - source: cricketstatz
+          id: '25'
+    - canonical_name: Egerton CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '2531'
+        - source: crichq_pdf
+          id: Egerton CC
+        - source: cricketstatz
+          id: '40'
+    - canonical_name: Bradshaw CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '1333'
+        - source: crichq_pdf
+          id: Bradshaw CC
+    - canonical_name: Winton CC, Lancs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6991'
+        - source: crichq_pdf
+          id: Winton CC
+        - source: cricketstatz
+          id: '39'
+    - canonical_name: Westleigh CC, Leigh
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '201'
+        - source: crichq_pdf
+          id: Westleigh CC
+        - source: cricketstatz
+          id: '50'
+  teams:
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '124290'
+        - source: crichq_pdf
+          id: Tottington St Johns CC, 2nd XI
+        - source: crichq_pdf
+          id: Tottington St Johns CC, Tottington St Johns CC 2nd XI
+        - source: cricketstatz
+          id: '23'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Tottington St Johns CC, 1st XI
+        - source: crichq_pdf
+          id: Tottington St Johns CC, Tottington St Johns CC 1st XI
+        - source: cricketstatz
+          id: '3'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '119947'
+        - source: crichq_pdf
+          id: East Lancs Paper Mill CC, 2nd XI
+        - source: cricketstatz
+          id: '2'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '87898'
+        - source: crichq_pdf
+          id: East Lancs Paper Mill CC, 1st XI
+        - source: cricketstatz
+          id: '1'
+    - canonical_name: Under 9
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '196920'
+        - source: play_cricket
+          id: '368155'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '36533'
+        - source: crichq_pdf
+          id: Edenfield CC, 2nd XI
+        - source: cricketstatz
+          id: '71'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Edenfield CC, 1st XI
+        - source: cricketstatz
+          id: '75'
+    - canonical_name: Under 9
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '320514'
+        - source: play_cricket
+          id: '363332'
+    - canonical_name: Under 11 B
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '362583'
+        - source: play_cricket
+          id: '120245'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Prestwich CC, 2nd XI
+        - source: cricketstatz
+          id: '78'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361541'
+        - source: crichq_pdf
+          id: Woodbank CC, 2nd XI
+        - source: crichq_pdf
+          id: Woodbank CC, Woodbank CC 2nd XI
+        - source: cricketstatz
+          id: '64'
+    - canonical_name: 3rd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Woodbank CC, 3rd XI
+        - source: cricketstatz
+          id: '33'
+    - canonical_name: Under 11
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '362571'
+        - source: play_cricket
+          id: '362572'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Walshaw CC, 2nd XI
+        - source: cricketstatz
+          id: '49'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361571'
+        - source: crichq_pdf
+          id: Bolton Indians CC, 2nd XI
+        - source: crichq_pdf
+          id: Bolton Indians CC, Bolton Indians CC 2nd XI
+        - source: cricketstatz
+          id: '59'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '65961'
+        - source: crichq_pdf
+          id: Brooksbottom CC, 2nd XI
+        - source: cricketstatz
+          id: '72'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '68877'
+        - source: crichq_pdf
+          id: Adlington CC, 2nd XI
+        - source: crichq_pdf
+          id: Adlington CC, 2nd
+    - canonical_name: Under 9
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '363325'
+        - source: play_cricket
+          id: '368067'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361536'
+        - source: crichq_pdf
+          id: Bury Cricket Club, 2nd XI
+        - source: crichq_pdf
+          id: Bury CC, Bury CC 2nd XI
+        - source: cricketstatz
+          id: '53'
+    - canonical_name: Under 11
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '362591'
+        - source: play_cricket
+          id: '362590'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Hindley St Peters CC, 2nd XI
+        - source: cricketstatz
+          id: '60'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361570'
+        - source: cricketstatz
+          id: '66'
+    - canonical_name: Under 9 B
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '363331'
+        - source: play_cricket
+          id: '196915'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361579'
+        - source: crichq_pdf
+          id: Worsley CC, 2nd XI
+        - source: cricketstatz
+          id: '52'
+    - canonical_name: Under 11
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '106720'
+        - source: play_cricket
+          id: '406683'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Greenmount CC, 2nd XI
+        - source: cricketstatz
+          id: '68'
+    - canonical_name: 3rd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Edgworth CC, 3rd XI
+        - source: cricketstatz
+          id: '44'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Edgworth CC, 2nd XI
+        - source: cricketstatz
+          id: '61'
+    - canonical_name: Roe Green CC 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Roe Green CC, Roe Green CC 2nd XI
+        - source: crichq_pdf
+          id: Roe Green CC, 2nd XI
+        - source: cricketstatz
+          id: '55'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Shaw CC, 1st XI
+        - source: cricketstatz
+          id: '77'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361542'
+        - source: cricketstatz
+          id: '10'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: South West Manchester CC, 1st XI
+        - source: cricketstatz
+          id: '67'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Westleigh CC, 1st XI
+        - source: cricketstatz
+          id: '73'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Westleigh CC, 2nd XI
+        - source: cricketstatz
+          id: '70'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Elton CC, 1st XI
+        - source: cricketstatz
+          id: '12'
+    - canonical_name: 3rd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Elton CC, 3rd XI
+        - source: cricketstatz
+          id: '30'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Elton CC, 2nd XI
+        - source: crichq_pdf
+          id: Elton CC, Elton CC 2nd XI
+        - source: cricketstatz
+          id: '62'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Clifton CC, 2nd XI
+        - source: cricketstatz
+          id: '76'
+    - canonical_name: Clifton Kingfishers
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Clifton CC, Clifton Kingfishers
+        - source: cricketstatz
+          id: '41'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Elton Vale CC, 1st XI
+        - source: cricketstatz
+          id: '5'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Glossop CC, 2nd XI
+        - source: cricketstatz
+          id: '74'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Hollinwood CC, 1st XI
+        - source: cricketstatz
+          id: '79'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Micklehurst CC, 1st XI
+        - source: cricketstatz
+          id: '80'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Werneth CC, 1st XI
+        - source: cricketstatz
+          id: '81'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Droylsden CC, 1st XI
+        - source: cricketstatz
+          id: '82'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Daisy Hill CC, 1st XI
+        - source: crichq_pdf
+          id: Daisy Hill CC, 1st
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Radcliffe CC, 1st XI
+        - source: cricketstatz
+          id: '65'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Winton CC, 2nd XI
+        - source: cricketstatz
+          id: '50'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Bamford Fieldhouse CC, 2nd XI
+        - source: cricketstatz
+          id: '69'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Uppermill CC, 1st XI
+        - source: cricketstatz
+          id: '46'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Blackley CC, 1st XI
+        - source: cricketstatz
+          id: '29'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Egerton CC, 2nd XI
+        - source: crichq_pdf
+          id: Egerton CC, Egerton CC 2nd XI
+        - source: cricketstatz
+          id: '51'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Whalley Range CC, 2nd XI
+        - source: cricketstatz
+          id: '56'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Rochdalians CC, 1st XI
+        - source: cricketstatz
+          id: '4'
+    - canonical_name: 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Denton West CC, 1st XI
+        - source: cricketstatz
+          id: '54'
+    - canonical_name: Irlam 1st XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Irlam CC, Irlam 1st XI
+        - source: cricketstatz
+          id: '45'
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Failsworth Macedonia CC, 2nd XI
+        - source: cricketstatz
+          id: '19'
+  grounds: []
+  players:
+    - canonical_name: S Keyworth
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: S Keyworth
+        - source: crichq_pdf
+          id: S Key worth
+        - source: cricketstatz
+          id: '5'
+        - source: play_cricket
+          id: '6214557'
+        - source: crichq_pdf
+          id: SA Keyworth
+        - source: crichq_pdf
+          id: SK Keyworth
+        - source: crichq_pdf
+          id: Stephen Keyworth
+    - canonical_name: M Partington
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: M Parting ton
+        - source: cricketstatz
+          id: '176'
+        - source: crichq_pdf
+          id: M.P Partington
+        - source: crichq_pdf
+          id: Mp Partington
+        - source: crichq_pdf
+          id: M P Partington
+        - source: play_cricket
+          id: '5685621'
+        - source: crichq_pdf
+          id: Mgp Partington
+    - canonical_name: C Dearden
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: C Dearden
+        - source: crichq_pdf
+          id: C Dear den
+        - source: cricketstatz
+          id: '860'
+        - source: play_cricket
+          id: '6196388'
+        - source: crichq_pdf
+          id: Carl Dearden
+        - source: crichq_pdf
+          id: ChD Dearden
+    - canonical_name: D Dwyer
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: d dwyer
+        - source: cricketstatz
+          id: '458'
+        - source: crichq_pdf
+          id: Danny Dwyer
+        - source: crichq_pdf
+          id: DD Dwyer
+    - canonical_name: Ajb birtwistle
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: AJB BIrtwistle
+        - source: crichq_pdf
+          id: Ajb birtwistle
+        - source: play_cricket
+          id: '6195627'
+        - source: crichq_pdf
+          id: Ashley Birtwistle
+        - source: cricketstatz
+          id: '539'
+    - canonical_name: D Mccaffrey
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: D Mccaffrey
+        - source: cricketstatz
+          id: '1256'
+        - source: crichq_pdf
+          id: D J McCaffrey
+        - source: crichq_pdf
+          id: Daniel Mccaffrey
+    - canonical_name: D J McCaffery
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: D J McCaffery
+        - source: crichq_pdf
+          id: D . J McCaffery
+        - source: play_cricket
+          id: '6196415'
+    - canonical_name: L . D . J McCaffery
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: L.D.J McCaffery
+        - source: crichq_pdf
+          id: LDJ McCaffery
+        - source: crichq_pdf
+          id: L . D . J McCaffery
+    - canonical_name: P Hewart
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: P Hewart
+        - source: crichq_pdf
+          id: PH Hewart
+        - source: cricketstatz
+          id: '10'
+    - canonical_name: Lewis Birmingham
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '5899972'
+        - source: crichq_pdf
+          id: L Birmingham
+        - source: crichq_pdf
+          id: LD Birmingham
+        - source: crichq_pdf
+          id: Louis Birmingham
+        - source: crichq_pdf
+          id: LDB Birmingham
+        - source: cricketstatz
+          id: '839'
+    - canonical_name: A Lomax
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6204163'
+        - source: crichq_pdf
+          id: A Lomax
+        - source: crichq_pdf
+          id: Andrew Lomax
+        - source: cricketstatz
+          id: '207'
+    - canonical_name: L Lomax
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6195623'
+        - source: crichq_pdf
+          id: L Lomax
+        - source: crichq_pdf
+          id: LL Lomax
+        - source: crichq_pdf
+          id: Luke Lomax
+        - source: cricketstatz
+          id: '1496'
+    - canonical_name: B Birtwistle
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6480114'
+        - source: crichq_pdf
+          id: B Birtwistle
+        - source: crichq_pdf
+          id: Ben Birtwistle
+        - source: crichq_pdf
+          id: Bega c A Whittaker b Ajb birtwistle
+        - source: cricketstatz
+          id: '672'
+    - canonical_name: Mark Robinson
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '5315731'
+        - source: crichq_pdf
+          id: MR Robinson
+        - source: crichq_pdf
+          id: MA Robinson
+        - source: crichq_pdf
+          id: M Robinson
+    - canonical_name: Shasvat Kakkar
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '5316742'
+        - source: crichq_pdf
+          id: S Kakkar
+        - source: crichq_pdf
+          id: SK Kakkar
+        - source: crichq_pdf
+          id: Shasvat kakkar Kakkar
+        - source: cricketstatz
+          id: '1666'
+    - canonical_name: Tom Partington
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6191602'
+        - source: crichq_pdf
+          id: Tgp Partington
+        - source: crichq_pdf
+          id: Tp Partington
+        - source: cricketstatz
+          id: '1430'
+    - canonical_name: S Carr
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: S Carr
+        - source: crichq_pdf
+          id: Simon Carr
+        - source: cricketstatz
+          id: '9'
+    - canonical_name: Carter Charlesworth
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6241739'
+        - source: crichq_pdf
+          id: Cc Charlesworth
+        - source: crichq_pdf
+          id: Carter Charlesworth
+        - source: crichq_pdf
+          id: C Charlesworth
+    - canonical_name: Adam Hogg
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6215653'
+        - source: crichq_pdf
+          id: Adam Hogg Hogg
+        - source: crichq_pdf
+          id: A Hogg
+    - canonical_name: D Pearson
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6196930'
+        - source: crichq_pdf
+          id: D Pearson
+        - source: crichq_pdf
+          id: Dwayne Pearson
+        - source: cricketstatz
+          id: '673'
+    - canonical_name: A Redford
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '7125366'
+        - source: crichq_pdf
+          id: A Redford
+        - source: crichq_pdf
+          id: Alan Redford
+        - source: cricketstatz
+          id: '212'
+    - canonical_name: APJ Sajewicz
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6300746'
+        - source: crichq_pdf
+          id: APJ Sajewicz
+        - source: crichq_pdf
+          id: AP Sajewicz
+        - source: cricketstatz
+          id: '1562'
+    - canonical_name: C Saliparri
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: C Saliparri
+        - source: crichq_pdf
+          id: Christian Saliparri
+        - source: cricketstatz
+          id: '1201'
+    - canonical_name: K Bowkett
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6260420'
+        - source: crichq_pdf
+          id: K Bowkett
+        - source: crichq_pdf
+          id: Kyle Bowkett
+    - canonical_name: Lewis G Mather
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6627252'
+        - source: crichq_pdf
+          id: L Mather
+        - source: crichq_pdf
+          id: LG Mather
+    - canonical_name: Zac Newton
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6218513'
+        - source: crichq_pdf
+          id: Z Newton
+        - source: crichq_pdf
+          id: Zac Newton
+        - source: crichq_pdf
+          id: Zack Newton
+        - source: crichq_pdf
+          id: ZTN Newton
+        - source: crichq_pdf
+          id: ZN Newton
+    - canonical_name: Anthony Whittaker
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6315666'
+        - source: crichq_pdf
+          id: A Whittaker
+    - canonical_name: C Holt
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6944852'
+        - source: cricketstatz
+          id: '467'
+    - canonical_name: CLS Saripalli
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: CLS Saripalli
+        - source: crichq_pdf
+          id: CL Saripalli
+        - source: crichq_pdf
+          id: C Saripalli
+        - source: crichq_pdf
+          id: Conrad Saripalli
+        - source: crichq_pdf
+          id: Carl Saripalli
+        - source: cricketstatz
+          id: '1202'
+    - canonical_name: J Crompton
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: J Crompton
+        - source: crichq_pdf
+          id: Jack Crompton
+        - source: cricketstatz
+          id: '869'
+    - canonical_name: D Scott
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: D Scott
+        - source: crichq_pdf
+          id: DS Scott
+        - source: cricketstatz
+          id: '399'
+    - canonical_name: D Barbe
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: D Barbe
+        - source: crichq_pdf
+          id: D M Barbe
+        - source: crichq_pdf
+          id: Dave Barbe
+    - canonical_name: Mark Patten
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6196382'
+        - source: crichq_pdf
+          id: MT Patten
+    - canonical_name: Daniel Caulfield
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6196444'
+        - source: crichq_pdf
+          id: DJ Caulfield
+    - canonical_name: S Stubbs
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '5015620'
+        - source: crichq_pdf
+          id: S Stubbs
+        - source: cricketstatz
+          id: '1264'
+    - canonical_name: BP Pattison
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: BP Pattison
+        - source: crichq_pdf
+          id: B Pattison
+        - source: crichq_pdf
+          id: Ben Pattison
+    - canonical_name: M.J. Hilton
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6220148'
+        - source: crichq_pdf
+          id: M.J. Hilton
+        - source: crichq_pdf
+          id: MJH Hilton
+    - canonical_name: L Warren
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6241368'
+        - source: crichq_pdf
+          id: L Warren
+        - source: crichq_pdf
+          id: Llw Warren
+    - canonical_name: Daniel Moriarty
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6192230'
+        - source: crichq_pdf
+          id: Daniel Moriarty
+        - source: crichq_pdf
+          id: DM Moriarty
+    - canonical_name: M Durrans
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: M Durrans
+        - source: cricketstatz
+          id: '951'
+        - source: cricketstatz
+          id: '954'
+    - canonical_name: R K R W Wilkes
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Rw Wilkes
+        - source: crichq_pdf
+          id: R K R W Wilkes
+        - source: crichq_pdf
+          id: Ryan Wilkes
+    - canonical_name: WT Turnbull
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: WT Turnbull
+        - source: cricketstatz
+          id: '1582'
+    - canonical_name: P Partington
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Phil Partington
+        - source: cricketstatz
+          id: '3'
+    - canonical_name: TW Whittaker
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: TW Whittaker
+        - source: crichq_pdf
+          id: Tony Whittaker
+    - canonical_name: Jack P Leonard
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6403629'
+        - source: crichq_pdf
+          id: Jack P Leonard
+        - source: crichq_pdf
+          id: Jordan C Leonard
+        - source: crichq_pdf
+          id: Jack Leonard
+        - source: crichq_pdf
+          id: J P Leonard
+        - source: crichq_pdf
+          id: J Leonard
+    - canonical_name: Aca Albanese
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Aca Albanese
+        - source: crichq_pdf
+          id: Aaron albanese
+    - canonical_name: Norm Hussain
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Norm Hussain
+        - source: crichq_pdf
+          id: N H Hussain
+    - canonical_name: M Z Shah
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: MS Shah
+        - source: crichq_pdf
+          id: M H Shah
+        - source: crichq_pdf
+          id: Mujihad Shah
+        - source: crichq_pdf
+          id: M Z Shah
+    - canonical_name: Chris Maidment
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6935056'
+        - source: play_cricket
+          id: '6999618'
+    - canonical_name: AC Campbell
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6745391'
+        - source: crichq_pdf
+          id: AC Campbell
+    - canonical_name: K Turner
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: K Turner
+        - source: crichq_pdf
+          id: KLT Turner
+        - source: crichq_pdf
+          id: KT Turner
+        - source: crichq_pdf
+          id: Kyle Turner
+    - canonical_name: Jja Albanese
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: J Albanese
+        - source: crichq_pdf
+          id: J A Albanese
+        - source: crichq_pdf
+          id: Jja Albanese
+        - source: crichq_pdf
+          id: Josh albanese
+    - canonical_name: Suleman Ishaq
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '5424334'
+        - source: crichq_pdf
+          id: S Ishaq
+    - canonical_name: Zakaria Ali
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6267738'
+        - source: cricketstatz
+          id: '1320'
+    - canonical_name: LJ Hamilton
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6640584'
+        - source: crichq_pdf
+          id: LJ Hamilton
+        - source: crichq_pdf
+          id: Lewis Hamilton
+    - canonical_name: Kevin Dodson
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: k dodson
+        - source: cricketstatz
+          id: '849'
+    - canonical_name: CB Belston
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6196620'
+        - source: crichq_pdf
+          id: CB Belston
+        - source: cricketstatz
+          id: '1644'
+    - canonical_name: DW Wilkes
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: DW Wilkes
+        - source: crichq_pdf
+          id: DJW wilkes
+        - source: crichq_pdf
+          id: Dave Wilkes
+        - source: crichq_pdf
+          id: David Wilkes
+    - canonical_name: HR Rabbi
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: H Rabbi
+        - source: crichq_pdf
+          id: HR Rabbi
+        - source: crichq_pdf
+          id: Hammed Rabbi
+        - source: crichq_pdf
+          id: Hamad rabbi
+    - canonical_name: SM Oldham
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: SM Oldham
+        - source: crichq_pdf
+          id: S Oldham
+    - canonical_name: David Leslie Eckersley
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '6196732'
+        - source: crichq_pdf
+          id: Dave Eckersley
+        - source: crichq_pdf
+          id: DE Eckersley
+        - source: crichq_pdf
+          id: D Eckersley
+    - canonical_name: G Jebb
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: GJ Jebb
+        - source: cricketstatz
+          id: '1425'
+    - canonical_name: MH Dearden
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: MH Dearden
+        - source: crichq_pdf
+          id: Max Dearden
+    - canonical_name: B Chapman
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: b P Chapman
+        - source: cricketstatz
+          id: '430'
+    - canonical_name: C Brindle
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: CB Brindle
+        - source: crichq_pdf
+          id: C Brindle
+    - canonical_name: D Roberts
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Danny Roberts
+        - source: cricketstatz
+          id: '1417'
+    - canonical_name: Simon Bowkett
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Simon Bowkett
+        - source: crichq_pdf
+          id: S Bowkett
+    - canonical_name: J Dwyer
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: J Dwyer
+        - source: crichq_pdf
+          id: Jamie Dwyer
+    - canonical_name: D Bowkett
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: D Bowkett
+        - source: crichq_pdf
+          id: D B Bowkett
+    - canonical_name: SS Shah
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: SS Shah
+        - source: crichq_pdf
+          id: SA Shah
+        - source: crichq_pdf
+          id: S F Shah
+    - canonical_name: Jordan b LDB Birmingham
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Jordan b LDB Birmingham
+        - source: crichq_pdf
+          id: Jordan c Shasvat kakkar Kakkar b LDB Birmingham
+    - canonical_name: Ahmad Rabbi
+      status: pending
+      refs:
+        - source: crichq_pdf
+          id: Ahmad Rabbi
+        - source: crichq_pdf
+          id: Amad Rabbi

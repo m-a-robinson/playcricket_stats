@@ -53,13 +53,31 @@ import argparse
 import os
 import sqlite3
 
-import yaml
+from ruamel.yaml import YAML
 
 
 DEFAULT_DECISIONS_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "reconcile", "decisions.yaml"
 )
+
+
+def _yaml_engine():
+    """
+    One ruamel.yaml instance, configured to round-trip decisions.yaml
+    (preserving its comments and structure) with the indent style the
+    file is hand-written in. Round-trip, not plain safe-load/dump:
+    promote_pending() below writes this file back out, and a bare
+    yaml.safe_load()/safe_dump() pair would silently strip every
+    comment in it. Shared with reconcile_audit.py's write_pending_
+    candidates(), which imports this rather than configuring its own.
+    """
+
+    y = YAML()
+    y.preserve_quotes = True
+    y.width = 4096
+    y.indent(mapping=2, sequence=4, offset=2)
+    return y
 
 
 def _as_ref_tuples(merge_entries):
@@ -83,7 +101,7 @@ def load_decisions(path=DEFAULT_DECISIONS_PATH):
     """
 
     with open(path, "r", encoding="utf-8") as f:
-        data = yaml.safe_load(f) or {}
+        data = _yaml_engine().load(f) or {}
 
     return {
         "players": _as_ref_tuples(data.get("players") or []),
@@ -395,6 +413,101 @@ def apply_decisions(conn, decisions=None, decisions_path=DEFAULT_DECISIONS_PATH)
 
 
 # ==================================================================
+# PROMOTE PENDING
+# ==================================================================
+
+# Statuses on a pending: entry that promote a candidate into the real
+# merge section instead of rejected:.
+_CONFIRMED_STATUSES = {"confirmed", "audited"}
+
+
+def promote_pending(decisions_path=DEFAULT_DECISIONS_PATH):
+    """
+    Sweep decisions.yaml's pending: section (written by
+    reconcile_audit.py's write_pending_candidates()) by each entry's
+    status: `status: confirmed` or `status: audited` moves it into the
+    real merge section (players:/clubs:/teams:/grounds:) -- a decision,
+    from here on applied by reconcile.py like any other. Anything else
+    -- still `status: pending` (never reviewed, or reviewed and not yet
+    decided), or explicitly `status: rejected` -- moves into rejected:
+    instead, so it's remembered either way and reconcile_audit.py stops
+    re-suggesting it as new.
+
+    This ALWAYS drains pending: completely -- every entry currently
+    there leaves it, one way or the other. Only run this once you've
+    actually finished going through the current pending: batch: an
+    entry you haven't looked at yet, still sitting at the default
+    status: pending, falls into rejected: (itself as status: pending
+    there, so it stays revisitable) exactly the same as one you looked
+    at and weren't sure about. If you're mid-review, leave pending:
+    alone and re-run this later -- re-running reconcile_audit.py in the
+    meantime only adds genuinely new candidates, it never touches
+    existing pending: entries' canonical_name/status.
+
+    Rewrites decisions.yaml only -- doesn't touch the SQLite database.
+    Run `python3 reconcile.py --sqlite-db <path>` (no --promote)
+    afterwards to actually apply anything newly confirmed.
+
+    Returns {entity: (promoted_count, deferred_count)}.
+    """
+
+    yaml = _yaml_engine()
+
+    with open(decisions_path, "r", encoding="utf-8") as f:
+        data = yaml.load(f) or {}
+
+    pending = data.get("pending") or {}
+    results = {}
+
+    for entity in ("players", "clubs", "teams", "grounds"):
+
+        entries = pending.get(entity) or []
+
+        if not entries:
+            results[entity] = (0, 0)
+            continue
+
+        if entity not in data or data[entity] is None:
+            data[entity] = []
+
+        if "rejected" not in data:
+            data["rejected"] = {}
+        if entity not in data["rejected"] or data["rejected"][entity] is None:
+            data["rejected"][entity] = []
+
+        promoted = 0
+        deferred = 0
+
+        for entry in entries:
+
+            status = (entry.get("status") or "pending").strip().lower()
+            promoted_entry = {
+                "canonical_name": entry.get("canonical_name"),
+                "refs": entry["refs"],
+            }
+
+            if status in _CONFIRMED_STATUSES:
+                data[entity].append(promoted_entry)
+                promoted += 1
+            else:
+                data["rejected"][entity].append({
+                    "refs": entry["refs"],
+                    "status": "rejected" if status == "rejected" else "pending",
+                })
+                deferred += 1
+
+        pending[entity] = []
+        results[entity] = (promoted, deferred)
+
+    data["pending"] = pending
+
+    with open(decisions_path, "w", encoding="utf-8") as f:
+        yaml.dump(data, f)
+
+    return results
+
+
+# ==================================================================
 # CLI
 # ==================================================================
 
@@ -408,8 +521,27 @@ if __name__ == "__main__":
     )
     parser.add_argument("--sqlite-db", default="playcricket_stats.sqlite")
     parser.add_argument("--decisions", default=DEFAULT_DECISIONS_PATH)
+    parser.add_argument(
+        "--promote", action="store_true",
+        help=(
+            "Sweep decisions.yaml's pending: section by status (confirmed/"
+            "audited -> the real merge section, anything else -> rejected:) "
+            "and exit -- rewrites decisions.yaml only, doesn't touch the "
+            "database. Run again without --promote afterwards to apply."
+        )
+    )
 
     args = parser.parse_args()
+
+    if args.promote:
+
+        results = promote_pending(decisions_path=args.decisions)
+
+        for entity, (promoted, deferred) in results.items():
+            if promoted or deferred:
+                print(f"{entity}: {promoted} promoted, {deferred} moved to rejected:")
+
+        raise SystemExit(0)
 
     conn = sqlite3.connect(args.sqlite_db)
     conn.execute("PRAGMA foreign_keys = ON")

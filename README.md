@@ -206,18 +206,25 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   you write, not just accept — see its own header for the full "how to
   edit this" guide), a club's confirmed home ground (`club_home_grounds`),
   and rules that fix a source's own unusably vague per-match venue text
-  for one club's home fixtures (`ground_overrides`). Also holds
-  `rejected:` — candidates a human has looked at and explicitly *not*
-  merged, either confirmed different (`status: rejected`) or genuinely
-  undecided (`status: pending`, i.e. postponed for later) — read only by
-  `reconcile_audit.py`, to keep something already reviewed out of its "new
-  candidates" list without losing the decision (or non-decision) already
-  made. This file is data, not code: `reconcile.py` applies it exactly as
-  written, and it's the "readable file" the reconciliation process
-  produces once populated, not a separate report generated from something
-  else. Changing a decision later means editing this file and rebuilding
-  the `.sqlite` from scratch (see "If in doubt" below) — there's no
-  separate undo, since a merge deletes rows.
+  for one club's home fixtures (`ground_overrides`). `pending:` is where
+  `reconcile_audit.py` writes every new candidate it finds (see that
+  bullet below) — nothing to hand-copy out of a report; work through it
+  (correct `canonical_name`, set `status: confirmed`/`audited`) and run
+  `python3 reconcile.py --promote` to sweep confirmed entries into the
+  real sections below and everything else into `rejected:` — candidates a
+  human has looked at and explicitly *not* merged, either confirmed
+  different (`status: rejected`) or genuinely undecided (`status: pending`
+  there too, i.e. postponed for later) — read by `reconcile_audit.py` to
+  keep something already reviewed out of its "new candidates" list without
+  losing the decision (or non-decision) already made. This file is data,
+  not code: `reconcile.py` applies it exactly as written, and it's the
+  "readable file" the reconciliation process produces once populated, not
+  a separate report generated from something else. Changing a decision
+  later means editing this file and rebuilding the `.sqlite` from scratch
+  (see "If in doubt" below) — there's no separate undo, since a merge
+  deletes rows. Edited via `ruamel.yaml`'s round-trip mode, not plain
+  PyYAML, specifically so `reconcile_audit.py`/`reconcile.py --promote`
+  can rewrite it without silently stripping every comment in it.
 - **`reconcile.py`** — Cross-source identity merging for players, clubs,
   teams, *and* grounds (see roadmap item 4), plus applying club home
   grounds and ground overrides — all read from `reconcile/decisions.yaml`
@@ -241,24 +248,41 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   after a merge: `career_stats()`/`SQLPlayerStats` already aggregate by
   `player_id` alone, across every source. `merge_players()` shares its
   underlying mechanism with `SQLiteStore.merge_players()` above, built
-  independently — see that bullet for the overlap.
+  independently — see that bullet for the overlap. `python3 reconcile.py
+  --promote` is the other half of the `pending:` workflow (yaml-only,
+  doesn't touch the database): sweeps `decisions.yaml`'s `pending:`
+  section by each entry's `status` — `confirmed`/`audited` moves it into
+  the real merge section, anything else (still `pending`, or explicitly
+  `rejected`) moves into `rejected:` — then run `reconcile.py` again
+  (without `--promote`) to actually apply what got confirmed.
 - **`reconcile_audit.py`** — Generates a Markdown report over an
   already-built SQLite store: a data-quality scan (distinct competitions/
   leagues/grounds/seasons, rarest-first so a likely typo surfaces near the
   top, plus any crichq_pdf.py "Unknown (...)" placeholder rows) and
   reconciliation candidates for clubs, teams, grounds, and players that
   look like the same real thing split across canonical rows but aren't
-  safe to merge automatically. Read-only — it never writes to the
-  database. Run `python3 reconcile_audit.py --sqlite-db <path> --out
-  reconcile/data_quality_report.md` after ingesting (all) sources; a
-  confirmed candidate becomes a permanent decision by hand-copying its
-  `(source, source_*_id)` refs into the right section of
-  `reconcile/decisions.yaml` (a ready-to-paste snippet is included under
-  each candidate), then re-running `reconcile.py`. A candidate already
-  recorded under `decisions.yaml`'s `rejected:` (confirmed different, or
-  still undecided) is held out of the "new candidates" lists and shown
-  separately instead, so a decision already made — including a "not yet"
-  one — doesn't get suggested again as if it were new. Club/team candidate
+  safe to merge automatically. Never writes to the SQLite database — but
+  DOES write to `reconcile/decisions.yaml` (see that bullet above):
+  every run appends anything new it finds into `pending:`, each with a
+  suggested `canonical_name` and `status: pending`, ready to review —
+  nothing to hand-copy out of the Markdown report any more (pass
+  `--no-write-pending` to skip this and only generate the report, as
+  before this existed). Run `python3 reconcile_audit.py --sqlite-db
+  <path> --out reconcile/data_quality_report.md` after ingesting (all)
+  sources. A candidate already recorded under `decisions.yaml`'s
+  `rejected:` (confirmed different, or still undecided) is held out of
+  the "new candidates" lists and shown separately instead, so a decision
+  already made — including a "not yet" one — doesn't get suggested again
+  as if it were new; a candidate already sitting in `pending:` keeps
+  whatever `canonical_name`/`status` a human has since set on it rather
+  than being overwritten by a fresh run, and a cluster that grows a new
+  ref (a third spelling surfaces) gets that ref merged into the existing
+  `pending:` entry instead of creating a duplicate — including
+  transitively, when two otherwise-unrelated clusters found in the same
+  run both overlap a third (confirmed happening in practice: an
+  exact-match cluster and a separate, broader first-initial+surname
+  cluster both touching "M Partington"/"M.P Partington"/"Mp Partington").
+  Club/team candidate
   clustering is deliberately exact-equality-only (on a normalised key
   looser than the automatic merge's — e.g. also drops a trailing regional
   qualifier like "Bradshaw CC, **Lancs**") rather than fuzzy/substring
@@ -521,7 +545,7 @@ progress is to import the pieces directly in an `ipython` session and look
 at what comes back. One-time setup:
 
 ```bash
-pip install ipython pandas numpy requests pypdf pyyaml
+pip install ipython pandas numpy requests pypdf ruamel.yaml
 cd playcricket_stats
 ipython
 ```
@@ -711,13 +735,17 @@ Wrote reconcile/data_quality_report.md
 The report has two parts: a data-quality scan (distinct competitions,
 leagues, grounds, seasons, and any crichq_pdf.py "Unknown (...)" placeholder
 rows — rarest-first, so a likely typo surfaces near the top) and
-reconciliation candidates for clubs, teams, and players that look like the
-same real thing split across two or more canonical rows. Confirming a
-candidate means hand-copying its `(source, source_*_id)` refs into
-`reconcile.py`'s `PLAYER_MERGES`/`CLUB_MERGES`/`TEAM_MERGES`, then
-re-running `python3 reconcile.py --sqlite-db demo.sqlite` (step 6) to apply
-it — the report itself never edits anything, and is cheap enough to
-regenerate any time after ingesting a new source or fixing a parser bug.
+reconciliation candidates for clubs, teams, grounds, and players that look
+like the same real thing split across two or more canonical rows. This same
+run also writes every one of those candidates into
+`reconcile/decisions.yaml`'s `pending:` section — nothing to hand-copy out
+of the report. Confirming a candidate means correcting its `canonical_name`
+there and setting `status: confirmed` (or `audited`), then running
+`python3 reconcile.py --promote` to sweep it into the real merge section,
+followed by `python3 reconcile.py --sqlite-db demo.sqlite` (step 6) to
+actually apply it — the report itself never edits anything, and is cheap
+enough to regenerate any time after ingesting a new source or fixing a
+parser bug.
 
 `reconcile/data_quality_report.md` in this repo is a committed snapshot from
 the **full 933-match archive** (see the milestone note at the top of this
