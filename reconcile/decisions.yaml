@@ -1468,7 +1468,8 @@ pending:
           id: MT Patten
           name: MT Patten
     - canonical_name: Daniel Caulfield
-      status: pending
+      status: confirmed
+      decided: 2026-08-27
       refs:
         - source: play_cricket
           id: '6196444'
@@ -1476,6 +1477,23 @@ pending:
         - source: crichq_pdf
           id: DJ Caulfield
           name: DJ Caulfield
+        - source: crichq_pdf
+          id: D Willett
+          name: D Willett
+        - source: cricketstatz
+          id: '783'
+          name: D Willett
+      reason: >
+        Same real person under a former name (Daniel/Danny Willett),
+        confirmed by the user. Data supports it: both identities play
+        exclusively for East Lancs Paper Mill CC with no season overlap
+        -- "D Willett" 2014-2017, "Daniel/DJ Caulfield" 2022-2026 -- a
+        clean gap consistent with a name change, not two different
+        people. NOT included: cricketstatz "D Willetts" (id 946) and
+        crichq_pdf "DN Willetts" (a different club, Greenmount CC, in
+        2015/2017 and 2019/2020) -- a different real person who happens
+        to share a similar surname. Checked for other misspellings
+        (Wilett/Willet/Willit etc.) -- none found in the archive.
     - canonical_name: Steve Stubbs
       status: confirmed
       refs:
