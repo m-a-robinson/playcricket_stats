@@ -490,12 +490,21 @@ def _parse_match(header_match, body, match_index):
             home_full, away_full = inferred[0], f"{placeholder} - Opponent"
 
         else:
-            # No batting or bowling at all either (a genuinely abandoned
-            # match) -- there is no team name left anywhere in the text
-            # to recover, so synthesise a stable placeholder from the
-            # header fields so the match still gets an idempotent id
-            # rather than being silently merged into a neighbour.
-            home_full, away_full = f"{placeholder} - Team A", f"{placeholder} - Team B"
+            # No batting or bowling at all either -- neither team's name
+            # survives anywhere in the text, and (see the "Batting:" not
+            # in body check below) there's no innings data either, so
+            # this match carries zero identifiable content: not the
+            # opponent, not a scorecard, nothing but a competition/date
+            # header. Rather than insert a same-shaped-forever "Unknown
+            # (...) - Team A" vs. "- Team B" placeholder pair (confirmed,
+            # for real, to add no value -- every one found this way in
+            # the archive was "Abandoned - No Play Possible" with 0
+            # innings), skip the match entirely. Contrast with the
+            # `elif len(inferred) == 1` case just above: one side's name
+            # surviving means the match has SOME real content (at least
+            # one identifiable team, sometimes partial scorecard data
+            # too), so that case still gets inserted.
+            return None
 
     home_club, home_team = _split_team_name(home_full)
     away_club, away_team = _split_team_name(away_full)
@@ -785,7 +794,12 @@ def parse_pdf(pdf_path):
     list of dict
         One match-detail dict per match found (Play-Cricket shaped),
         in document order. Abandoned matches are included with empty
-        innings/players and status="Abandoned".
+        innings/players and status="Abandoned", as long as at least
+        one team's name is identifiable somewhere in the text -- a
+        match with literally no identifiable content at all (neither
+        team named, no innings) is skipped rather than inserted as an
+        "Unknown (...) - Team A" vs. "- Team B" placeholder pair (see
+        _parse_match()'s own comment on that case).
     """
 
     text = _extract_text(pdf_path)
@@ -799,7 +813,10 @@ def parse_pdf(pdf_path):
         end = headers[i + 1].start() if i + 1 < len(headers) else len(text)
         body = text[start:end]
 
-        matches.append(_parse_match(header_match, body, i))
+        parsed = _parse_match(header_match, body, i)
+
+        if parsed is not None:
+            matches.append(parsed)
 
     return matches
 
