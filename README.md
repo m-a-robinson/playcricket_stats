@@ -400,6 +400,50 @@ remains.
   Play-Cricket sync itself (`playcricket_api.py`/`playcricket_database.py`
   have no `__main__` — see "Maintaining the database" above for the
   snippet a `sync_playcricket.py` wrapper would replace).
+- **Four data-quality issues found reviewing sample scorecards across all
+  three sources (2026-08-27), each a naming/reference-data problem rather
+  than a parser bug, so deliberately left for manual reconciliation rather
+  than guessed at in code — consistent with this project's existing
+  "no fuzzy matching, human confirms it" approach (see roadmap item 4):**
+  - **CricHQ's `ground_name` is always county-level, never a real ground**
+    — confirmed by checking the raw PDF text directly: only 4 distinct
+    values across all 381 matches (`England - Lancashire` ×377,
+    `Derbyshire`/`Cheshire`/`Bedfordshire` ×1-2 each). There is no ground
+    name anywhere in the source text for `crichq_pdf.py` to extract — the
+    PDF's own `Venue:` field never carries one. Inferring a ground from
+    the home team would be wrong often enough to matter (cup ties and
+    Sunday friendlies aren't always played at the "home" side's own
+    ground), so this needs a manual club → home-ground reference table
+    instead. 75 distinct clubs appear across the archive (as home or
+    away) if that table gets built.
+  - **CricHQ's `result_description` now states the winner only** (fixed
+    this session — see the commit that added `AWARDED_WIN_LINE` and
+    extended `RESULT_LINE` for `"Won (D/L method)"` — previously showed
+    both teams, e.g. `"X Lost. Y Won"`). 44 played matches still have no
+    result recorded at all: 36 from the 2016-season report layout, which
+    never prints a result line of any kind, and 8 marked `"Batting:"`-
+    present but actually abandoned mid-match (`"Abandoned - Game
+    Unfinished - No Result"`) — the latter are stored with
+    `status="Played"` today since that flag only checks for the presence
+    of a `Batting:` section, not for an actual result; worth a genuine
+    `no_result` status distinction if these matter for stats later.
+  - **CricketStatz team names carry their club's abbreviation prefix**
+    (e.g. team name `ELPM 1st XI` for club `East Lancs Paper Mill`) where
+    Play-Cricket/CricHQ keep the two separate — already surfaced by
+    `reconcile_audit.py` as part of its 56 team-name splits (see roadmap
+    item 4/step 7); resolved the normal way, via a `TEAM_MERGES` entry,
+    not a parser change.
+  - **CricketStatz's bare `"Division 1"`/`"Division 2"`/`"Division 3"`/
+    `"Cup"` competition names (2005-2015, 223 matches) are missing an
+    `NMCL` league prefix** — the club played in the NMCL (North Manchester
+    Cricket League — see `nmcl stats/*.tif` above, the pre-CricketStatz
+    paper archive from the same era) before moving to the GMCL, and the
+    year ranges confirm the split cleanly: every bare `"Division N"`/
+    `"Cup"` name falls in 2005-2015, while `"GMCL Division N"`-prefixed
+    names only start in 2016. The exact cutover year isn't in the data
+    itself, so renaming these needs the club's own confirmation of when
+    the move happened before `competition_name` values can be corrected
+    (by hand, or a small date-gated rename pass once confirmed).
 
 ## Basic usage (verifying progress in ipython)
 

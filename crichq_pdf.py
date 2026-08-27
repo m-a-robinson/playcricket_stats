@@ -107,7 +107,15 @@ TOSS_LINE = re.compile(
 )
 
 RESULT_LINE = re.compile(
-    r'^(?P<team>.+?) - (?P<margin>Won by .+|Match Tied|Match Drawn)$',
+    r'^(?P<team>.+?) - (?P<margin>Won by .+|Won \(D/L method\)|Match Tied|Match Drawn)$',
+    re.MULTILINE
+)
+
+# Rare alternative to RESULT_LINE seen on administratively-decided matches
+# (e.g. a walkover) -- no "<team> - Won ..." summary line at all, just
+# "<team> Game(s) Awarded as Win"/"...as Loss" sentences for both sides.
+AWARDED_WIN_LINE = re.compile(
+    r'^(?P<team>.+?) Games? Awarded as Win\.',
     re.MULTILINE
 )
 
@@ -495,21 +503,37 @@ def _parse_match(header_match, body, match_index):
     # Result
     # --------------------------------------------------------------
 
-    result_m = RESULT_LINE.search(body[:body.index("Batting:")])
+    result_section = body[:body.index("Batting:")]
+    result_m = RESULT_LINE.search(result_section)
+    awarded_m = None if result_m else AWARDED_WIN_LINE.search(result_section)
+
     result = None
     result_applied_to = None
+    result_description = None
 
     if result_m:
         result = result_m.group("margin")
         winner_text = result_m.group("team").strip()
+    elif awarded_m:
+        # No "<team> - Won ..." summary line for a walkover -- recover the
+        # winner from the "Game(s) Awarded as Win" sentence instead.
+        result = "Won (awarded)"
+        winner_text = awarded_m.group("team").strip()
+    else:
+        winner_text = None
+
+    if winner_text:
         result_applied_to = home_full if winner_text == home_full else (
             away_full if winner_text == away_full else None
         )
 
-    result_desc_m = re.search(
-        r"^(.+Lost\.?\s.+(?:Won|Lost).*)$", body[:body.index("Batting:")], re.MULTILINE
-    )
-    result_description = result_desc_m.group(1).strip() if result_desc_m else None
+        # CricHQ's own summary line states the result from both teams'
+        # perspective ("X Won. Y Lost" / "Y Lost. X Won" -- order varies)
+        # -- redundant with the winner + margin already parsed above, and
+        # reads as noise next to Play-Cricket's own single-team style
+        # ("<team> - Won by X"). Build one winner-only sentence instead of
+        # keeping both team names.
+        result_description = f"{winner_text} {result}"
 
     # --------------------------------------------------------------
     # Innings
