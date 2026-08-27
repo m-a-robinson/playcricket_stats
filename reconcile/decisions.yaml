@@ -1644,8 +1644,9 @@ pending:
         - source: crichq_pdf
           id: N H Hussain
           name: N H Hussain
-    - canonical_name: M Z Shah
-      status: pending
+    - canonical_name: Mujihad Shah
+      status: confirmed
+      decided: 2026-08-27
       refs:
         - source: crichq_pdf
           id: MS Shah
@@ -1656,9 +1657,18 @@ pending:
         - source: crichq_pdf
           id: Mujihad Shah
           name: Mujihad Shah
-        - source: crichq_pdf
-          id: M Z Shah
-          name: M Z Shah
+      reason: >
+        Same person, all 2022 season, never marked as wicketkeeper --
+        "Mujihad Shah" gives the real full name the other two spell
+        with a slightly different middle initial. NOT included:
+        crichq_pdf "M Z Shah" -- 2023 season only (no overlap), 23
+        games vs. 11 combined here, and consistently marked
+        wicketkeeper (dagger in 8/23 raw appearances vs. never for
+        this cluster) -- confirmed by the user as a different real
+        person who happens to share the surname and first initial
+        ("Shah" is common at this club: M/H/A/SA/E Shah and "S F Shah
+        Hussain" all appear as clearly distinct people in the same
+        matches).
     - canonical_name: Chris Maidment
       status: confirmed
       refs:
