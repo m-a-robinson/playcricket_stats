@@ -11,29 +11,47 @@ already-built SQLite store:
    seasons/date ranges, and suspicious/placeholder values -- so someone
    can eyeball the fields stats get filtered/grouped by (the same
    fields career_stats()/SQLPlayerStats query on) before trusting them.
-2. Reconciliation candidates -- clubs, teams, and players that look
-   like they might be the same real thing split across two or more
-   canonical rows, but aren't safe to merge automatically. SQLiteStore
-   already auto-merges exact/near-exact club and team names at insert
-   time (see its docstring); what's left here is the fuzzier residue,
-   plus players, which get no automatic merging at all. Player
-   candidates are restricted to players who *exclusively* appear for
-   one club (ELPMCC_NAME from sqlite_queries.py, by default) -- the
-   only players career_stats() tracks by default anyway. A shared name
-   across different clubs is excluded rather than suggested: more
-   likely two different real people (or a guest/opposition appearance)
-   than the same person reconciled across clubs. Different *teams*
-   within that one club (1st XI, 2nd XI, ...) are fine -- that's still
-   one club, and exactly the case this is meant to catch.
+2. Reconciliation candidates -- clubs, teams, grounds, and players
+   that look like they might be the same real thing split across two
+   or more canonical rows, but aren't safe to merge automatically.
+   SQLiteStore already auto-merges exact/near-exact club, team, and
+   ground names at insert time (see its docstring); what's left here
+   is the fuzzier residue, plus players, which get no automatic
+   merging at all. Player candidates are restricted to players who
+   *exclusively* appear for one club (ELPMCC_NAME from
+   sqlite_queries.py, by default) -- the only players career_stats()
+   tracks by default anyway. A shared name across different clubs is
+   excluded rather than suggested: more likely two different real
+   people (or a guest/opposition appearance) than the same person
+   reconciled across clubs. Different *teams* within that one club
+   (1st XI, 2nd XI, ...) are fine -- that's still one club, and
+   exactly the case this is meant to catch. Ground candidates are
+   grouped by home club rather than by name similarity -- see
+   render_ground_candidates() for why.
 
-This script never writes to the database. It only reads and reports.
-Confirmed candidates are turned into permanent decisions by hand, added
-to reconcile.py's PLAYER_MERGES/CLUB_MERGES/TEAM_MERGES using the
-(source, source_*_id) refs listed under each candidate -- then
-`python3 reconcile.py --sqlite-db <path>` applies them. Re-run this
-script (it's cheap and disposable, not version-controlled output in
-itself beyond whatever snapshot you choose to commit) any time after
-ingesting a new source or fixing a parser bug, to see what's changed.
+This script never writes to the SQLite database -- only to decisions.yaml
+(see write_pending_candidates()), and only additively: every new
+candidate found is appended into decisions.yaml's `pending:` section
+with a suggested `canonical_name` and `status: pending`, rather than
+requiring the (source, source_*_id) refs to be hand-copied out of the
+Markdown report. Nothing gets applied to the database from this alone --
+review each pending entry, correct `canonical_name` if needed, and set
+`status: confirmed` (or `audited`) for the ones you agree with, then run
+`python3 reconcile.py --promote` to sweep confirmed entries into the
+real merge sections (and everything else into `rejected:`), followed by
+`python3 reconcile.py --sqlite-db <path>` to actually apply them. Pass
+`--no-write-pending` to skip this and only generate the report, as
+before. A candidate already recorded in decisions.yaml's `rejected:`
+section (confirmed different, or still undecided) is held out of the
+"new candidates" lists below and shown separately instead -- see
+render_deferred_section() -- so a decision already made, even a
+"not yet" one, doesn't get re-suggested as if it were new, and a
+pending: entry already written keeps whatever canonical_name/status a
+human has since set on it (see write_pending_candidates()). Re-run this
+script (it's cheap, and the Markdown report itself is disposable, not
+version-controlled output in itself beyond whatever snapshot you choose
+to commit) any time after ingesting a new source, fixing a parser bug,
+or editing decisions.yaml.
 
 Usage
 -----
@@ -42,8 +60,8 @@ Usage
 
 Everything here is a *suggestion* for a human to confirm or reject --
 none of it is applied automatically, and false positives (two
-different real people/clubs/teams that happen to look similar) are
-expected and fine; that's exactly what the human review step is for.
+different real people/clubs/teams/grounds that happen to look similar)
+are expected and fine; that's exactly what the human review step is for.
 """
 
 import argparse
@@ -55,6 +73,7 @@ from difflib import SequenceMatcher
 
 from sqlite_store import SQLiteStore
 from sqlite_queries import ELPMCC_NAME
+from reconcile import DEFAULT_DECISIONS_PATH, _yaml_engine
 
 
 # ==================================================================
@@ -128,6 +147,408 @@ def _similar(a, b, threshold=0.82):
         return False
 
     return SequenceMatcher(None, a, b).ratio() >= threshold
+
+
+# ==================================================================
+# ALREADY-REVIEWED (decisions.yaml's `rejected:` section)
+# ==================================================================
+
+def _load_rejected(decisions_path=DEFAULT_DECISIONS_PATH):
+    """
+    decisions.yaml's `rejected:` section, keyed by entity type, as a
+    list of {refs: frozenset of (source, id) tuples, status, reason}.
+    Missing file / missing section -> no entries, same as an empty one.
+    """
+
+    try:
+        with open(decisions_path, "r", encoding="utf-8") as f:
+            rejected_raw = (_yaml_engine().load(f) or {}).get("rejected") or {}
+    except FileNotFoundError:
+        rejected_raw = {}
+
+    result = {}
+
+    for entity in ("players", "clubs", "teams", "grounds"):
+
+        entries = []
+
+        for entry in rejected_raw.get(entity) or []:
+
+            refs = frozenset(
+                (ref["source"], str(ref["id"])) for ref in entry["refs"]
+            )
+
+            entries.append({
+                "refs": refs,
+                "status": entry.get("status", "pending"),
+                "reason": (entry.get("reason") or "").strip(),
+            })
+
+        result[entity] = entries
+
+    return result
+
+
+def _load_claimed_refs(decisions_path=DEFAULT_DECISIONS_PATH):
+    """
+    Every (source, id) ref already spoken for anywhere in
+    decisions.yaml -- a confirmed merge, rejected:, or pending: --
+    keyed by entity type, plus every canonical_name already confirmed
+    for that entity type. Used two ways: stripping already-claimed
+    refs out of a freshly-found candidate cluster before it's written
+    to pending: (the refs), and warning when a fresh candidate's
+    suggested name matches a confirmed entry it has no refs in common
+    with (the names) -- see render_player_candidates()'s use of
+    `confirmed_names` for why that second case matters.
+
+    Needed because a confirmed merge's own survivor row can later look,
+    to the clustering logic, just like a fresh candidate: once
+    reconcile.py sets a survivor's canonical_name (e.g. "Ian Wade"),
+    any other still-separate row that happens to share that name (a
+    different source's own raw-text id, say) clusters with it again on
+    the next audit run -- and without the refs filter, the resulting
+    "candidate" would re-list the confirmed refs the survivor already
+    owns, exactly the ref-in-two-places hazard reconcile.py's
+    find_ref_conflicts()/--check exists to catch. Filtering here means
+    that never gets written in the first place: only the genuinely new,
+    unclaimed refs make it into the candidate -- which is exactly what
+    then needs the names warning: a "new refs only" candidate promoted
+    as its own separate players: entry does NOT fold into the existing
+    confirmed player of the same name, it creates a second, disconnected
+    one -- promoting it is very likely the wrong action; adding its refs
+    directly to the existing confirmed entry instead is usually right.
+    """
+
+    try:
+        with open(decisions_path, "r", encoding="utf-8") as f:
+            data = _yaml_engine().load(f) or {}
+    except FileNotFoundError:
+        data = {}
+
+    claimed_refs = {}
+    confirmed_names = {}
+
+    for entity in ("players", "clubs", "teams", "grounds"):
+
+        refs = set()
+        names = set()
+
+        for entry in data.get(entity) or []:
+            names.add((entry.get("canonical_name") or "").casefold())
+            for ref in entry["refs"]:
+                refs.add((ref["source"], str(ref["id"])))
+
+        for entry in ((data.get("rejected") or {}).get(entity) or []):
+            for ref in entry["refs"]:
+                refs.add((ref["source"], str(ref["id"])))
+
+        for entry in ((data.get("pending") or {}).get(entity) or []):
+            for ref in entry["refs"]:
+                refs.add((ref["source"], str(ref["id"])))
+
+        claimed_refs[entity] = refs
+        confirmed_names[entity] = names
+
+    return claimed_refs, confirmed_names
+
+
+def _match_rejected(cluster_refs, rejected_entries):
+    """
+    The rejected entry that shares at least one ref with this candidate
+    cluster, if any -- any overlap at all, not strict containment
+    either direction, since either side can be the larger one: a pair
+    rejected once is still recognised if the cluster around it later
+    grows a third spelling (rejected ref set smaller than the fresh
+    cluster) -- but a rejected entry can ALSO be the larger one once
+    write_pending_candidates()/promote_pending() have consolidated
+    several runs' worth of refs into it, while a single clustering pass
+    this run (e.g. just the exact-match section, not the broader
+    first-initial+surname one) only rediscovers a smaller fragment of
+    it (confirmed happening in practice: a strict "rejected subset of
+    cluster" check missed exactly this case, silently un-suppressing
+    an already-reviewed group). None if this cluster hasn't been
+    reviewed before at all.
+    """
+
+    cluster_set = frozenset(cluster_refs)
+
+    for entry in rejected_entries:
+        if entry["refs"] & cluster_set:
+            return entry
+
+    return None
+
+
+def render_deferred_section(rejected_by_entity):
+    """
+    Everything already looked at and held back (status: pending) or
+    confirmed different (status: rejected) -- kept visible so review
+    work already done isn't lost or silently repeated, but out of the
+    way of genuinely new candidates.
+    """
+
+    lines = ["### Already reviewed (deferred / rejected)", ""]
+
+    any_entries = any(rejected_by_entity.values())
+
+    if not any_entries:
+        lines.append("None recorded in decisions.yaml's `rejected:` section.")
+        lines.append("")
+        return lines
+
+    for entity, entries in rejected_by_entity.items():
+
+        if not entries:
+            continue
+
+        lines.append(f"**{entity.capitalize()}**")
+        lines.append("")
+
+        for entry in entries:
+            refs_text = ", ".join(f"(\"{s}\", \"{i}\")" for s, i in sorted(entry["refs"]))
+            lines.append(f"- `{entry['status']}` -- {refs_text}")
+            if entry["reason"]:
+                lines.append(f"  - {entry['reason']}")
+
+        lines.append("")
+
+    return lines
+
+
+def _ref_set(entry_or_refs):
+    """(source, id) frozenset for either a candidate's [(s, i), ...] refs or a pending entry's [{source, id}, ...] refs."""
+
+    items = entry_or_refs["refs"] if isinstance(entry_or_refs, dict) else entry_or_refs
+
+    return {
+        (item["source"], str(item["id"])) if isinstance(item, dict) else (item[0], str(item[1]))
+        for item in items
+    }
+
+
+def _merge_ref_group(primary, other):
+    """Fold `other`'s refs into `primary` in place; a non-pending status on either wins the name/status."""
+
+    primary_status = (primary.get("status") or "pending").strip().lower()
+    other_status = (other.get("status") or "pending").strip().lower()
+
+    if primary_status == "pending" and other_status != "pending":
+        primary["canonical_name"] = other["canonical_name"]
+        primary["status"] = other["status"]
+
+    if other.get("note") and not primary.get("note"):
+        primary["note"] = other["note"]
+
+    primary_refs = _ref_set(primary)
+
+    for ref in other["refs"]:
+        key = (ref["source"], str(ref["id"])) if isinstance(ref, dict) else (ref[0], str(ref[1]))
+        if key not in primary_refs:
+            primary["refs"].append(
+                ref if isinstance(ref, dict) else {"source": ref[0], "id": str(ref[1])}
+            )
+            primary_refs.add(key)
+
+
+def _consolidate_pending(entries):
+    """
+    Merge any entries in one entity type's pending: list that share at
+    least one ref, including transitively (entry C overlapping both A
+    and B, even though A and B don't overlap each other, still ends up
+    as one group with A/B/C all folded together) -- needed because
+    render_player_candidates() (and, less often, the others) can
+    legitimately return more than one overlapping-but-not-identical
+    cluster for the same real ambiguity in a single run (confirmed
+    happening in practice: an exact-punctuation-stripped match and a
+    separate, broader first-initial+surname match both touching "M
+    Partington"/"M.P Partington"/"Mp Partington", with the broader one
+    being exactly the C that links two otherwise-disjoint clusters
+    together). Left unmerged, these would land in pending: as separate
+    entries for what's really one decision.
+
+    Greedy, order-dependent, and that's fine here: entries already in
+    the file (loaded first, so processed first) act as the anchor a
+    later, overlapping candidate merges into, so an existing human
+    edit is never the one that gets discarded. Between two entries
+    neither of which has been touched (both status: pending), the
+    first-seen one's canonical_name is kept arbitrarily -- still a
+    default guess either way, no worse than before.
+    """
+
+    merged = []
+
+    for entry in entries:
+
+        entry_refs = _ref_set(entry)
+        overlapping = [kept for kept in merged if entry_refs & _ref_set(kept)]
+
+        if not overlapping:
+            merged.append(entry)
+            continue
+
+        primary = overlapping[0]
+
+        for other in overlapping[1:]:
+            _merge_ref_group(primary, other)
+            merged.remove(other)
+
+        _merge_ref_group(primary, entry)
+
+    return merged
+
+
+def _annotate_name_collisions(pending_by_entity, confirmed_names):
+    """
+    Flags any freshly-found pending candidate whose canonical_name
+    matches an entity already confirmed elsewhere in decisions.yaml --
+    e.g. a fresh "Ian Wade" cluster surfacing again after the real Ian
+    Wade merge is confirmed (see _load_claimed_refs()'s docstring for
+    how that happens). Promoting such a candidate via --promote would
+    create a second, disconnected entity with the same display name
+    rather than folding into the one that already exists, so each
+    flagged entry gets a `note:` field (written into pending: by
+    write_pending_candidates()) plus an entry in the returned
+    {entity: [canonical_name, ...]} map for the report to warn about --
+    the human still has to decide by hand whether the refs actually
+    belong in the existing confirmed entry instead.
+
+    Mutates the pending_by_entity entries in place.
+    """
+
+    collisions = defaultdict(list)
+
+    for entity, entries in pending_by_entity.items():
+        confirmed = confirmed_names.get(entity, set())
+        for entry in entries:
+            if (entry.get("canonical_name") or "").casefold() in confirmed:
+                entry["note"] = (
+                    f"WARNING: canonical_name {entry['canonical_name']!r} matches "
+                    "an entry already confirmed elsewhere in this file, but this "
+                    "candidate's refs are not part of that entry -- promoting it "
+                    "as-is via --promote creates a second, disconnected entity "
+                    "with the same name rather than extending the existing one. "
+                    "Check whether these refs belong in the existing confirmed "
+                    "entry instead."
+                )
+                collisions[entity].append(entry["canonical_name"])
+
+    return collisions
+
+
+def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS_PATH, confirmed_names=None):
+    """
+    Append newly-found candidates into decisions.yaml's `pending:`
+    section, in place -- the alternative this project's user asked for
+    to hand-copying YAML snippets out of the Markdown report. Comments
+    and everything else already in the file are preserved (see
+    reconcile._yaml_engine()'s docstring for why this needs ruamel, not
+    plain PyYAML).
+
+    Each ref gets a `name` alongside its `source`/`id` -- the row's
+    current display name at that source (known_as/club_name/team_name/
+    ground_name, whichever applies), so a ref reads as something a
+    human can actually check ("crichq_pdf: MP Partington") rather than
+    a bare opaque id. Purely informational: reconcile.py's merge logic
+    only ever reads `source`/`id`.
+
+    A candidate whose refs already appear (even partially) in an
+    existing `pending:` entry is treated as already represented: any
+    ref this run found that the existing entry doesn't have yet is
+    merged in (a cluster can grow as more sources/spellings surface),
+    but canonical_name/status are left exactly as the human set them --
+    never overwritten by a fresh run. A genuinely new candidate is
+    appended with status: pending and its suggested canonical_name (the
+    human's to correct or accept). Overlapping candidates found within
+    the same run are also consolidated with each other and with what
+    was already there -- see _consolidate_pending().
+
+    If `confirmed_names` is given (the first item _load_claimed_refs()
+    returns), every existing `pending:` entry -- not just ones fresh
+    this run -- gets re-checked against it, and any whose
+    canonical_name matches an already-confirmed entry gets a `note:`
+    warning added if it doesn't already have one. This is what keeps a
+    stale collision self-healing: an entry written to pending: before
+    this warning existed, or before the name it now collides with was
+    confirmed, gets flagged the next time this runs rather than staying
+    silently dangerous forever (see _annotate_name_collisions() for why
+    it's dangerous -- promoting it as-is creates a second, disconnected
+    entity with the same name instead of extending the existing one).
+
+    Returns (added_count, grown_count, collisions) -- collisions is
+    {entity: [canonical_name, ...]} for every pending entry (fresh or
+    pre-existing) currently flagged with a collision note.
+    """
+
+    yaml = _yaml_engine()
+
+    try:
+        with open(decisions_path, "r", encoding="utf-8") as f:
+            data = yaml.load(f) or {}
+    except FileNotFoundError:
+        data = {}
+
+    if "pending" not in data:
+        data["pending"] = {}
+
+    added = 0
+    grown = 0
+    collisions = defaultdict(list)
+    confirmed_names = confirmed_names or {}
+
+    for entity, new_entries in pending_by_entity.items():
+
+        existing = list(data["pending"].get(entity) or [])
+        existing_ref_sets = [_ref_set(e) for e in existing]
+        before_count = len(existing)
+
+        candidates = [
+            {
+                "canonical_name": c["canonical_name"],
+                "status": "pending",
+                **({"note": c["note"]} if c.get("note") else {}),
+                "refs": [
+                    {"source": s, "id": str(i), "name": c.get("ref_names", {}).get((s, i))}
+                    for s, i in c["refs"]
+                ],
+            }
+            for c in new_entries
+        ]
+
+        combined = _consolidate_pending(existing + candidates)
+
+        # Rough but honest counts: a post-merge entry with no overlap
+        # against any pre-existing entry is genuinely new; one whose
+        # ref set grew past what any single pre-existing entry already
+        # had counts as grown, not added twice over.
+        for entry in combined:
+            refs = _ref_set(entry)
+            prior_match = next((s for s in existing_ref_sets if refs & s), None)
+            if prior_match is None:
+                added += 1
+            elif refs - prior_match:
+                grown += 1
+
+        confirmed = confirmed_names.get(entity, set())
+        for entry in combined:
+            if (entry.get("canonical_name") or "").casefold() in confirmed:
+                if not entry.get("note"):
+                    entry["note"] = (
+                        f"WARNING: canonical_name {entry['canonical_name']!r} matches "
+                        "an entry already confirmed elsewhere in this file, but this "
+                        "candidate's refs are not part of that entry -- promoting it "
+                        "as-is via --promote creates a second, disconnected entity "
+                        "with the same name rather than extending the existing one. "
+                        "Check whether these refs belong in the existing confirmed "
+                        "entry instead."
+                    )
+                collisions[entity].append(entry["canonical_name"])
+
+        data["pending"][entity] = combined
+
+    with open(decisions_path, "w", encoding="utf-8") as f:
+        yaml.dump(data, f)
+
+    return added, grown, collisions
 
 
 # ==================================================================
@@ -326,6 +747,13 @@ def _team_source_refs(conn, team_id):
     ).fetchall()
 
 
+def _ground_source_refs(conn, ground_id):
+    return conn.execute(
+        "SELECT source, source_ground_key FROM ground_source_ids WHERE ground_id = ?",
+        (ground_id,)
+    ).fetchall()
+
+
 def _player_source_refs(conn, player_id):
     return conn.execute(
         "SELECT source, source_player_id FROM player_source_ids WHERE player_id = ?",
@@ -373,7 +801,7 @@ def _elpmcc_exclusive_player_ids(conn, elpmcc_name):
     return {row[0] for row in rows}
 
 
-def render_club_candidates(conn):
+def render_club_candidates(conn, rejected_entries=(), claimed_refs=frozenset()):
 
     lines = ["### Clubs", ""]
     lines.append(
@@ -398,15 +826,31 @@ def render_club_candidates(conn):
         if key:
             groups[key].append((club_id, club_name))
 
-    clusters = [group for group in groups.values() if len(group) > 1]
+    all_clusters = [group for group in groups.values() if len(group) > 1]
+    clusters = [
+        group for group in all_clusters
+        if _match_rejected(
+            [ref for cid, _ in group for ref in _club_source_refs(conn, cid)],
+            rejected_entries
+        ) is None
+    ]
+    deferred_count = len(all_clusters) - len(clusters)
+
+    pending_entries = []
 
     if not clusters:
-        lines.append("None found -- SQLiteStore's automatic name-based merge (see its docstring) "
-                      "already caught every case in the current data.")
+        note = "None found -- SQLiteStore's automatic name-based merge (see its docstring) already caught every case in the current data."
+        if deferred_count:
+            note += f" ({deferred_count} already reviewed -- see \"Already reviewed\" below.)"
+        lines.append(note)
         lines.append("")
-        return lines
+        return lines, pending_entries
 
-    lines.append(f"{len(clusters)} candidate group(s) not already unified automatically:")
+    lines.append(
+        f"{len(clusters)} candidate group(s) not already unified automatically"
+        + (f" ({deferred_count} more already reviewed -- see below)" if deferred_count else "")
+        + f" -- written to \`pending: clubs:\` in reconcile/decisions.yaml for review:"
+    )
     lines.append("")
 
     for group in clusters:
@@ -419,18 +863,22 @@ def render_club_candidates(conn):
             ref_text = ", ".join(f"(\"{s}\", \"{sid}\")" for s, sid in refs)
             lines.append(f"  - club_id {cid}: {ref_text}")
 
-        all_refs = [ref for cid, _ in group for ref in _club_source_refs(conn, cid)]
-        refs_literal = ",\n        ".join(f"(\"{s}\", \"{sid}\")" for s, sid in all_refs)
-        lines.append("  - if confirmed, add to `CLUB_MERGES` in reconcile.py:")
-        lines.append("    ```python")
-        lines.append("    {")
-        lines.append(f"        \"known_as\": {group[0][1]!r},")
-        lines.append(f"        \"refs\": [\n        {refs_literal}\n        ],")
-        lines.append("    },")
-        lines.append("    ```")
         lines.append("")
 
-    return lines
+        all_refs = [
+            ref for cid, _ in group for ref in _club_source_refs(conn, cid)
+            if ref not in claimed_refs
+        ]
+        if len(all_refs) < 2:
+            continue
+        ref_names = {ref: name for cid, name in group for ref in _club_source_refs(conn, cid)}
+        pending_entries.append({
+            "canonical_name": group[0][1],
+            "refs": all_refs,
+            "ref_names": ref_names,
+        })
+
+    return lines, pending_entries
 
 
 def _near_duplicate_clusters_ids(id_name_pairs):
@@ -482,14 +930,14 @@ def _near_duplicate_clusters_ids(id_name_pairs):
     return clusters
 
 
-def render_team_candidates(conn):
+def render_team_candidates(conn, rejected_entries=(), claimed_refs=frozenset()):
 
     lines = ["### Teams", ""]
 
     clubs = conn.execute(
         "SELECT club_id, club_name FROM clubs WHERE club_name NOT LIKE 'Unknown (%'"
     ).fetchall()
-    all_clusters = []
+    found_clusters = []
 
     for club_id, club_name in clubs:
 
@@ -498,14 +946,32 @@ def render_team_candidates(conn):
         ).fetchall()
 
         for group in _near_duplicate_clusters_ids(teams):
-            all_clusters.append((club_id, club_name, group))
+            found_clusters.append((club_id, club_name, group))
+
+    all_clusters = [
+        (club_id, club_name, group) for club_id, club_name, group in found_clusters
+        if _match_rejected(
+            [ref for tid, _ in group for ref in _team_source_refs(conn, tid)],
+            rejected_entries
+        ) is None
+    ]
+    deferred_count = len(found_clusters) - len(all_clusters)
+
+    pending_entries = []
 
     if not all_clusters:
-        lines.append("None found.")
+        note = "None found."
+        if deferred_count:
+            note += f" ({deferred_count} already reviewed -- see \"Already reviewed\" below.)"
+        lines.append(note)
         lines.append("")
-        return lines
+        return lines, pending_entries
 
-    lines.append(f"{len(all_clusters)} candidate group(s), within a single club each:")
+    lines.append(
+        f"{len(all_clusters)} candidate group(s), within a single club each"
+        + (f" ({deferred_count} more already reviewed -- see below)" if deferred_count else "")
+        + f" -- written to \`pending: teams:\` in reconcile/decisions.yaml for review:"
+    )
     lines.append("")
 
     for club_id, club_name, group in all_clusters:
@@ -518,21 +984,233 @@ def render_team_candidates(conn):
             ref_text = ", ".join(f"(\"{s}\", \"{sid}\")" for s, sid in refs)
             lines.append(f"  - team_id {tid}: {ref_text}")
 
-        all_refs = [ref for tid, _ in group for ref in _team_source_refs(conn, tid)]
-        refs_literal = ",\n        ".join(f"(\"{s}\", \"{sid}\")" for s, sid in all_refs)
-        lines.append("  - if confirmed, add to `TEAM_MERGES` in reconcile.py:")
-        lines.append("    ```python")
-        lines.append("    {")
-        lines.append(f"        \"known_as\": {group[0][1]!r},")
-        lines.append(f"        \"refs\": [\n        {refs_literal}\n        ],")
-        lines.append("    },")
-        lines.append("    ```")
         lines.append("")
 
-    return lines
+        all_refs = [
+            ref for tid, _ in group for ref in _team_source_refs(conn, tid)
+            if ref not in claimed_refs
+        ]
+        if len(all_refs) < 2:
+            continue
+        ref_names = {ref: name for tid, name in group for ref in _team_source_refs(conn, tid)}
+        pending_entries.append({
+            "canonical_name": group[0][1],
+            "refs": all_refs,
+            "ref_names": ref_names,
+        })
+
+    return lines, pending_entries
 
 
-def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME):
+def _club_acronym(club_name):
+    """
+    Initials of a club's significant name words (trailing "CC"/"Cricket
+    Club" dropped first, same as _CLUB_SUFFIX_RE) -- "East Lancs Paper
+    Mill CC" -> "elpm". A weak but useful signal for "is this ground
+    plausibly named after/abbreviated from this club's own name" --
+    see render_ground_candidates() for why that signal is needed at all.
+    """
+
+    name = re.sub(r"\s*,?\s*(cricket club|c\.?c\.?)\s*$", "", club_name or "", flags=re.IGNORECASE)
+    words = re.findall(r"[A-Za-z]+", name)
+    return "".join(w[0] for w in words).casefold()
+
+
+def render_ground_candidates(conn, rejected_entries=(), claimed_refs=frozenset()):
+    """
+    Grouped by home club, NOT by name similarity: ground names vary far
+    too much in form across sources for text matching to find these
+    reliably (e.g. "ELPMCC" vs "Croft Lane, ELPM" share no substring or
+    close spelling at all, despite being the same real ground). What's
+    reliable instead is that a club's own home matches should mostly
+    resolve to one ground -- so for each club, every distinct ground
+    recorded across sources for its home matches is one candidate
+    group.
+
+    BUT: a single-club archive (CricketStatz here) records "home_team"
+    from that one club's own perspective, not true host/venue -- so
+    e.g. every away fixture ELPMCC played at an opponent's ground still
+    shows ELPMCC as "home_team_id" in this data, which would otherwise
+    flood every real club with dozens of one-off "candidate" grounds
+    that are actually just other clubs' real venues (confirmed by
+    inspecting the raw output: ~38 clearly-unrelated one-to-few-match
+    grounds appeared under East Lancs Paper Mill CC alone before this
+    filter existed). Guarded against by requiring the ground name to
+    contain the club's own acronym (_club_acronym()) before it counts
+    as a same-club candidate at all -- conservative in the safe
+    direction: real cross-source alternate names this misses (no shared
+    club-name text at all) stay findable some other way, rather than
+    risking a wall of false candidates that makes the real ones hard to
+    spot.
+
+    A ground shared across MANY different clubs' home matches (not
+    just one) is a different situation, flagged separately: that's a
+    generic/vague placeholder (CricHQ's county-only "Venue:" field is
+    the known example), not a real single venue -- merging it into any
+    one club's ground would be wrong, since it's also recording every
+    OTHER club's home matches under that source. That case wants a
+    `ground_overrides` rule scoped to one club's home matches, not a
+    `grounds:` merge -- see reconcile/decisions.yaml's own header.
+    """
+
+    lines = ["### Grounds", ""]
+    lines.append(
+        "Grouped by home club rather than by name similarity -- see this "
+        "function's docstring for why. A ground recorded for only one "
+        "club's home matches is a same-ground merge candidate; a ground "
+        "shared across several different clubs' home matches is flagged "
+        "separately below as a likely vague/generic placeholder, which "
+        "wants a `ground_overrides` rule instead of a merge."
+    )
+    lines.append("")
+
+    rows = conn.execute(
+        """
+        SELECT c.club_id, c.club_name, g.ground_id, g.ground_name, COUNT(*)
+        FROM matches m
+        JOIN teams t ON t.team_id = m.home_team_id
+        JOIN clubs c ON c.club_id = t.club_id
+        JOIN grounds g ON g.ground_id = m.ground_id
+        WHERE c.club_name NOT LIKE 'Unknown (%'
+        GROUP BY c.club_id, g.ground_id
+        """
+    ).fetchall()
+
+    by_club = defaultdict(list)
+    by_ground_clubs = defaultdict(dict)
+
+    for club_id, club_name, ground_id, ground_name, count in rows:
+        by_club[(club_id, club_name)].append((ground_id, ground_name, count))
+        by_ground_clubs[(ground_id, ground_name)][(club_id, club_name)] = count
+
+    shared_grounds = {
+        ground: clubs for ground, clubs in by_ground_clubs.items()
+        if len(clubs) > 2   # a handful of genuine away/neutral-venue matches is normal; many clubs is the vague-placeholder signal
+    }
+
+    found_clusters = []
+
+    for (club_id, club_name), grounds in by_club.items():
+
+        acronym = _club_acronym(club_name)
+
+        # A one- or two-letter acronym (a club with only one short
+        # significant word in its name) is too weak a signal -- likely
+        # to appear inside an unrelated ground name by pure chance
+        # (seen in practice: "Rochdalians CC" -> "r" matched CricHQ's
+        # placeholder "England - Bedfordshire"). Skip clustering for
+        # that club entirely rather than risk a misleading suggestion.
+        own_grounds = [
+            (gid, gname, cnt) for gid, gname, cnt in grounds
+            if (gid, gname) not in shared_grounds
+            and len(acronym) >= 3 and acronym in _normalise_loose(gname)
+        ]
+
+        if len(own_grounds) > 1:
+            found_clusters.append((club_id, club_name, own_grounds))
+
+    clusters = [
+        (cid, cname, group) for cid, cname, group in found_clusters
+        if _match_rejected(
+            [ref for gid, _, _ in group for ref in _ground_source_refs(conn, gid)],
+            rejected_entries
+        ) is None
+    ]
+    deferred_count = len(found_clusters) - len(clusters)
+
+    pending_entries = []
+
+    if clusters:
+
+        lines.append(
+            f"{len(clusters)} club(s) with more than one distinct ground recorded "
+            "for their own home matches"
+            + (f" ({deferred_count} more already reviewed -- see below)" if deferred_count else "")
+            + f" -- written to \`pending: grounds:\` in reconcile/decisions.yaml for review "
+            "(no `canonical_name` guess -- name it yourself):"
+        )
+        lines.append("")
+
+        for club_id, club_name, group in clusters:
+
+            names = ", ".join(f"{gname!r} ({cnt} home matches)" for gid, gname, cnt in group)
+            lines.append(f"- **{club_name}** (club_id {club_id}): {names}")
+
+            for gid, gname, cnt in group:
+                refs = _ground_source_refs(conn, gid)
+                ref_text = ", ".join(f"(\"{s}\", \"{sid}\")" for s, sid in refs)
+                lines.append(f"  - ground_id {gid}: {ref_text}")
+
+            lines.append("")
+
+            all_refs = [
+                ref for gid, _, _ in group for ref in _ground_source_refs(conn, gid)
+                if ref not in claimed_refs
+            ]
+            if len(all_refs) < 2:
+                continue
+            ref_names = {
+                ref: gname for gid, gname, _ in group for ref in _ground_source_refs(conn, gid)
+            }
+            pending_entries.append({
+                "canonical_name": "???",
+                "refs": all_refs,
+                "ref_names": ref_names,
+            })
+
+    else:
+        note = "No club has more than one distinct (non-shared) ground recorded for its home matches."
+        if deferred_count:
+            note += f" ({deferred_count} already reviewed -- see \"Already reviewed\" below.)"
+        lines.append(note)
+        lines.append("")
+
+    if shared_grounds:
+
+        lines.append(
+            f"**{len(shared_grounds)} ground(s) shared across more than 2 clubs' home "
+            "matches** -- two different explanations, and the match-count split "
+            "below tells them apart: (a) a vague/generic placeholder, several clubs "
+            "each with a handful of matches and no clear majority (CricHQ's "
+            "county-only text is the known example) -- wants a `ground_overrides` "
+            "rule; or (b) one club with the large majority of matches (its own real "
+            "ground) and a long tail of 1-few-match \"other clubs\" -- that's not a "
+            "placeholder at all, it means the SOURCE's own home/away field isn't "
+            "reliable for those matches (confirmed for CricketStatz: it sometimes "
+            "names the visiting side as \"home\" even though the match was played "
+            "at the true home side's ground, which the `ground_name` itself still "
+            "gets right). (b) is a data-quality note about that source's home/away "
+            "field, not something this file can fix -- nothing to add here."
+        )
+        lines.append("")
+
+        for (ground_id, ground_name), clubs in sorted(shared_grounds.items(), key=lambda kv: -sum(kv[1].values())):
+
+            ranked = sorted(clubs.items(), key=lambda kv: -kv[1])
+            total = sum(clubs.values())
+            top_name, top_count = ranked[0][0][1], ranked[0][1]
+            likely_b = top_count >= total * 0.5
+
+            club_text = ", ".join(f"{name} ({count})" for (_, name), count in ranked)
+            lines.append(
+                f"- {ground_name!r} (ground_id {ground_id}) -- {total} matches across "
+                f"{len(clubs)} clubs, {top_name} the largest at {top_count} "
+                f"({'likely (b) -- unreliable home/away field, not a placeholder' if likely_b else 'likely (a) -- vague placeholder'}): "
+                f"{club_text}"
+            )
+            if not likely_b:
+                lines.append(
+                    "  - if this club's home matches should really point at a real "
+                    "ground, add a `ground_overrides` rule in reconcile/decisions.yaml "
+                    "(see the CricHQ example already there) rather than merging this row."
+                )
+
+        lines.append("")
+
+    return lines, pending_entries
+
+
+def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=(), claimed_refs=frozenset()):
 
     lines = ["### Players", ""]
     lines.append(
@@ -568,17 +1246,35 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME):
     for pid, name in players:
         loose_groups[_normalise_loose(name)].append((pid, name))
 
-    exact_clusters = [
+    def _refs(group):
+        return [ref for pid, _ in group for ref in _player_source_refs(conn, pid)]
+
+    def _ref_names(group):
+        return {ref: name for pid, name in group for ref in _player_source_refs(conn, pid)}
+
+    found_exact = [
         group for group in loose_groups.values()
         if len(group) > 1 and len({name for _, name in group}) > 1
     ]
+    exact_clusters = [
+        group for group in found_exact
+        if _match_rejected(_refs(group), rejected_entries) is None
+    ]
+    exact_deferred = len(found_exact) - len(exact_clusters)
 
     def _evidence(group):
         return sum(_player_appearance_count(conn, pid) for pid, _ in group)
 
     exact_clusters.sort(key=_evidence, reverse=True)
 
-    lines.append(f"#### Same name, different spelling of whitespace/case/punctuation only ({len(exact_clusters)} groups)")
+    pending_entries = []
+
+    lines.append(
+        f"#### Same name, different spelling of whitespace/case/punctuation only "
+        f"({len(exact_clusters)} groups"
+        + (f", {exact_deferred} more already reviewed -- see below" if exact_deferred else "")
+        + ")"
+    )
     lines.append("")
 
     for group in exact_clusters:
@@ -591,6 +1287,15 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME):
             ref_text = ", ".join(f"(\"{s}\", \"{sid}\")" for s, sid in refs)
             games = _player_appearance_count(conn, pid)
             lines.append(f"  - player_id {pid} ({games} games): {ref_text}")
+
+        new_refs = [ref for ref in _refs(group) if ref not in claimed_refs]
+        if len(new_refs) < 2:
+            continue
+        pending_entries.append({
+            "canonical_name": max(group, key=lambda pn: _player_appearance_count(conn, pn[0]))[1],
+            "refs": new_refs,
+            "ref_names": _ref_names(group),
+        })
 
     lines.append("")
 
@@ -621,9 +1326,21 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME):
 
         fuzzy_clusters.append(group)
 
+    found_fuzzy = fuzzy_clusters
+    fuzzy_clusters = [
+        group for group in found_fuzzy
+        if _match_rejected(_refs(group), rejected_entries) is None
+    ]
+    fuzzy_deferred = len(found_fuzzy) - len(fuzzy_clusters)
+
     fuzzy_clusters.sort(key=_evidence, reverse=True)
 
-    lines.append(f"#### Same first initial + surname, different first name spelling ({len(fuzzy_clusters)} groups)")
+    lines.append(
+        f"#### Same first initial + surname, different first name spelling "
+        f"({len(fuzzy_clusters)} groups"
+        + (f", {fuzzy_deferred} more already reviewed -- see below" if fuzzy_deferred else "")
+        + ")"
+    )
     lines.append("")
 
     for group in fuzzy_clusters:
@@ -637,40 +1354,58 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME):
             games = _player_appearance_count(conn, pid)
             lines.append(f"  - player_id {pid} ({games} games): {ref_text}")
 
+        new_refs = [ref for ref in _refs(group) if ref not in claimed_refs]
+        if len(new_refs) < 2:
+            continue
+        pending_entries.append({
+            "canonical_name": max(group, key=lambda pn: _player_appearance_count(conn, pn[0]))[1],
+            "refs": new_refs,
+            "ref_names": _ref_names(group),
+        })
+
     lines.append("")
     lines.append(
-        "To confirm any player group above, add an entry to `PLAYER_MERGES` "
-        "in reconcile.py using the `(source, source_player_id)` refs listed "
-        "-- see the existing Ian Wade entry for the shape."
+        "Every group above (both sections) is written to `pending: players:` "
+        "in reconcile/decisions.yaml for review -- correct `canonical_name` "
+        "(defaulted to the spelling with the most appearances, which is not "
+        "necessarily right) and set `status: confirmed` for each you agree "
+        "with, then run `python3 reconcile.py --promote`. Leave `status: "
+        "pending` (the default) to keep considering it later, or set `status: "
+        "rejected` if you're sure these are different people -- either way it "
+        "moves to `rejected:` on the next promote rather than disappearing."
     )
     lines.append("")
 
-    return lines
+    return lines, pending_entries
 
 
 # ==================================================================
 # ENTRY POINT
 # ==================================================================
 
-def generate_report(conn, elpmcc_name=ELPMCC_NAME):
+def generate_report(conn, elpmcc_name=ELPMCC_NAME, decisions_path=DEFAULT_DECISIONS_PATH):
+
+    rejected = _load_rejected(decisions_path)
+    claimed_refs, confirmed_names = _load_claimed_refs(decisions_path)
 
     lines = ["# Data Quality & Reconciliation Report", ""]
     lines.append(
         f"_Generated {datetime.now(timezone.utc).isoformat()} -- "
         "auto-generated by `reconcile_audit.py`, safe to regenerate/"
         "overwrite; the database itself is never written to by this "
-        "script. See reconcile.py for how confirmed candidates below "
-        "get applied._"
+        "script. See reconcile.py and reconcile/decisions.yaml for how "
+        "confirmed candidates below get applied._"
     )
     lines.append("")
 
     counts = {
         table: conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-        for table in ("clubs", "teams", "players", "matches")
+        for table in ("clubs", "teams", "players", "grounds", "matches")
     }
     lines.append(
         f"**{counts['clubs']} clubs, {counts['teams']} teams, "
-        f"{counts['players']} players, {counts['matches']} matches.**"
+        f"{counts['grounds']} grounds, {counts['players']} players, "
+        f"{counts['matches']} matches.**"
     )
     lines.append("")
 
@@ -678,11 +1413,72 @@ def generate_report(conn, elpmcc_name=ELPMCC_NAME):
 
     lines.append("## Part 2 -- Reconciliation candidates")
     lines.append("")
-    lines.extend(render_club_candidates(conn))
-    lines.extend(render_team_candidates(conn))
-    lines.extend(render_player_candidates(conn, elpmcc_name))
 
-    return "\n".join(lines) + "\n"
+    club_lines, club_pending = render_club_candidates(conn, rejected["clubs"], claimed_refs["clubs"])
+    team_lines, team_pending = render_team_candidates(conn, rejected["teams"], claimed_refs["teams"])
+    ground_lines, ground_pending = render_ground_candidates(conn, rejected["grounds"], claimed_refs["grounds"])
+    player_lines, player_pending = render_player_candidates(conn, elpmcc_name, rejected["players"], claimed_refs["players"])
+
+    lines.extend(club_lines)
+    lines.extend(team_lines)
+    lines.extend(ground_lines)
+    lines.extend(player_lines)
+
+    pending_by_entity = {
+        "clubs": club_pending,
+        "teams": team_pending,
+        "grounds": ground_pending,
+        "players": player_pending,
+    }
+
+    name_collisions = _annotate_name_collisions(pending_by_entity, confirmed_names)
+
+    # Also flag collisions already sitting in pending: from an earlier
+    # run, not just fresh ones from this run -- a candidate whose own
+    # refs are already claimed by itself in pending: (see
+    # _load_claimed_refs()'s docstring) never gets rediscovered by the
+    # clustering above, so without this a stale collision written
+    # before this check existed (or before the name it collides with
+    # was confirmed) would never resurface here. Read-only: the actual
+    # `note:` field on these gets (re)written by write_pending_candidates(),
+    # not here -- this function only ever reads the report's own text.
+    try:
+        with open(decisions_path, "r", encoding="utf-8") as f:
+            existing_pending = (_yaml_engine().load(f) or {}).get("pending") or {}
+    except FileNotFoundError:
+        existing_pending = {}
+
+    for entity, entries in existing_pending.items():
+        confirmed = confirmed_names.get(entity, set())
+        already_flagged = set(name_collisions.get(entity, []))
+        for entry in entries or []:
+            name = entry.get("canonical_name")
+            if (name or "").casefold() in confirmed and name not in already_flagged:
+                name_collisions[entity].append(name)
+                already_flagged.add(name)
+
+    if any(name_collisions.values()):
+        lines.append("### Name collisions with already-confirmed entries")
+        lines.append("")
+        lines.append(
+            "The candidates below share a canonical_name with an entry "
+            "already confirmed elsewhere in decisions.yaml, but share none "
+            "of its refs. Promoting one as-is via `--promote` creates a "
+            "second, disconnected entity with the same display name rather "
+            "than extending the existing one -- each is also flagged with "
+            "a `note:` field in `pending:` itself. Check whether the refs "
+            "actually belong in the existing confirmed entry instead of "
+            "accepting the suggested canonical_name here."
+        )
+        lines.append("")
+        for entity, names in name_collisions.items():
+            for name in names:
+                lines.append(f"- **{entity}**: {name!r}")
+        lines.append("")
+
+    lines.extend(render_deferred_section(rejected))
+
+    return "\n".join(lines) + "\n", pending_by_entity
 
 
 if __name__ == "__main__":
@@ -696,13 +1492,23 @@ if __name__ == "__main__":
         "--elpmcc-name", default=ELPMCC_NAME,
         help="Club name player candidates are restricted to (see sqlite_queries.py's ELPMCC_NAME)."
     )
+    parser.add_argument("--decisions", default=DEFAULT_DECISIONS_PATH)
+    parser.add_argument(
+        "--no-write-pending", action="store_true",
+        help=(
+            "Don't write new candidates into decisions.yaml's pending: "
+            "section -- report only, same as before this existed."
+        )
+    )
 
     args = parser.parse_args()
 
     conn = sqlite3.connect(args.sqlite_db)
     conn.execute("PRAGMA foreign_keys = ON")
 
-    report = generate_report(conn, elpmcc_name=args.elpmcc_name)
+    report, pending_by_entity = generate_report(
+        conn, elpmcc_name=args.elpmcc_name, decisions_path=args.decisions
+    )
 
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(report)
@@ -710,3 +1516,28 @@ if __name__ == "__main__":
     conn.close()
 
     print(f"Wrote {args.out}")
+
+    if not args.no_write_pending:
+
+        _, confirmed_names = _load_claimed_refs(args.decisions)
+        added, grown, collisions = write_pending_candidates(
+            pending_by_entity, decisions_path=args.decisions, confirmed_names=confirmed_names
+        )
+
+        if added or grown:
+            print(
+                f"Updated {args.decisions}: {added} new candidate(s) added to "
+                f"pending:, {grown} existing pending entr{'y' if grown == 1 else 'ies'} grew a ref. "
+                f"Review and set status: confirmed (or rejected) on each, "
+                f"then run `python3 reconcile.py --promote`."
+            )
+        else:
+            print(f"{args.decisions}: no new candidates to add to pending:.")
+
+        for entity, names in collisions.items():
+            for name in names:
+                print(
+                    f"  WARNING: pending: {entity}: {name!r} collides with an "
+                    f"already-confirmed entry of the same name -- see its `note:` "
+                    f"field in {args.decisions}."
+                )

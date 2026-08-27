@@ -59,8 +59,8 @@ SOURCE_PLAY_CRICKET = "play_cricket"
 # "Bradshaw CC, Lancs" vs "Bradshaw CC" does NOT normalise to the same
 # key here) -- so an auto-merge triggered by this can't plausibly
 # conflate two different real clubs. Fuzzier cases are surfaced by
-# reconcile_audit.py for a human to confirm via reconcile.py's
-# CLUB_MERGES/TEAM_MERGES instead of being guessed at here.
+# reconcile_audit.py for a human to confirm via reconcile/decisions.yaml's
+# clubs:/teams: sections instead of being guessed at here.
 _CLUB_SUFFIX_RE = re.compile(r"\s*,?\s*(cricket club|c\.?c\.?)\s*$", re.IGNORECASE)
 
 # Classifies a team as junior cricket from its name alone -- "Under 9",
@@ -104,12 +104,16 @@ class SQLiteStore:
         # store that already has split rows, one rebuild at a time.
         self._club_index = {}
         self._team_index = {}
+        self._ground_index = {}
 
         for club_id, club_name in self.conn.execute("SELECT club_id, club_name FROM clubs"):
             self._club_index.setdefault(self._normalise_club_name(club_name), club_id)
 
         for team_id, team_name, club_id in self.conn.execute("SELECT team_id, team_name, club_id FROM teams"):
             self._team_index.setdefault((club_id, self._normalise_team_name(team_name)), team_id)
+
+        for ground_id, ground_name in self.conn.execute("SELECT ground_id, ground_name FROM grounds"):
+            self._ground_index.setdefault(self._normalise_ground_name(ground_name), ground_id)
 
     def _apply_schema(self):
 
@@ -218,6 +222,20 @@ class SQLiteStore:
 
         return re.sub(r"\s+", " ", (name or "").strip()).casefold()
 
+    @classmethod
+    def _normalise_ground_name(cls, name):
+        """
+        Dedup key for ground names -- global, not scoped to a club
+        (unlike teams), since a ground is not owned by one club. Just
+        case/whitespace, same conservative reasoning as team names:
+        real cross-source spelling differences ("ELPMCC" vs "Croft
+        Lane, ELPM") are common enough that this alone under-merges far
+        more than it over-merges, which is exactly the safe direction
+        -- the fuzzier remainder is reconcile/decisions.yaml's job.
+        """
+
+        return re.sub(r"\s+", " ", (name or "").strip()).casefold()
+
     # ==========================================================
     # DIMENSION UPSERTS
     # ==========================================================
@@ -236,7 +254,7 @@ class SQLiteStore:
         resolve to the same canonical club instead of splitting into two.
         This is a deliberately conservative, automatic merge; anything
         it doesn't catch is a candidate for reconcile_audit.py /
-        reconcile.py's CLUB_MERGES instead.
+        reconcile/decisions.yaml's clubs: section instead (see reconcile.py).
         """
 
         source_club_id = self._clean_text(source_club_id)
@@ -317,6 +335,57 @@ class SQLiteStore:
         )
 
         return team_id
+
+    def _upsert_ground(self, source, source_ground_id, ground_name):
+        """
+        Resolve a source-specific ground reference to a canonical
+        ground_id, the same way _upsert_club()/_upsert_team() do --
+        via self._ground_index, keyed by _normalise_ground_name().
+
+        Unlike clubs/teams, not every source has a real id to key on:
+        CricketStatz does (a numeric ground id), CricHQ never does, and
+        Play-Cricket only sometimes does. Falls back to the ground name
+        itself as the source key when no id is present -- exactly the
+        same fallback crichq_pdf.py/mxp_parser.py already use for their
+        own synthetic ids elsewhere. Returns None if there's no name to
+        key on at all (nothing recorded either way).
+        """
+
+        ground_name = self._clean_text(ground_name)
+        source_ground_key = self._clean_text(source_ground_id) or ground_name
+
+        if source_ground_key is None:
+            return None
+
+        row = self.conn.execute(
+            "SELECT ground_id FROM ground_source_ids WHERE source = ? AND source_ground_key = ?",
+            (source, source_ground_key)
+        ).fetchone()
+
+        if row:
+            return row[0]
+
+        ground_name = ground_name or source_ground_key
+        norm_key = self._normalise_ground_name(ground_name)
+
+        ground_id = self._ground_index.get(norm_key)
+
+        if ground_id is None:
+
+            cursor = self.conn.execute(
+                "INSERT INTO grounds (ground_name) VALUES (?)",
+                (ground_name,)
+            )
+
+            ground_id = cursor.lastrowid
+            self._ground_index[norm_key] = ground_id
+
+        self.conn.execute(
+            "INSERT INTO ground_source_ids (source, source_ground_key, ground_id) VALUES (?, ?, ?)",
+            (source, source_ground_key, ground_id)
+        )
+
+        return ground_id
 
     def _resolve_team_id(self, source, source_team_id):
         """
@@ -458,6 +527,10 @@ class SQLiteStore:
             source, match.get("away_team_id"), match.get("away_team_name"), away_club_id
         )
 
+        ground_id = self._upsert_ground(
+            source, match.get("ground_id"), match.get("ground_name")
+        )
+
         # ------------------------------------------------------
         # Season
         # ------------------------------------------------------
@@ -512,7 +585,7 @@ class SQLiteStore:
                 self._clean_id(match.get("league_id")),
                 self._clean_text(match.get("league_name")),
                 home_team_id, away_team_id,
-                self._clean_id(match.get("ground_id")),
+                ground_id,
                 self._clean_text(match.get("ground_name")),
                 self._clean_int(match.get("no_of_innings")),
                 self._clean_int(match.get("no_of_overs")),
