@@ -961,7 +961,7 @@ players:
         name: S F Shah
 clubs:
 
-  - canonical_name: "Westleigh Meths"
+  - canonical_name: "Westleigh Meths CC"
     decided: 2026-08-27
     refs:
       - {source: cricketstatz, id: "8", name: "West Leigh Meths"}
@@ -1077,6 +1077,59 @@ clubs:
       match itself only recorded one ball (rain abandonment), so
       crichq_pdf.py's normal parsing never found a second `Batting:`
       header to read the opponent's name from.
+  - canonical_name: "Glodwick CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "5", name: "Glodwick"}
+    reason: >
+      Rename for consistency: every other club in the archive except
+      Friends Sporting Club, Rochdale Catholic Club, and Robinsons
+      carries a "CC" suffix.
+  - canonical_name: "Springhead CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "14", name: "Springhead"}
+    reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
+  - canonical_name: "Broadway CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "16", name: "Broadway"}
+    reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
+  - canonical_name: "Greenfield CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "17", name: "Greenfield"}
+    reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
+  - canonical_name: "Chew Moor Brook CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "18", name: "Chew Moor Brook"}
+    reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
+  - canonical_name: "Farnworth Social Circle CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "19", name: "Farnworth Social Circle"}
+    reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
+  - canonical_name: "Littleborough CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "27", name: "Littleborough C C"}
+    reason: >
+      Fixes "Littleborough C C" (space between the Cs) to match the
+      "CC" suffix every other club uses.
+  - canonical_name: "Rochdale CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "29", name: "Rochdale"}
+    reason: >
+      Rename for CC-suffix consistency -- see Glodwick CC's reason
+      above. Distinct from the separate "Rochdale Catholic Club" (a
+      named exception, left as-is).
+  - canonical_name: "Roytonians CC"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "31", name: "Roytonians"}
+    reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
 teams:
   - canonical_name: Tottington St Johns CC 2nd XI
     refs:
