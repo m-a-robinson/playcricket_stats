@@ -119,12 +119,21 @@ AWARDED_WIN_LINE = re.compile(
     re.MULTILINE
 )
 
+
+# The team name uses [\s\S]+? rather than .+? so it can still match when
+# a long name (e.g. a T20 side's club-prefixed nickname, "East Lancs
+# Paper Mill CC, East Lancs Millers") happens to wrap across a PDF line
+# break right before "1st/2nd Innings"/the bowling column headers -- .+?
+# can't cross the embedded newline, which used to make the whole
+# "Batting:"/"Bowling:" header silently fail to match, dropping that
+# entire innings (see the README/roadmap "ELPMCC Millers" note -- this
+# was found affecting 28 real T20 matches in the archive).
 INNINGS_HEADER = re.compile(
-    r"Batting:\s+(?P<team>.+?)\s+(?P<ordinal>1st|2nd)\s*\n?Innings"
+    r"Batting:\s+(?P<team>[\s\S]+?)\s+(?P<ordinal>1st|2nd)\s*\n?Innings"
 )
 
 BOWLING_HEADER = re.compile(
-    r"Bowling:\s+(?P<team>.+?)\s+O\s+M\s+R\s+W\s+EC\s+AV\s+EX"
+    r"Bowling:\s+(?P<team>[\s\S]+?)\s+O\s+M\s+R\s+W\s+EC\s+AV\s+EX"
 )
 
 BATTING_ROW = re.compile(
@@ -151,6 +160,20 @@ DID_NOT_BAT = re.compile(
 )
 
 NAME_SUFFIX = re.compile(r"\s*\([^)]*\)")
+
+_WHITESPACE_RUN = re.compile(r"\s+")
+
+
+def _team_name_from_match(m):
+    """
+    A team name captured by INNINGS_HEADER/BOWLING_HEADER, with any
+    embedded PDF line-wrap collapsed back to a single space -- the
+    [\\s\\S]+? team group can now span a newline (see those patterns'
+    comment), so this normalises it back to the same one-line form
+    MATCH_HEADER's own "vs" line produces, keeping the two comparable.
+    """
+
+    return _WHITESPACE_RUN.sub(" ", m.group("team")).strip()
 
 SKIP_LINES = {"R B 4's 6's SR", "Match Notes"}
 
@@ -426,7 +449,7 @@ def _parse_match(header_match, body, match_index):
 
         for nm in name_matches:
 
-            name = nm.group("team").strip()
+            name = _team_name_from_match(nm)
 
             if name not in inferred:
                 inferred.append(name)
@@ -564,7 +587,7 @@ def _parse_match(header_match, body, match_index):
         i_end = innings_headers[ii + 1].start() if ii + 1 < len(innings_headers) else len(body)
         innings_body = body[i_start:i_end]
 
-        batting_team_full = ih.group("team").strip()
+        batting_team_full = _team_name_from_match(ih)
         bowling_team_full = away_full if batting_team_full == home_full else home_full
 
         bowl_h = BOWLING_HEADER.search(innings_body)

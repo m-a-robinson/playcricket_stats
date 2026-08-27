@@ -63,6 +63,23 @@ SOURCE_PLAY_CRICKET = "play_cricket"
 # CLUB_MERGES/TEAM_MERGES instead of being guessed at here.
 _CLUB_SUFFIX_RE = re.compile(r"\s*,?\s*(cricket club|c\.?c\.?)\s*$", re.IGNORECASE)
 
+# Classifies a team as youth cricket from its name alone -- "Under 9",
+# "Under 11 B", "U9", "U-11", "Colts", "Juniors" and similar. Checked
+# against the full archive: only Play-Cricket (2024-2026) currently has
+# any youth teams at all (Under 9/Under 9 B/Under 9 D/Under 11/Under 11
+# B) -- CricHQ and CricketStatz have none. Deliberately name-based like
+# the club/team merge logic above rather than sourced from a reference
+# list, since every youth team name seen so far states its age group
+# plainly; a team that doesn't match stays classed as senior.
+_YOUTH_TEAM_RE = re.compile(
+    r"\bunder[\s-]?\d{1,2}\b|\bu-?\d{1,2}\b|\bcolts?\b|\bjuniors?\b",
+    re.IGNORECASE
+)
+
+
+def _classify_team(team_name):
+    return 1 if team_name and _YOUTH_TEAM_RE.search(team_name) else 0
+
 
 class SQLiteStore:
 
@@ -287,8 +304,8 @@ class SQLiteStore:
         if team_id is None:
 
             cursor = self.conn.execute(
-                "INSERT INTO teams (team_name, club_id) VALUES (?, ?)",
-                (team_name, club_id)
+                "INSERT INTO teams (team_name, club_id, is_youth) VALUES (?, ?, ?)",
+                (team_name, club_id, _classify_team(team_name))
             )
 
             team_id = cursor.lastrowid

@@ -82,7 +82,12 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   extras. Detects individual milestone achievements (half-century, century,
   double-century, 4- and 5-wicket hauls) and has a `print_scorecard()`
   plain-text console renderer. Directly reused by `sqlite_store.py` as its
-  parsing engine.
+  parsing engine. `batting_table()` (display only — the stored
+  `batting_innings.balls` figure is untouched) drops the balls-faced
+  column entirely for an innings where every row reads 0, rather than
+  printing a whole card of misleading zeroes: CricketStatz simply didn't
+  record balls-faced before ~2016 (see "Modules" below), and a genuine
+  single 0 next to real values elsewhere is left alone.
 - **`schema.sql`** / **`sqlite_store.py`** — Normalised SQLite store (clubs,
   teams, players, matches, innings, batting/bowling innings, match
   appearances/team sheets, milestone views), fed from the JSON cache with no
@@ -100,6 +105,11 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   Lancs Paper Mill" resolve to one canonical club), scoped by the already-
   resolved `club_id` for teams (so "1st XI" is still a different team per
   club, just not split into two rows for the *same* club across sources).
+  `teams` also carries `is_youth` (0/1), set at insert time from the team
+  name alone ("Under 9", "Under 11 B", "U9", "Colts", "Juniors", etc. —
+  `_classify_team()`) — currently only Play-Cricket's 2024-2026 seasons
+  have any youth teams at all; CricHQ and CricketStatz have none. This is
+  what `sqlite_queries.py`'s `include_youth` filter (see below) reads.
   Deliberately conservative — no fuzzy matching, no guessing at dropped
   qualifiers — so it can't plausibly conflate two different real clubs;
   anything it doesn't catch is a candidate for `reconcile_audit.py`/
@@ -126,7 +136,16 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   `"Date:"`/`"Venue:"` onto separate lines — recovered by inferring the two
   team names from the innings' own `"Batting:"`/`"Bowling:"` headers instead
   when the header's `"vs"` line isn't there (see "Sample data" and the
-  roadmap for how this was found). Run
+  roadmap for how this was found). `INNINGS_HEADER`/`BOWLING_HEADER` also
+  tolerate a mid-name PDF line-wrap now (a long club-prefixed nickname like
+  "East Lancs Paper Mill CC, East Lancs Millers" occasionally wraps right
+  before "1st/2nd Innings" or the bowling column headers) — found by
+  spot-checking sample scorecards: whenever that wrap landed inside the
+  team-name capture, the header silently failed to match and the whole
+  innings vanished rather than erroring, taking real runs/wickets/batting/
+  bowling figures with it. Affected 28 real matches in the archive (all
+  involving a T20/nickname side long enough to wrap), recovered without
+  any change in the 381/328/53 total/played/abandoned counts. Run
   `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
   more PDFs; add `--json-out <path>` to also write every parsed match-detail
   dict to a JSON file — see `crichq/crichq_pdf.json` under "Sample data"
@@ -173,6 +192,14 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   (`batting_innings`/`bowling_innings`/`match_appearances` are untouched);
   pass `elpmcc_only=False` to include them in `career_stats()` too, e.g.
   to check one opposition player's record specifically against this club.
+  Excludes youth teams by default the same way (`include_youth=False`) —
+  U9/U11 appearances/batting/bowling/fielding stay out of every career
+  total and leaderboard, keyed off `teams.is_youth` (see `sqlite_store.py`
+  above); the underlying rows are untouched, so `include_youth=True` (or
+  filtering to one youth `team_id` directly, which already overrides this)
+  brings them back. Nothing else in this project treats junior cricket as
+  second-class — it's ingested and stored exactly like senior fixtures —
+  this is purely a default view on top, not a data restriction.
 - **`reconcile.py`** — Cross-source identity merging for players, clubs,
   *and* teams (see roadmap item 4). `merge_players(conn, source_refs)` /
   `merge_clubs(...)` / `merge_teams(...)` each repoint a confirmed list of

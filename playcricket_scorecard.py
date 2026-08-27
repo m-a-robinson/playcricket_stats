@@ -783,6 +783,22 @@ class Scorecard:
             "batsman_id"
         ]
 
+        # Some sources (CricketStatz before ~2016) never recorded
+        # balls-faced at all -- every row in the innings comes through as
+        # 0, which reads as "every batter faced a golden duck" rather
+        # than "not recorded". Drop the column entirely rather than show
+        # a whole innings of misleading zeroes; a genuine single 0 next
+        # to other real values is left alone.
+        if (
+            "balls" in data.columns
+            and (data["balls"] == 0).all()
+        ):
+            columns = [
+                column
+                for column in columns
+                if column != "balls"
+            ]
+
         columns = [
             column
             for column in columns
@@ -1468,7 +1484,7 @@ class Scorecard:
                     f"{str(row.get('batsman_name', '')):<25} "
                     f"{str(row.get('dismissal', '')):<30} "
                     f"{row.get('runs', 0):>3} "
-                    f"{row.get('balls', 0):>3} "
+                    f"{row.get('balls', ''):>3} "
                     f"{row.get('fours', 0):>2} "
                     f"{row.get('sixes', 0):>2}"
                 )
