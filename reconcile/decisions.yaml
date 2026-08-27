@@ -1730,7 +1730,8 @@ pending:
           id: S Ishaq
           name: S Ishaq
     - canonical_name: Zakaria Ali
-      status: pending
+      status: rejected
+      decided: 2026-08-27
       refs:
         - source: play_cricket
           id: '6267738'
@@ -1738,6 +1739,13 @@ pending:
         - source: cricketstatz
           id: '1320'
           name: Z Ali
+      reason: >
+        Confirmed by the user as two different real people: Zakaria
+        Ali (play_cricket, 2024-2026, a junior player) is not Zeeshan
+        Ali (cricketstatz "Z Ali", 2017) -- "Ali" is one of the most
+        common surnames in this archive, so a shared "Z Ali" is not
+        strong evidence on its own (same lesson as the Shah surname
+        cluster).
     - canonical_name: Lewis Hamilton
       status: confirmed
       refs:
