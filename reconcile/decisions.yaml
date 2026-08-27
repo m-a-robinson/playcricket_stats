@@ -259,8 +259,8 @@ pending:
         - source: cricketstatz
           id: '47'
           name: Radcliffe CC
-    - canonical_name: Swinton Moorside CC, Salford
-      status: pending
+    - canonical_name: Swinton Moorside CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6211'
@@ -268,8 +268,8 @@ pending:
         - source: cricketstatz
           id: '33'
           name: Swinton Moorside
-    - canonical_name: Elton CC, Lancs
-      status: pending
+    - canonical_name: Elton CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '2564'
@@ -280,8 +280,8 @@ pending:
         - source: cricketstatz
           id: '11'
           name: Elton CC
-    - canonical_name: Thornham CC, Lancs
-      status: pending
+    - canonical_name: Thornham CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6331'
@@ -292,8 +292,8 @@ pending:
         - source: cricketstatz
           id: '21'
           name: Thornham CC
-    - canonical_name: Clifton CC, Lancs
-      status: pending
+    - canonical_name: Clifton CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '1925'
@@ -304,8 +304,8 @@ pending:
         - source: cricketstatz
           id: '25'
           name: Clifton CC
-    - canonical_name: Egerton CC, Lancs
-      status: pending
+    - canonical_name: Egerton CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '2531'
@@ -316,8 +316,8 @@ pending:
         - source: cricketstatz
           id: '40'
           name: Egerton CC
-    - canonical_name: Bradshaw CC, Lancs
-      status: pending
+    - canonical_name: Bradshaw CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '1333'
@@ -325,8 +325,8 @@ pending:
         - source: crichq_pdf
           id: Bradshaw CC
           name: Bradshaw CC
-    - canonical_name: Winton CC, Lancs
-      status: pending
+    - canonical_name: Winton CC
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6991'
@@ -337,7 +337,7 @@ pending:
         - source: cricketstatz
           id: '39'
           name: Winton CC
-    - canonical_name: Westleigh CC, Leigh
+    - canonical_name: Westleigh CC
       status: pending
       refs:
         - source: play_cricket
@@ -350,8 +350,8 @@ pending:
           id: '50'
           name: Westleigh CC
   teams:
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Tottington St Johns CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '124290'
@@ -365,8 +365,8 @@ pending:
         - source: cricketstatz
           id: '23'
           name: TSJ 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Tottington St Johns CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Tottington St Johns CC, 1st XI
@@ -377,8 +377,8 @@ pending:
         - source: cricketstatz
           id: '3'
           name: TSJ 1st XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: East Lancs Paper Mill CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '119947'
@@ -389,8 +389,8 @@ pending:
         - source: cricketstatz
           id: '2'
           name: ELPM 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: East Lancs Paper Mill CC 1st XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '87898'
@@ -410,8 +410,8 @@ pending:
         - source: play_cricket
           id: '368155'
           name: Under 9 B
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Edenfield CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '36533'
@@ -422,8 +422,8 @@ pending:
         - source: cricketstatz
           id: '71'
           name: Edenfield 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Edenfield CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Edenfield CC, 1st XI
@@ -449,8 +449,8 @@ pending:
         - source: play_cricket
           id: '120245'
           name: Under 11
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Prestwich CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Prestwich CC, 2nd XI
@@ -458,8 +458,8 @@ pending:
         - source: cricketstatz
           id: '78'
           name: Prestwich 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Woodbank CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '361541'
@@ -473,8 +473,8 @@ pending:
         - source: cricketstatz
           id: '64'
           name: WB 2nd XI
-    - canonical_name: 3rd XI
-      status: pending
+    - canonical_name: Woodbank CC 3rd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Woodbank CC, 3rd XI
@@ -491,8 +491,8 @@ pending:
         - source: play_cricket
           id: '362572'
           name: Under 11 B
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Walshaw CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Walshaw CC, 2nd XI
@@ -500,8 +500,8 @@ pending:
         - source: cricketstatz
           id: '49'
           name: WAL 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Bolton Indians CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '361571'
@@ -515,8 +515,8 @@ pending:
         - source: cricketstatz
           id: '59'
           name: Bolton Indians 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Brooksbottom CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '65961'
@@ -527,8 +527,8 @@ pending:
         - source: cricketstatz
           id: '72'
           name: BBM 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Adlington CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '68877'
@@ -548,8 +548,8 @@ pending:
         - source: play_cricket
           id: '368067'
           name: Under 9 B
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Bury CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '361536'
@@ -572,8 +572,8 @@ pending:
         - source: play_cricket
           id: '362590'
           name: Under 11 B
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Hindley St Peters CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Hindley St Peters CC, 2nd XI
@@ -581,8 +581,8 @@ pending:
         - source: cricketstatz
           id: '60'
           name: Hindley St Peters 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Deane and Derby 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '361570'
@@ -599,8 +599,8 @@ pending:
         - source: play_cricket
           id: '196915'
           name: Under 9
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Worsley CC 2nd XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '361579'
@@ -620,8 +620,8 @@ pending:
         - source: play_cricket
           id: '406683'
           name: Under 11 B
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Greenmount CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Greenmount CC, 2nd XI
@@ -629,8 +629,8 @@ pending:
         - source: cricketstatz
           id: '68'
           name: GM 2nd XI
-    - canonical_name: 3rd XI
-      status: pending
+    - canonical_name: Edgworth CC 3rd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Edgworth CC, 3rd XI
@@ -638,8 +638,8 @@ pending:
         - source: cricketstatz
           id: '44'
           name: EDG 3rd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Edgworth CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Edgworth CC, 2nd XI
@@ -648,7 +648,7 @@ pending:
           id: '61'
           name: EDG 2nd XI
     - canonical_name: Roe Green CC 2nd XI
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Roe Green CC, Roe Green CC 2nd XI
@@ -659,8 +659,8 @@ pending:
         - source: cricketstatz
           id: '55'
           name: Roe Green 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Shaw CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Shaw CC, 1st XI
@@ -668,8 +668,8 @@ pending:
         - source: cricketstatz
           id: '77'
           name: Shaw 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Ashton Ladysmith CC 1st XI
+      status: confirmed
       refs:
         - source: play_cricket
           id: '361542'
@@ -677,8 +677,8 @@ pending:
         - source: cricketstatz
           id: '10'
           name: AL 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: South West Manchester CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: South West Manchester CC, 1st XI
@@ -686,8 +686,8 @@ pending:
         - source: cricketstatz
           id: '67'
           name: SW Manchester 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Westleigh CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Westleigh CC, 1st XI
@@ -695,8 +695,8 @@ pending:
         - source: cricketstatz
           id: '73'
           name: Westleigh 1st XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Westleigh CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Westleigh CC, 2nd XI
@@ -704,8 +704,8 @@ pending:
         - source: cricketstatz
           id: '70'
           name: Westleigh 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Elton CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Elton CC, 1st XI
@@ -713,8 +713,8 @@ pending:
         - source: cricketstatz
           id: '12'
           name: Elton 1st XI
-    - canonical_name: 3rd XI
-      status: pending
+    - canonical_name: Elton CC 3rd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Elton CC, 3rd XI
@@ -722,8 +722,8 @@ pending:
         - source: cricketstatz
           id: '30'
           name: Elton 3rd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Elton CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Elton CC, 2nd XI
@@ -734,8 +734,8 @@ pending:
         - source: cricketstatz
           id: '62'
           name: Elton 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Clifton CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Clifton CC, 2nd XI
@@ -744,7 +744,7 @@ pending:
           id: '76'
           name: Clifton 2nd XI
     - canonical_name: Clifton Kingfishers
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Clifton CC, Clifton Kingfishers
@@ -752,8 +752,8 @@ pending:
         - source: cricketstatz
           id: '41'
           name: Clifton
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Elton Vale CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Elton Vale CC, 1st XI
@@ -761,8 +761,8 @@ pending:
         - source: cricketstatz
           id: '5'
           name: EV 1st XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Glossop CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Glossop CC, 2nd XI
@@ -770,8 +770,8 @@ pending:
         - source: cricketstatz
           id: '74'
           name: Glossop 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Hollinwood CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Hollinwood CC, 1st XI
@@ -779,8 +779,8 @@ pending:
         - source: cricketstatz
           id: '79'
           name: Hollinwood 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Micklehurst CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Micklehurst CC, 1st XI
@@ -788,8 +788,8 @@ pending:
         - source: cricketstatz
           id: '80'
           name: MKH 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Werneth CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Werneth CC, 1st XI
@@ -797,8 +797,8 @@ pending:
         - source: cricketstatz
           id: '81'
           name: Werneth 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Droylsden CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Droylsden CC, 1st XI
@@ -806,8 +806,8 @@ pending:
         - source: cricketstatz
           id: '82'
           name: Droylsden 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Daisy Hill CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Daisy Hill CC, 1st XI
@@ -815,17 +815,8 @@ pending:
         - source: crichq_pdf
           id: Daisy Hill CC, 1st
           name: 1st
-    - canonical_name: 1st XI
-      status: pending
-      refs:
-        - source: crichq_pdf
-          id: Radcliffe CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '65'
-          name: RAD 1st XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Winton CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Winton CC, 2nd XI
@@ -833,8 +824,8 @@ pending:
         - source: cricketstatz
           id: '50'
           name: Winton CC 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Bamford Fieldhouse CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Bamford Fieldhouse CC, 2nd XI
@@ -842,8 +833,8 @@ pending:
         - source: cricketstatz
           id: '69'
           name: BAM 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Uppermill CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Uppermill CC, 1st XI
@@ -851,8 +842,8 @@ pending:
         - source: cricketstatz
           id: '46'
           name: UP 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Blackley CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Blackley CC, 1st XI
@@ -860,8 +851,8 @@ pending:
         - source: cricketstatz
           id: '29'
           name: BL 1st XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Egerton CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Egerton CC, 2nd XI
@@ -872,8 +863,8 @@ pending:
         - source: cricketstatz
           id: '51'
           name: Egerton 2nd XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Whalley Range CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Whalley Range CC, 2nd XI
@@ -881,8 +872,8 @@ pending:
         - source: cricketstatz
           id: '56'
           name: Whalley Range 2nd XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Rochdalians CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Rochdalians CC, 1st XI
@@ -890,8 +881,8 @@ pending:
         - source: cricketstatz
           id: '4'
           name: RD 1st XI
-    - canonical_name: 1st XI
-      status: pending
+    - canonical_name: Denton West CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Denton West CC, 1st XI
@@ -899,8 +890,8 @@ pending:
         - source: cricketstatz
           id: '54'
           name: Denton West 1st XI
-    - canonical_name: Irlam 1st XI
-      status: pending
+    - canonical_name: Irlam CC 1st XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Irlam CC, Irlam 1st XI
@@ -908,8 +899,8 @@ pending:
         - source: cricketstatz
           id: '45'
           name: IRM 1st XI
-    - canonical_name: 2nd XI
-      status: pending
+    - canonical_name: Failsworth Macedonia CC 2nd XI
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Failsworth Macedonia CC, 2nd XI
@@ -917,10 +908,20 @@ pending:
         - source: cricketstatz
           id: '19'
           name: FM 2nd XI
+    - canonical_name: Radcliffe CC 1st XI
+      status: confirmed
+      decided: 2026-08-27
+      refs:
+        - source: crichq_pdf
+          id: Radcliffe CC, 1st XI
+          name: 1st XI
+        - source: cricketstatz
+          id: '65'
+          name: RAD 1st XI
   grounds: []
   players:
-    - canonical_name: S Keyworth
-      status: pending
+    - canonical_name: Stephen Keyworth
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: S Keyworth
@@ -943,8 +944,8 @@ pending:
         - source: crichq_pdf
           id: Stephen Keyworth
           name: Stephen Keyworth
-    - canonical_name: M Partington
-      status: pending
+    - canonical_name: Matty Partington
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: M Parting ton
@@ -967,8 +968,8 @@ pending:
         - source: crichq_pdf
           id: Mgp Partington
           name: Mgp Partington
-    - canonical_name: C Dearden
-      status: pending
+    - canonical_name: Carl Dearden
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: C Dearden
@@ -985,11 +986,14 @@ pending:
         - source: crichq_pdf
           id: Carl Dearden
           name: Carl Dearden
+    - canonical_name: Charlie Dearden
+      status: confirmed
+      refs:
         - source: crichq_pdf
           id: ChD Dearden
           name: ChD Dearden
-    - canonical_name: D Dwyer
-      status: pending
+    - canonical_name: Danny Dwyer
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: d dwyer
@@ -1003,8 +1007,8 @@ pending:
         - source: crichq_pdf
           id: DD Dwyer
           name: DD Dwyer
-    - canonical_name: Ajb birtwistle
-      status: pending
+    - canonical_name: Ash birtwistle
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: AJB BIrtwistle
@@ -1021,8 +1025,8 @@ pending:
         - source: cricketstatz
           id: '539'
           name: A Birtwistle
-    - canonical_name: D Mccaffrey
-      status: pending
+    - canonical_name: Daniel McCaffery
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: D Mccaffrey
@@ -1036,9 +1040,6 @@ pending:
         - source: crichq_pdf
           id: Daniel Mccaffrey
           name: Daniel Mccaffrey
-    - canonical_name: D J McCaffery
-      status: pending
-      refs:
         - source: crichq_pdf
           id: D J McCaffery
           name: D J McCaffery
@@ -1048,9 +1049,6 @@ pending:
         - source: play_cricket
           id: '6196415'
           name: Daniel McCaffery
-    - canonical_name: L . D . J McCaffery
-      status: pending
-      refs:
         - source: crichq_pdf
           id: L.D.J McCaffery
           name: L.D.J McCaffery
@@ -1060,8 +1058,8 @@ pending:
         - source: crichq_pdf
           id: L . D . J McCaffery
           name: L . D . J McCaffery
-    - canonical_name: P Hewart
-      status: pending
+    - canonical_name: Paul Hewart
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: P Hewart
@@ -1073,7 +1071,7 @@ pending:
           id: '10'
           name: P Hewart
     - canonical_name: Ian Wade
-      status: pending
+      status: confirmed
       note: >-
         WARNING: canonical_name 'Ian Wade' matches an entry already
         confirmed elsewhere in this file (see players: above), but this
@@ -1091,8 +1089,8 @@ pending:
         - source: crichq_pdf
           id: Ian Wade
           name: Ian Wade
-    - canonical_name: Lewis Birmingham
-      status: pending
+    - canonical_name: Louis Birmingham
+      status: confirmed
       refs:
         - source: play_cricket
           id: '5899972'
@@ -1112,8 +1110,8 @@ pending:
         - source: cricketstatz
           id: '839'
           name: Lewis Birmingham
-    - canonical_name: A Lomax
-      status: pending
+    - canonical_name: Andrew Lomax
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6204163'
@@ -1127,8 +1125,8 @@ pending:
         - source: cricketstatz
           id: '207'
           name: A Lomax
-    - canonical_name: L Lomax
-      status: pending
+    - canonical_name: Luke Lomax
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6195623'
@@ -1145,7 +1143,7 @@ pending:
         - source: cricketstatz
           id: '1496'
           name: L Lomax
-    - canonical_name: B Birtwistle
+    - canonical_name: Ben Birtwistle
       status: pending
       refs:
         - source: play_cricket
@@ -1161,7 +1159,7 @@ pending:
           id: '672'
           name: B Birtwistle
     - canonical_name: Mark Robinson
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '5315731'
@@ -1176,7 +1174,7 @@ pending:
           id: M Robinson
           name: M Robinson
     - canonical_name: Shasvat Kakkar
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '5316742'
@@ -1194,7 +1192,7 @@ pending:
           id: '1666'
           name: S Kakkar
     - canonical_name: Tom Partington
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6191602'
@@ -1208,8 +1206,8 @@ pending:
         - source: cricketstatz
           id: '1430'
           name: T Partington
-    - canonical_name: S Carr
-      status: pending
+    - canonical_name: Simon Carr
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: S Carr
@@ -1221,7 +1219,7 @@ pending:
           id: '9'
           name: S Carr
     - canonical_name: Carter Charlesworth
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6241739'
@@ -1236,7 +1234,7 @@ pending:
           id: C Charlesworth
           name: C Charlesworth
     - canonical_name: Adam Hogg
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6215653'
@@ -1247,8 +1245,8 @@ pending:
         - source: crichq_pdf
           id: A Hogg
           name: A Hogg
-    - canonical_name: D Pearson
-      status: pending
+    - canonical_name: Dwayne Pearson
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6196930'
@@ -1262,8 +1260,8 @@ pending:
         - source: cricketstatz
           id: '673'
           name: D Pearson
-    - canonical_name: A Redford
-      status: pending
+    - canonical_name: Alan Redford
+      status: confirmed
       refs:
         - source: play_cricket
           id: '7125366'
@@ -1277,8 +1275,8 @@ pending:
         - source: cricketstatz
           id: '212'
           name: A Redford
-    - canonical_name: APJ Sajewicz
-      status: pending
+    - canonical_name: Adam Sajewicz
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6300746'
@@ -1292,20 +1290,41 @@ pending:
         - source: cricketstatz
           id: '1562'
           name: A Sajewicz
-    - canonical_name: C Saliparri
-      status: pending
+    - canonical_name: Conrad Saliparri
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: C Saliparri
           name: C Saliparri
+        - source: crichq_pdf
+          id: CLS Saripalli
+          name: CLS Saripall
+        - source: crichq_pdf
+          id: CL Saripalli
+          name: CL Saripalli
+        - source: crichq_pdf
+          id: C Saripalli
+          name: C Saripalli
+        - source: crichq_pdf
+          id: Conrad Saripalli
+          name: Conrad Saripalli
+        - source: crichq_pdf
+          id: Carl Saripalli
+          name: Carl Saripalli
+        - source: cricketstatz
+          id: '1202'
+          name: Con Saripalli
+    - canonical_name: Chris Saliparri
+      status: confirmed
+      refs:
         - source: crichq_pdf
           id: Christian Saliparri
           name: Christian Saliparri
         - source: cricketstatz
           id: '1201'
           name: Ch Saliparri
-    - canonical_name: K Bowkett
-      status: pending
+    - canonical_name: Kyle Bowkett
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6260420'
@@ -1316,8 +1335,8 @@ pending:
         - source: crichq_pdf
           id: Kyle Bowkett
           name: Kyle Bowkett
-    - canonical_name: Lewis G Mather
-      status: pending
+    - canonical_name: Lewis Mather
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6627252'
@@ -1329,7 +1348,7 @@ pending:
           id: LG Mather
           name: LG Mather
     - canonical_name: Zac Newton
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6218513'
@@ -1350,7 +1369,7 @@ pending:
           id: ZN Newton
           name: ZN Newton
     - canonical_name: Anthony Whittaker
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6315666'
@@ -1358,8 +1377,14 @@ pending:
         - source: crichq_pdf
           id: A Whittaker
           name: A Whittaker
-    - canonical_name: C Holt
-      status: pending
+        - source: crichq_pdf
+          id: TW Whittaker
+          name: TW Whittaker
+        - source: crichq_pdf
+          id: Tony Whittaker
+          name: Tony Whittaker
+    - canonical_name: Craig Holt
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6944852'
@@ -1367,29 +1392,8 @@ pending:
         - source: cricketstatz
           id: '467'
           name: C Holt
-    - canonical_name: CLS Saripalli
-      status: pending
-      refs:
-        - source: crichq_pdf
-          id: CLS Saripalli
-          name: CLS Saripalli
-        - source: crichq_pdf
-          id: CL Saripalli
-          name: CL Saripalli
-        - source: crichq_pdf
-          id: C Saripalli
-          name: C Saripalli
-        - source: crichq_pdf
-          id: Conrad Saripalli
-          name: Conrad Saripalli
-        - source: crichq_pdf
-          id: Carl Saripalli
-          name: Carl Saripalli
-        - source: cricketstatz
-          id: '1202'
-          name: Con Saripalli
-    - canonical_name: J Crompton
-      status: pending
+    - canonical_name: Jack Crompton
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: J Crompton
@@ -1400,8 +1404,8 @@ pending:
         - source: cricketstatz
           id: '869'
           name: J Crompton
-    - canonical_name: D Scott
-      status: pending
+    - canonical_name: Daniel Scott
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: D Scott
@@ -1412,8 +1416,8 @@ pending:
         - source: cricketstatz
           id: '399'
           name: D Scott
-    - canonical_name: D Barbe
-      status: pending
+    - canonical_name: Dave Barbe
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: D Barbe
@@ -1425,7 +1429,7 @@ pending:
           id: Dave Barbe
           name: Dave Barbe
     - canonical_name: Mark Patten
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6196382'
@@ -1442,8 +1446,8 @@ pending:
         - source: crichq_pdf
           id: DJ Caulfield
           name: DJ Caulfield
-    - canonical_name: S Stubbs
-      status: pending
+    - canonical_name: Steve Stubbs
+      status: confirmed
       refs:
         - source: play_cricket
           id: '5015620'
@@ -1454,8 +1458,8 @@ pending:
         - source: cricketstatz
           id: '1264'
           name: S Stubbs
-    - canonical_name: BP Pattison
-      status: pending
+    - canonical_name: Ben Pattison
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: BP Pattison
@@ -1466,8 +1470,8 @@ pending:
         - source: crichq_pdf
           id: Ben Pattison
           name: Ben Pattison
-    - canonical_name: M.J. Hilton
-      status: pending
+    - canonical_name: Matthew Hilton
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6220148'
@@ -1478,8 +1482,8 @@ pending:
         - source: crichq_pdf
           id: MJH Hilton
           name: MJH Hilton
-    - canonical_name: L Warren
-      status: pending
+    - canonical_name: Lewis Warren
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6241368'
@@ -1491,7 +1495,7 @@ pending:
           id: Llw Warren
           name: Llw Warren
     - canonical_name: Daniel Moriarty
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6192230'
@@ -1502,8 +1506,8 @@ pending:
         - source: crichq_pdf
           id: DM Moriarty
           name: DM Moriarty
-    - canonical_name: M Durrans
-      status: pending
+    - canonical_name: Mark Durrans
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: M Durrans
@@ -1511,11 +1515,14 @@ pending:
         - source: cricketstatz
           id: '951'
           name: M Durrans
+    - canonical_name: Mitchell Durrans
+      status: confirmed
+      refs:
         - source: cricketstatz
           id: '954'
           name: Mitchell Durrans
-    - canonical_name: R K R W Wilkes
-      status: pending
+    - canonical_name: Ryan Wilkes
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Rw Wilkes
@@ -1526,8 +1533,8 @@ pending:
         - source: crichq_pdf
           id: Ryan Wilkes
           name: Ryan Wilkes
-    - canonical_name: WT Turnbull
-      status: pending
+    - canonical_name: Will Turnbull
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: WT Turnbull
@@ -1535,8 +1542,8 @@ pending:
         - source: cricketstatz
           id: '1582'
           name: W Turnbull
-    - canonical_name: P Partington
-      status: pending
+    - canonical_name: Phil Partington
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Phil Partington
@@ -1544,47 +1551,44 @@ pending:
         - source: cricketstatz
           id: '3'
           name: P Partington
-    - canonical_name: TW Whittaker
-      status: pending
+    - canonical_name: Jack Leonard
+      status: confirmed
       refs:
-        - source: crichq_pdf
-          id: TW Whittaker
-          name: TW Whittaker
-        - source: crichq_pdf
-          id: Tony Whittaker
-          name: Tony Whittaker
-    - canonical_name: Jack P Leonard
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '6403629'
-          name: Jordan Leonard
         - source: crichq_pdf
           id: Jack P Leonard
           name: Jack P Leonard
-        - source: crichq_pdf
-          id: Jordan C Leonard
-          name: Jordan C Leonard
         - source: crichq_pdf
           id: Jack Leonard
           name: Jack Leonard
         - source: crichq_pdf
           id: J P Leonard
           name: J P Leonard
+    - canonical_name: Jordan Leonard
+      status: confirmed
+      refs:
+        - source: play_cricket
+          id: '6403629'
+          name: Jordan Leonard
+        - source: crichq_pdf
+          id: Jordan C Leonard
+          name: Jordan C Leonard
         - source: crichq_pdf
           id: J Leonard
           name: J Leonard
     - canonical_name: Aca Albanese
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Aca Albanese
           name: Aca Albanese
+    - canonical_name: Aaron Albanese
+      status: confirmed
+      refs:
         - source: crichq_pdf
           id: Aaron albanese
           name: Aaron albanese
     - canonical_name: Norm Hussain
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Norm Hussain
@@ -1608,16 +1612,19 @@ pending:
           id: M Z Shah
           name: M Z Shah
     - canonical_name: Chris Maidment
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6935056'
           name: Chris Maidment
+    - canonical_name: Charlie Maidment
+      status: confirmed
+      refs:
         - source: play_cricket
           id: '6999618'
           name: Charlie Maidment
-    - canonical_name: AC Campbell
-      status: pending
+    - canonical_name: Adrian Campbell
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6745391'
@@ -1625,8 +1632,8 @@ pending:
         - source: crichq_pdf
           id: AC Campbell
           name: AC Campbell
-    - canonical_name: K Turner
-      status: pending
+    - canonical_name: Kyle Turner
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: K Turner
@@ -1640,8 +1647,8 @@ pending:
         - source: crichq_pdf
           id: Kyle Turner
           name: Kyle Turner
-    - canonical_name: Jja Albanese
-      status: pending
+    - canonical_name: Josh Albanese
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: J Albanese
@@ -1656,7 +1663,7 @@ pending:
           id: Josh albanese
           name: Josh albanese
     - canonical_name: Suleman Ishaq
-      status: pending
+      status: confirmed
       refs:
         - source: play_cricket
           id: '5424334'
@@ -1673,8 +1680,8 @@ pending:
         - source: cricketstatz
           id: '1320'
           name: Z Ali
-    - canonical_name: LJ Hamilton
-      status: pending
+    - canonical_name: Lewis Hamilton
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6640584'
@@ -1686,7 +1693,7 @@ pending:
           id: Lewis Hamilton
           name: Lewis Hamilton
     - canonical_name: Kevin Dodson
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: k dodson
@@ -1694,8 +1701,8 @@ pending:
         - source: cricketstatz
           id: '849'
           name: Kevin Dodson
-    - canonical_name: CB Belston
-      status: pending
+    - canonical_name: Craig Belston
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6196620'
@@ -1706,8 +1713,8 @@ pending:
         - source: cricketstatz
           id: '1644'
           name: C Belston
-    - canonical_name: DW Wilkes
-      status: pending
+    - canonical_name: Dave Wilkes
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: DW Wilkes
@@ -1721,8 +1728,8 @@ pending:
         - source: crichq_pdf
           id: David Wilkes
           name: David Wilkes
-    - canonical_name: HR Rabbi
-      status: pending
+    - canonical_name: Hamad Rabbi
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: H Rabbi
@@ -1736,8 +1743,14 @@ pending:
         - source: crichq_pdf
           id: Hamad rabbi
           name: Hamad rabbi
-    - canonical_name: SM Oldham
-      status: pending
+        - source: crichq_pdf
+          id: Ahmad Rabbi
+          name: Ahmad Rabbi
+        - source: crichq_pdf
+          id: Amad Rabbi
+          name: Amad Rabbi
+    - canonical_name: Sam Oldham
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: SM Oldham
@@ -1745,8 +1758,8 @@ pending:
         - source: crichq_pdf
           id: S Oldham
           name: S Oldham
-    - canonical_name: David Leslie Eckersley
-      status: pending
+    - canonical_name: David Eckersley
+      status: confirmed
       refs:
         - source: play_cricket
           id: '6196732'
@@ -1760,8 +1773,8 @@ pending:
         - source: crichq_pdf
           id: D Eckersley
           name: D Eckersley
-    - canonical_name: G Jebb
-      status: pending
+    - canonical_name: Graham Jebb
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: GJ Jebb
@@ -1769,8 +1782,8 @@ pending:
         - source: cricketstatz
           id: '1425'
           name: G Jebb
-    - canonical_name: MH Dearden
-      status: pending
+    - canonical_name: Max Dearden
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: MH Dearden
@@ -1778,17 +1791,8 @@ pending:
         - source: crichq_pdf
           id: Max Dearden
           name: Max Dearden
-    - canonical_name: B Chapman
-      status: pending
-      refs:
-        - source: crichq_pdf
-          id: b P Chapman
-          name: b P Chapman
-        - source: cricketstatz
-          id: '430'
-          name: B Chapman
     - canonical_name: C Brindle
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: CB Brindle
@@ -1796,8 +1800,8 @@ pending:
         - source: crichq_pdf
           id: C Brindle
           name: C Brindle
-    - canonical_name: D Roberts
-      status: pending
+    - canonical_name: Daniel Roberts
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Danny Roberts
@@ -1806,7 +1810,7 @@ pending:
           id: '1417'
           name: D Roberts
     - canonical_name: Simon Bowkett
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: Simon Bowkett
@@ -1814,8 +1818,8 @@ pending:
         - source: crichq_pdf
           id: S Bowkett
           name: S Bowkett
-    - canonical_name: J Dwyer
-      status: pending
+    - canonical_name: Jamie Dwyer
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: J Dwyer
@@ -1824,7 +1828,7 @@ pending:
           id: Jamie Dwyer
           name: Jamie Dwyer
     - canonical_name: D Bowkett
-      status: pending
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: D Bowkett
@@ -1832,24 +1836,21 @@ pending:
         - source: crichq_pdf
           id: D B Bowkett
           name: D B Bowkett
-    - canonical_name: SS Shah
-      status: pending
+    - canonical_name: Eddie Shah
+      status: confirmed
       refs:
         - source: crichq_pdf
           id: SS Shah
           name: SS Shah
+    - canonical_name: S Shah
+      status: confirmed
+      refs:
         - source: crichq_pdf
           id: SA Shah
           name: SA Shah
+    - canonical_name: S F Shah
+      status: confirmed
+      refs:
         - source: crichq_pdf
           id: S F Shah
           name: S F Shah
-    - canonical_name: Ahmad Rabbi
-      status: pending
-      refs:
-        - source: crichq_pdf
-          id: Ahmad Rabbi
-          name: Ahmad Rabbi
-        - source: crichq_pdf
-          id: Amad Rabbi
-          name: Amad Rabbi
