@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS teams (
     team_id     INTEGER PRIMARY KEY AUTOINCREMENT,
     team_name   TEXT NOT NULL,
     club_id     INTEGER REFERENCES clubs (club_id),
-    is_youth    INTEGER NOT NULL DEFAULT 0   -- 0/1, set from team_name at insert (see _classify_team())
+    is_juniors    INTEGER NOT NULL DEFAULT 0   -- 0/1, set from team_name at insert (see _classify_team())
 );
 
 CREATE TABLE IF NOT EXISTS team_source_ids (

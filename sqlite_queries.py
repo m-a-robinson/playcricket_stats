@@ -69,7 +69,7 @@ appearances AS (
     JOIN matches m ON m.match_id = ma.match_id
     WHERE (:season IS NULL OR m.season = :season)
       AND (:team_id IS NULL OR ma.team_id = :team_id)
-      AND (:include_youth = 1 OR :team_id IS NOT NULL OR ma.team_id NOT IN (SELECT team_id FROM teams WHERE is_youth = 1))
+      AND (:include_juniors = 1 OR :team_id IS NOT NULL OR ma.team_id NOT IN (SELECT team_id FROM teams WHERE is_juniors = 1))
     GROUP BY ma.player_id
 ),
 batting_agg AS (
@@ -89,7 +89,7 @@ batting_agg AS (
     WHERE COALESCE(how_out, '') != 'did not bat'
       AND (:season IS NULL OR season = :season)
       AND (:team_id IS NULL OR team_id = :team_id)
-      AND (:include_youth = 1 OR :team_id IS NOT NULL OR team_id NOT IN (SELECT team_id FROM teams WHERE is_youth = 1))
+      AND (:include_juniors = 1 OR :team_id IS NOT NULL OR team_id NOT IN (SELECT team_id FROM teams WHERE is_juniors = 1))
     GROUP BY player_id
 ),
 bowling_agg AS (
@@ -106,7 +106,7 @@ bowling_agg AS (
     FROM bowling_base
     WHERE (:season IS NULL OR season = :season)
       AND (:team_id IS NULL OR team_id = :team_id)
-      AND (:include_youth = 1 OR :team_id IS NOT NULL OR team_id NOT IN (SELECT team_id FROM teams WHERE is_youth = 1))
+      AND (:include_juniors = 1 OR :team_id IS NOT NULL OR team_id NOT IN (SELECT team_id FROM teams WHERE is_juniors = 1))
     GROUP BY player_id
 ),
 -- A fielding dismissal is credited to the fielder's OWN team, which is
@@ -134,7 +134,7 @@ fielding_agg AS (
     FROM fielding_base
     WHERE (:season IS NULL OR season = :season)
       AND (:team_id IS NULL OR fielding_team_id = :team_id)
-      AND (:include_youth = 1 OR :team_id IS NOT NULL OR fielding_team_id NOT IN (SELECT team_id FROM teams WHERE is_youth = 1))
+      AND (:include_juniors = 1 OR :team_id IS NOT NULL OR fielding_team_id NOT IN (SELECT team_id FROM teams WHERE is_juniors = 1))
     GROUP BY player_id
 )
 SELECT
@@ -224,7 +224,7 @@ ELPMCC_NAME = "East Lancs Paper Mill CC"
 
 def career_stats(
     conn, season=None, team_id=None, elpmcc_only=True,
-    elpmcc_name=ELPMCC_NAME, include_youth=False
+    elpmcc_name=ELPMCC_NAME, include_juniors=False
 ):
     """
     Return one row per player with career (or, if team_id is given,
@@ -240,13 +240,13 @@ def career_stats(
     bowling_innings, match_appearances), just not as tracked "players"
     with their own career stats/leaderboard entries.
 
-    By default (include_youth=False) appearances/batting/bowling/
-    fielding for a youth team (teams.is_youth -- "Under 9", "Under 11",
+    By default (include_juniors=False) appearances/batting/bowling/
+    fielding for a junior team (teams.is_juniors -- "Under 9", "Under 11",
     see sqlite_store.py's _classify_team()) are excluded from every
-    total, the same way opposition players are: youth matches stay in
+    total, the same way opposition players are: junior matches stay in
     the underlying scorecard tables untouched, just not folded into a
     player's main career figures or any leaderboard. Pass
-    include_youth=True to include them, or filter to one youth team
+    include_juniors=True to include them, or filter to one junior team
     specifically with team_id instead (which already overrides this).
     """
 
@@ -255,7 +255,7 @@ def career_stats(
         "team_id": int(team_id) if team_id is not None else None,
         "elpmcc_only": 1 if elpmcc_only else 0,
         "elpmcc_name": elpmcc_name,
-        "include_youth": 1 if include_youth else 0
+        "include_juniors": 1 if include_juniors else 0
     }
 
     return pd.read_sql_query(_CAREER_SQL, conn, params=params)
@@ -276,20 +276,20 @@ class SQLPlayerStats:
     PlayerPerformances.summary()).
     """
 
-    def __init__(self, conn, elpmcc_only=True, elpmcc_name=ELPMCC_NAME, include_youth=False):
+    def __init__(self, conn, elpmcc_only=True, elpmcc_name=ELPMCC_NAME, include_juniors=False):
         self.conn = conn
         self.elpmcc_only = elpmcc_only
         self.elpmcc_name = elpmcc_name
-        self.include_youth = include_youth
+        self.include_juniors = include_juniors
 
     # ----------------------------------------------------------
 
-    def career(self, season=None, team_id=None, elpmcc_only=None, include_youth=None):
+    def career(self, season=None, team_id=None, elpmcc_only=None, include_juniors=None):
         return career_stats(
             self.conn, season=season, team_id=team_id,
             elpmcc_only=self.elpmcc_only if elpmcc_only is None else elpmcc_only,
             elpmcc_name=self.elpmcc_name,
-            include_youth=self.include_youth if include_youth is None else include_youth
+            include_juniors=self.include_juniors if include_juniors is None else include_juniors
         )
 
     # ----------------------------------------------------------

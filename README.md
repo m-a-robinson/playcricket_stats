@@ -105,11 +105,11 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   Lancs Paper Mill" resolve to one canonical club), scoped by the already-
   resolved `club_id` for teams (so "1st XI" is still a different team per
   club, just not split into two rows for the *same* club across sources).
-  `teams` also carries `is_youth` (0/1), set at insert time from the team
+  `teams` also carries `is_juniors` (0/1), set at insert time from the team
   name alone ("Under 9", "Under 11 B", "U9", "Colts", "Juniors", etc. —
   `_classify_team()`) — currently only Play-Cricket's 2024-2026 seasons
-  have any youth teams at all; CricHQ and CricketStatz have none. This is
-  what `sqlite_queries.py`'s `include_youth` filter (see below) reads.
+  have any junior teams at all; CricHQ and CricketStatz have none. This is
+  what `sqlite_queries.py`'s `include_juniors` filter (see below) reads.
   Deliberately conservative — no fuzzy matching, no guessing at dropped
   qualifiers — so it can't plausibly conflate two different real clubs;
   anything it doesn't catch is a candidate for `reconcile_audit.py`/
@@ -192,11 +192,11 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   (`batting_innings`/`bowling_innings`/`match_appearances` are untouched);
   pass `elpmcc_only=False` to include them in `career_stats()` too, e.g.
   to check one opposition player's record specifically against this club.
-  Excludes youth teams by default the same way (`include_youth=False`) —
+  Excludes junior teams by default the same way (`include_juniors=False`) —
   U9/U11 appearances/batting/bowling/fielding stay out of every career
-  total and leaderboard, keyed off `teams.is_youth` (see `sqlite_store.py`
-  above); the underlying rows are untouched, so `include_youth=True` (or
-  filtering to one youth `team_id` directly, which already overrides this)
+  total and leaderboard, keyed off `teams.is_juniors` (see `sqlite_store.py`
+  above); the underlying rows are untouched, so `include_juniors=True` (or
+  filtering to one junior `team_id` directly, which already overrides this)
   brings them back. Nothing else in this project treats junior cricket as
   second-class — it's ingested and stored exactly like senior fixtures —
   this is purely a default view on top, not a data restriction.
