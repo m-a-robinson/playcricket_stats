@@ -1514,6 +1514,54 @@ teams:
         id: '65'
         name: RAD 1st XI
 
+  - canonical_name: Radcliffe CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '361737'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Radcliffe CC, 2nd XI
+        name: 2nd XI
+  - canonical_name: Elton CC 4th XI
+    refs:
+      - source: play_cricket
+        id: '361742'
+        name: 4th XI
+      - source: crichq_pdf
+        id: Elton CC, 4th XI
+        name: 4th XI
+  - canonical_name: Thornham CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '38029'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Thornham CC, 2nd XI
+        name: 2nd XI
+  - canonical_name: Egerton CC 3rd XI
+    refs:
+      - source: play_cricket
+        id: '361736'
+        name: 3rd XI
+      - source: crichq_pdf
+        id: Egerton CC, 3rd XI
+        name: 3rd XI
+  - canonical_name: Bradshaw CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '106645'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Bradshaw CC, 2nd XI
+        name: 2nd XI
+  - canonical_name: Winton CC 3rd XI
+    refs:
+      - source: play_cricket
+        id: '41448'
+        name: 3rd XI
+      - source: crichq_pdf
+        id: Winton CC, 3rd XI
+        name: 3rd XI
 grounds:
 
   - canonical_name: "ELPMCC, Croft Lane"
@@ -1714,60 +1762,6 @@ rejected:
 
 pending:
   clubs: []
-  teams:
-    - canonical_name: 2nd XI
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '361737'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Radcliffe CC, 2nd XI
-          name: 2nd XI
-    - canonical_name: 4th XI
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '361742'
-          name: 4th XI
-        - source: crichq_pdf
-          id: Elton CC, 4th XI
-          name: 4th XI
-    - canonical_name: 2nd XI
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '38029'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Thornham CC, 2nd XI
-          name: 2nd XI
-    - canonical_name: 3rd XI
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '361736'
-          name: 3rd XI
-        - source: crichq_pdf
-          id: Egerton CC, 3rd XI
-          name: 3rd XI
-    - canonical_name: 2nd XI
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '106645'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Bradshaw CC, 2nd XI
-          name: 2nd XI
-    - canonical_name: 3rd XI
-      status: pending
-      refs:
-        - source: play_cricket
-          id: '41448'
-          name: 3rd XI
-        - source: crichq_pdf
-          id: Winton CC, 3rd XI
-          name: 3rd XI
+  teams: []
   grounds: []
   players: []
