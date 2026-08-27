@@ -1635,6 +1635,24 @@ teams:
       - source: crichq_pdf
         id: Winton CC, 3rd XI
         name: 3rd XI
+  - canonical_name: Friends United CC
+    decided: 2026-08-27
+    refs:
+      - source: play_cricket
+        id: '192704'
+        name: 1st XI
+      - source: crichq_pdf
+        id: "Friends United CC, Friends United CC"
+        name: "Friends United CC, Friends United CC"
+    reason: >
+      1 game each, no season overlap (crichq_pdf 2023 cup match,
+      play_cricket 2025 league match) -- same team recorded by two
+      different systems, same pattern as the other confirmed team
+      merges. The crichq_pdf scorecard never specified a numbered XI
+      for Friends United CC's own team (source text literally read
+      "Friends United CC, Friends United CC"), so named after the
+      full club name rather than invent an XI number the source
+      doesn't give.
 grounds:
 
   - canonical_name: "ELPMCC, Croft Lane"
