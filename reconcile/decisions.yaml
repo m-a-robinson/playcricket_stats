@@ -114,7 +114,19 @@ players:
       which is a smaller, more honest error than misattributing a
       joint credit.
 
-clubs: []
+clubs:
+
+  - canonical_name: "Westleigh Meths"
+    decided: 2026-08-27
+    refs:
+      - {source: cricketstatz, id: "8", name: "West Leigh Meths"}
+    reason: >
+      Single-source club (CricketStatz only, no play_cricket/crichq_pdf
+      presence in this archive) -- a pure rename, not a merge, to fix
+      the "West Leigh" / "Westleigh" spelling inconsistency against the
+      separate, unrelated "Westleigh CC" (see the confirmed pending:
+      clubs: entry): checked and confirmed as two genuinely different
+      real clubs, not a duplicate to merge.
 
 teams: []
 
@@ -338,7 +350,8 @@ pending:
           id: '39'
           name: Winton CC
     - canonical_name: Westleigh CC
-      status: pending
+      status: confirmed
+      decided: 2026-08-27
       refs:
         - source: play_cricket
           id: '201'
