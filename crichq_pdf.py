@@ -107,16 +107,33 @@ TOSS_LINE = re.compile(
 )
 
 RESULT_LINE = re.compile(
-    r'^(?P<team>.+?) - (?P<margin>Won by .+|Match Tied|Match Drawn)$',
+    r'^(?P<team>.+?) - (?P<margin>Won by .+|Won \(D/L method\)|Match Tied|Match Drawn)$',
     re.MULTILINE
 )
 
+# Rare alternative to RESULT_LINE seen on administratively-decided matches
+# (e.g. a walkover) -- no "<team> - Won ..." summary line at all, just
+# "<team> Game(s) Awarded as Win"/"...as Loss" sentences for both sides.
+AWARDED_WIN_LINE = re.compile(
+    r'^(?P<team>.+?) Games? Awarded as Win\.',
+    re.MULTILINE
+)
+
+
+# The team name uses [\s\S]+? rather than .+? so it can still match when
+# a long name (e.g. a T20 side's club-prefixed nickname, "East Lancs
+# Paper Mill CC, East Lancs Millers") happens to wrap across a PDF line
+# break right before "1st/2nd Innings"/the bowling column headers -- .+?
+# can't cross the embedded newline, which used to make the whole
+# "Batting:"/"Bowling:" header silently fail to match, dropping that
+# entire innings (see the README/roadmap "ELPMCC Millers" note -- this
+# was found affecting 28 real T20 matches in the archive).
 INNINGS_HEADER = re.compile(
-    r"Batting:\s+(?P<team>.+?)\s+(?P<ordinal>1st|2nd)\s*\n?Innings"
+    r"Batting:\s+(?P<team>[\s\S]+?)\s+(?P<ordinal>1st|2nd)\s*\n?Innings"
 )
 
 BOWLING_HEADER = re.compile(
-    r"Bowling:\s+(?P<team>.+?)\s+O\s+M\s+R\s+W\s+EC\s+AV\s+EX"
+    r"Bowling:\s+(?P<team>[\s\S]+?)\s+O\s+M\s+R\s+W\s+EC\s+AV\s+EX"
 )
 
 BATTING_ROW = re.compile(
@@ -143,6 +160,20 @@ DID_NOT_BAT = re.compile(
 )
 
 NAME_SUFFIX = re.compile(r"\s*\([^)]*\)")
+
+_WHITESPACE_RUN = re.compile(r"\s+")
+
+
+def _team_name_from_match(m):
+    """
+    A team name captured by INNINGS_HEADER/BOWLING_HEADER, with any
+    embedded PDF line-wrap collapsed back to a single space -- the
+    [\\s\\S]+? team group can now span a newline (see those patterns'
+    comment), so this normalises it back to the same one-line form
+    MATCH_HEADER's own "vs" line produces, keeping the two comparable.
+    """
+
+    return _WHITESPACE_RUN.sub(" ", m.group("team")).strip()
 
 SKIP_LINES = {"R B 4's 6's SR", "Match Notes"}
 
@@ -272,6 +303,21 @@ def _parse_dismissal(dismissal_text):
         return "not out", None, None
 
     if low.startswith("retired"):
+
+        # CricHQ's own vocabulary distinguishes "retired hurt" (not out --
+        # standard scoring convention), "retired out" (a genuine dismissal
+        # -- the fielding side declined the return, or the scorer marked
+        # it as out) and bare "retired" (a tactical not-out retirement,
+        # e.g. to let a partner bat on). Collapsing all three into one
+        # label previously hid a real "retired out" dismissal as a
+        # not-out -- see how_out's not-out vocabulary in
+        # playcricket_scorecard.py._standardise_batting().
+        if low.startswith("retired hurt"):
+            return "retired hurt", None, None
+
+        if low.startswith("retired out"):
+            return "retired out", None, None
+
         return "retired not out", None, None
 
     if low.startswith("c & b") or low.startswith("c and b"):
@@ -403,7 +449,7 @@ def _parse_match(header_match, body, match_index):
 
         for nm in name_matches:
 
-            name = nm.group("team").strip()
+            name = _team_name_from_match(nm)
 
             if name not in inferred:
                 inferred.append(name)
@@ -480,21 +526,37 @@ def _parse_match(header_match, body, match_index):
     # Result
     # --------------------------------------------------------------
 
-    result_m = RESULT_LINE.search(body[:body.index("Batting:")])
+    result_section = body[:body.index("Batting:")]
+    result_m = RESULT_LINE.search(result_section)
+    awarded_m = None if result_m else AWARDED_WIN_LINE.search(result_section)
+
     result = None
     result_applied_to = None
+    result_description = None
 
     if result_m:
         result = result_m.group("margin")
         winner_text = result_m.group("team").strip()
+    elif awarded_m:
+        # No "<team> - Won ..." summary line for a walkover -- recover the
+        # winner from the "Game(s) Awarded as Win" sentence instead.
+        result = "Won (awarded)"
+        winner_text = awarded_m.group("team").strip()
+    else:
+        winner_text = None
+
+    if winner_text:
         result_applied_to = home_full if winner_text == home_full else (
             away_full if winner_text == away_full else None
         )
 
-    result_desc_m = re.search(
-        r"^(.+Lost\.?\s.+(?:Won|Lost).*)$", body[:body.index("Batting:")], re.MULTILINE
-    )
-    result_description = result_desc_m.group(1).strip() if result_desc_m else None
+        # CricHQ's own summary line states the result from both teams'
+        # perspective ("X Won. Y Lost" / "Y Lost. X Won" -- order varies)
+        # -- redundant with the winner + margin already parsed above, and
+        # reads as noise next to Play-Cricket's own single-team style
+        # ("<team> - Won by X"). Build one winner-only sentence instead of
+        # keeping both team names.
+        result_description = f"{winner_text} {result}"
 
     # --------------------------------------------------------------
     # Innings
@@ -525,7 +587,7 @@ def _parse_match(header_match, body, match_index):
         i_end = innings_headers[ii + 1].start() if ii + 1 < len(innings_headers) else len(body)
         innings_body = body[i_start:i_end]
 
-        batting_team_full = ih.group("team").strip()
+        batting_team_full = _team_name_from_match(ih)
         bowling_team_full = away_full if batting_team_full == home_full else home_full
 
         bowl_h = BOWLING_HEADER.search(innings_body)
@@ -620,7 +682,7 @@ def _parse_match(header_match, body, match_index):
 
         wickets_down = sum(
             1 for r in bat_rows
-            if r["how_out"] not in ("not out", "retired not out")
+            if r["how_out"] not in ("not out", "retired not out", "retired hurt")
         )
 
         innings_list.append({

@@ -82,7 +82,12 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   extras. Detects individual milestone achievements (half-century, century,
   double-century, 4- and 5-wicket hauls) and has a `print_scorecard()`
   plain-text console renderer. Directly reused by `sqlite_store.py` as its
-  parsing engine.
+  parsing engine. `batting_table()` (display only — the stored
+  `batting_innings.balls` figure is untouched) drops the balls-faced
+  column entirely for an innings where every row reads 0, rather than
+  printing a whole card of misleading zeroes: CricketStatz simply didn't
+  record balls-faced before ~2016 (see "Modules" below), and a genuine
+  single 0 next to real values elsewhere is left alone.
 - **`schema.sql`** / **`sqlite_store.py`** — Normalised SQLite store (clubs,
   teams, players, matches, innings, batting/bowling innings, match
   appearances/team sheets, milestone views), fed from the JSON cache with no
@@ -100,6 +105,11 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   Lancs Paper Mill" resolve to one canonical club), scoped by the already-
   resolved `club_id` for teams (so "1st XI" is still a different team per
   club, just not split into two rows for the *same* club across sources).
+  `teams` also carries `is_juniors` (0/1), set at insert time from the team
+  name alone ("Under 9", "Under 11 B", "U9", "Colts", "Juniors", etc. —
+  `_classify_team()`) — currently only Play-Cricket's 2024-2026 seasons
+  have any junior teams at all; CricHQ and CricketStatz have none. This is
+  what `sqlite_queries.py`'s `include_juniors` filter (see below) reads.
   Deliberately conservative — no fuzzy matching, no guessing at dropped
   qualifiers — so it can't plausibly conflate two different real clubs;
   anything it doesn't catch is a candidate for `reconcile_audit.py`/
@@ -126,7 +136,16 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   `"Date:"`/`"Venue:"` onto separate lines — recovered by inferring the two
   team names from the innings' own `"Batting:"`/`"Bowling:"` headers instead
   when the header's `"vs"` line isn't there (see "Sample data" and the
-  roadmap for how this was found). Run
+  roadmap for how this was found). `INNINGS_HEADER`/`BOWLING_HEADER` also
+  tolerate a mid-name PDF line-wrap now (a long club-prefixed nickname like
+  "East Lancs Paper Mill CC, East Lancs Millers" occasionally wraps right
+  before "1st/2nd Innings" or the bowling column headers) — found by
+  spot-checking sample scorecards: whenever that wrap landed inside the
+  team-name capture, the header silently failed to match and the whole
+  innings vanished rather than erroring, taking real runs/wickets/batting/
+  bowling figures with it. Affected 28 real matches in the archive (all
+  involving a T20/nickname side long enough to wrap), recovered without
+  any change in the 381/328/53 total/played/abandoned counts. Run
   `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
   more PDFs; add `--json-out <path>` to also write every parsed match-detail
   dict to a JSON file — see `crichq/crichq_pdf.json` under "Sample data"
@@ -173,6 +192,14 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   (`batting_innings`/`bowling_innings`/`match_appearances` are untouched);
   pass `elpmcc_only=False` to include them in `career_stats()` too, e.g.
   to check one opposition player's record specifically against this club.
+  Excludes junior teams by default the same way (`include_juniors=False`) —
+  U9/U11 appearances/batting/bowling/fielding stay out of every career
+  total and leaderboard, keyed off `teams.is_juniors` (see `sqlite_store.py`
+  above); the underlying rows are untouched, so `include_juniors=True` (or
+  filtering to one junior `team_id` directly, which already overrides this)
+  brings them back. Nothing else in this project treats junior cricket as
+  second-class — it's ingested and stored exactly like senior fixtures —
+  this is purely a default view on top, not a data restriction.
 - **`reconcile.py`** — Cross-source identity merging for players, clubs,
   *and* teams (see roadmap item 4). `merge_players(conn, source_refs)` /
   `merge_clubs(...)` / `merge_teams(...)` each repoint a confirmed list of
@@ -400,6 +427,50 @@ remains.
   Play-Cricket sync itself (`playcricket_api.py`/`playcricket_database.py`
   have no `__main__` — see "Maintaining the database" above for the
   snippet a `sync_playcricket.py` wrapper would replace).
+- **Four data-quality issues found reviewing sample scorecards across all
+  three sources (2026-08-27), each a naming/reference-data problem rather
+  than a parser bug, so deliberately left for manual reconciliation rather
+  than guessed at in code — consistent with this project's existing
+  "no fuzzy matching, human confirms it" approach (see roadmap item 4):**
+  - **CricHQ's `ground_name` is always county-level, never a real ground**
+    — confirmed by checking the raw PDF text directly: only 4 distinct
+    values across all 381 matches (`England - Lancashire` ×377,
+    `Derbyshire`/`Cheshire`/`Bedfordshire` ×1-2 each). There is no ground
+    name anywhere in the source text for `crichq_pdf.py` to extract — the
+    PDF's own `Venue:` field never carries one. Inferring a ground from
+    the home team would be wrong often enough to matter (cup ties and
+    Sunday friendlies aren't always played at the "home" side's own
+    ground), so this needs a manual club → home-ground reference table
+    instead. 75 distinct clubs appear across the archive (as home or
+    away) if that table gets built.
+  - **CricHQ's `result_description` now states the winner only** (fixed
+    this session — see the commit that added `AWARDED_WIN_LINE` and
+    extended `RESULT_LINE` for `"Won (D/L method)"` — previously showed
+    both teams, e.g. `"X Lost. Y Won"`). 44 played matches still have no
+    result recorded at all: 36 from the 2016-season report layout, which
+    never prints a result line of any kind, and 8 marked `"Batting:"`-
+    present but actually abandoned mid-match (`"Abandoned - Game
+    Unfinished - No Result"`) — the latter are stored with
+    `status="Played"` today since that flag only checks for the presence
+    of a `Batting:` section, not for an actual result; worth a genuine
+    `no_result` status distinction if these matter for stats later.
+  - **CricketStatz team names carry their club's abbreviation prefix**
+    (e.g. team name `ELPM 1st XI` for club `East Lancs Paper Mill`) where
+    Play-Cricket/CricHQ keep the two separate — already surfaced by
+    `reconcile_audit.py` as part of its 56 team-name splits (see roadmap
+    item 4/step 7); resolved the normal way, via a `TEAM_MERGES` entry,
+    not a parser change.
+  - **CricketStatz's bare `"Division 1"`/`"Division 2"`/`"Division 3"`/
+    `"Cup"` competition names (2005-2015, 223 matches) are missing an
+    `NMCL` league prefix** — the club played in the NMCL (North Manchester
+    Cricket League — see `nmcl stats/*.tif` above, the pre-CricketStatz
+    paper archive from the same era) before moving to the GMCL, and the
+    year ranges confirm the split cleanly: every bare `"Division N"`/
+    `"Cup"` name falls in 2005-2015, while `"GMCL Division N"`-prefixed
+    names only start in 2016. The exact cutover year isn't in the data
+    itself, so renaming these needs the club's own confirmation of when
+    the move happened before `competition_name` values can be corrected
+    (by hand, or a small date-gated rename pass once confirmed).
 
 ## Basic usage (verifying progress in ipython)
 
