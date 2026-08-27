@@ -1380,6 +1380,7 @@ teams:
         id: '73'
         name: Westleigh 1st XI
   - canonical_name: Westleigh CC 2nd XI
+    decided: 2026-08-27
     refs:
       - source: crichq_pdf
         id: Westleigh CC, 2nd XI
@@ -1387,6 +1388,14 @@ teams:
       - source: cricketstatz
         id: '70'
         name: Westleigh 2nd XI
+      - source: crichq_pdf
+        id: "Unknown (GMCL Division 5 - GMCL Division 5 N & W (GMCLDIV5NW), Sat, 16 July, 2016) - Opponent"
+        name: "2016) - Opponent"
+    reason: >
+      Same 16/07/2016 match as the club-level Westleigh CC fix (see
+      clubs: above) -- the leftover team-level fragment of the same
+      "Unknown (...)" placeholder, identified the same way (the
+      scorecard's own "Toss Details: Westleigh CC, 2nd XI" line).
   - canonical_name: Elton CC 1st XI
     refs:
       - source: crichq_pdf
