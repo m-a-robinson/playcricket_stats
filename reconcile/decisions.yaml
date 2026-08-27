@@ -1173,7 +1173,8 @@ pending:
           id: '1496'
           name: L Lomax
     - canonical_name: Ben Birtwistle
-      status: pending
+      status: confirmed
+      decided: 2026-08-27
       refs:
         - source: play_cricket
           id: '6480114'
