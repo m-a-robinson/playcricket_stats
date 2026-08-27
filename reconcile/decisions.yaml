@@ -246,8 +246,9 @@ rejected:
 
 pending:
   clubs:
-    - canonical_name: Radcliffe CC, Lancs
-      status: pending
+    - canonical_name: Radcliffe CC
+      status: confirmed
+      decided: 2026-08-27
       refs:
         - source: play_cricket
           id: '9372'
