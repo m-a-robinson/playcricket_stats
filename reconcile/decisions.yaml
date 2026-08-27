@@ -954,11 +954,6 @@ players:
       - source: crichq_pdf
         id: SA Shah
         name: SA Shah
-  - canonical_name: S F Shah
-    refs:
-      - source: crichq_pdf
-        id: S F Shah
-        name: S F Shah
 clubs:
 
   - canonical_name: "Westleigh Meths CC"

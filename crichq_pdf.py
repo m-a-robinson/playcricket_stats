@@ -671,9 +671,30 @@ def _parse_match(header_match, body, match_index):
         extras = {}
         totals = {}
         dnb_names = []
+        dnb_text = None   # accumulated "Did not bat:" text, across a PDF line-wrap, while not None
+
+        def _flush_dnb():
+            nonlocal dnb_names
+            if dnb_text and dnb_text.strip():
+                dnb_names = [n.strip() for n in dnb_text.split(",") if n.strip()]
 
         for line in batting_part.split("\n"):
             line = line.strip()
+
+            if dnb_text is not None:
+                # A long did-not-bat list can wrap onto its own PDF line
+                # mid-name -- e.g. "..., L Warren, S\nF Shah Hussain" is
+                # one name, "S F Shah Hussain", split by the page layout,
+                # not two. Keep absorbing lines as part of the list until
+                # one starts a new section (a name never does).
+                if not line or EXTRAS_LINE.match(line) or TOTALS_LINE.match(line) or \
+                   line.startswith(("Fall of wicket", "Bowling:", "Batting:")):
+                    _flush_dnb()
+                    dnb_text = None
+                else:
+                    dnb_text += " " + line
+                    continue
+
             em = EXTRAS_LINE.match(line)
             if em:
                 extras = _parse_extras(em.group("detail"))
@@ -684,8 +705,10 @@ def _parse_match(header_match, body, match_index):
                 totals = {"runs": int(tm.group("runs"))}
                 continue
             dm = DID_NOT_BAT.match(line)
-            if dm and dm.group("names").strip():
-                dnb_names = [n.strip() for n in dm.group("names").split(",") if n.strip()]
+            if dm:
+                dnb_text = dm.group("names").strip()
+
+        _flush_dnb()
 
         for raw_name in dnb_names:
             _sheet_entry(batting_team_full, raw_name)
