@@ -114,6 +114,851 @@ players:
       which is a smaller, more honest error than misattributing a
       joint credit.
 
+  - canonical_name: Stephen Keyworth
+    refs:
+      - source: crichq_pdf
+        id: S Keyworth
+        name: S Keyworth
+      - source: crichq_pdf
+        id: S Key worth
+        name: S Key worth
+      - source: cricketstatz
+        id: '5'
+        name: S Keyworth
+      - source: play_cricket
+        id: '6214557'
+        name: Stephen Keyworth
+      - source: crichq_pdf
+        id: SA Keyworth
+        name: SA Keyworth
+      - source: crichq_pdf
+        id: SK Keyworth
+        name: SK Keyworth
+      - source: crichq_pdf
+        id: Stephen Keyworth
+        name: Stephen Keyworth
+  - canonical_name: Matty Partington
+    refs:
+      - source: crichq_pdf
+        id: M Parting ton
+        name: M Parting ton
+      - source: cricketstatz
+        id: '176'
+        name: M Partington
+      - source: crichq_pdf
+        id: M.P Partington
+        name: M.P Partington
+      - source: crichq_pdf
+        id: Mp Partington
+        name: Mp Partington
+      - source: crichq_pdf
+        id: M P Partington
+        name: M P Partington
+      - source: play_cricket
+        id: '5685621'
+        name: Matt Partington
+      - source: crichq_pdf
+        id: Mgp Partington
+        name: Mgp Partington
+  - canonical_name: Carl Dearden
+    refs:
+      - source: crichq_pdf
+        id: C Dearden
+        name: C Dearden
+      - source: crichq_pdf
+        id: C Dear den
+        name: C Dear den
+      - source: cricketstatz
+        id: '860'
+        name: C Dearden
+      - source: play_cricket
+        id: '6196388'
+        name: Carl Dearden
+      - source: crichq_pdf
+        id: Carl Dearden
+        name: Carl Dearden
+  - canonical_name: Charlie Dearden
+    refs:
+      - source: crichq_pdf
+        id: ChD Dearden
+        name: ChD Dearden
+  - canonical_name: Danny Dwyer
+    refs:
+      - source: crichq_pdf
+        id: d dwyer
+        name: d dwyer
+      - source: cricketstatz
+        id: '458'
+        name: D Dwyer
+      - source: crichq_pdf
+        id: Danny Dwyer
+        name: Danny Dwyer
+      - source: crichq_pdf
+        id: DD Dwyer
+        name: DD Dwyer
+  - canonical_name: Ash birtwistle
+    refs:
+      - source: crichq_pdf
+        id: AJB BIrtwistle
+        name: AJB BIrtwistle
+      - source: crichq_pdf
+        id: Ajb birtwistle
+        name: Ajb birtwistle
+      - source: play_cricket
+        id: '6195627'
+        name: Ashley Birtwistle
+      - source: crichq_pdf
+        id: Ashley Birtwistle
+        name: Ashley Birtwistle
+      - source: cricketstatz
+        id: '539'
+        name: A Birtwistle
+  - canonical_name: Daniel McCaffery
+    refs:
+      - source: crichq_pdf
+        id: D Mccaffrey
+        name: D Mccaffrey
+      - source: cricketstatz
+        id: '1256'
+        name: D McCaffrey
+      - source: crichq_pdf
+        id: D J McCaffrey
+        name: D J McCaffrey
+      - source: crichq_pdf
+        id: Daniel Mccaffrey
+        name: Daniel Mccaffrey
+      - source: crichq_pdf
+        id: D J McCaffery
+        name: D J McCaffery
+      - source: crichq_pdf
+        id: D . J McCaffery
+        name: D . J McCaffery
+      - source: play_cricket
+        id: '6196415'
+        name: Daniel McCaffery
+      - source: crichq_pdf
+        id: L.D.J McCaffery
+        name: L.D.J McCaffery
+      - source: crichq_pdf
+        id: LDJ McCaffery
+        name: LDJ McCaffery
+      - source: crichq_pdf
+        id: L . D . J McCaffery
+        name: L . D . J McCaffery
+  - canonical_name: Paul Hewart
+    refs:
+      - source: crichq_pdf
+        id: P Hewart
+        name: P Hewart
+      - source: crichq_pdf
+        id: PH Hewart
+        name: PH Hewart
+      - source: cricketstatz
+        id: '10'
+        name: P Hewart
+  - canonical_name: Ian Wade
+    refs:
+      - source: crichq_pdf
+        id: IW wade
+        name: IW wade
+      - source: crichq_pdf
+        id: Ian Wade
+        name: Ian Wade
+  - canonical_name: Louis Birmingham
+    refs:
+      - source: play_cricket
+        id: '5899972'
+        name: Louis Birmingham
+      - source: crichq_pdf
+        id: L Birmingham
+        name: L Birmingham
+      - source: crichq_pdf
+        id: LD Birmingham
+        name: LD Birmingham
+      - source: crichq_pdf
+        id: Louis Birmingham
+        name: Louis Birmingham
+      - source: crichq_pdf
+        id: LDB Birmingham
+        name: LDB Birmingham
+      - source: cricketstatz
+        id: '839'
+        name: Lewis Birmingham
+  - canonical_name: Andrew Lomax
+    refs:
+      - source: play_cricket
+        id: '6204163'
+        name: Andrew Lomax
+      - source: crichq_pdf
+        id: A Lomax
+        name: A Lomax
+      - source: crichq_pdf
+        id: Andrew Lomax
+        name: Andrew Lomax
+      - source: cricketstatz
+        id: '207'
+        name: A Lomax
+  - canonical_name: Luke Lomax
+    refs:
+      - source: play_cricket
+        id: '6195623'
+        name: Luke Lomax
+      - source: crichq_pdf
+        id: L Lomax
+        name: L Lomax
+      - source: crichq_pdf
+        id: LL Lomax
+        name: LL Lomax
+      - source: crichq_pdf
+        id: Luke Lomax
+        name: Luke Lomax
+      - source: cricketstatz
+        id: '1496'
+        name: L Lomax
+  - canonical_name: Ben Birtwistle
+    refs:
+      - source: play_cricket
+        id: '6480114'
+        name: Ben Birtwistle
+      - source: crichq_pdf
+        id: B Birtwistle
+        name: B Birtwistle
+      - source: crichq_pdf
+        id: Ben Birtwistle
+        name: Ben Birtwistle
+      - source: cricketstatz
+        id: '672'
+        name: B Birtwistle
+  - canonical_name: Mark Robinson
+    refs:
+      - source: play_cricket
+        id: '5315731'
+        name: Mark Robinson
+      - source: crichq_pdf
+        id: MR Robinson
+        name: MR Robinson
+      - source: crichq_pdf
+        id: MA Robinson
+        name: MA Robinson
+      - source: crichq_pdf
+        id: M Robinson
+        name: M Robinson
+  - canonical_name: Shasvat Kakkar
+    refs:
+      - source: play_cricket
+        id: '5316742'
+        name: Shasvat Kakkar
+      - source: crichq_pdf
+        id: S Kakkar
+        name: S Kakkar
+      - source: crichq_pdf
+        id: SK Kakkar
+        name: SK Kakkar
+      - source: crichq_pdf
+        id: Shasvat kakkar Kakkar
+        name: Shasvat kakkar Kakkar
+      - source: cricketstatz
+        id: '1666'
+        name: S Kakkar
+  - canonical_name: Tom Partington
+    refs:
+      - source: play_cricket
+        id: '6191602'
+        name: Tom Partington
+      - source: crichq_pdf
+        id: Tgp Partington
+        name: Tgp Partington
+      - source: crichq_pdf
+        id: Tp Partington
+        name: Tp Partington
+      - source: cricketstatz
+        id: '1430'
+        name: T Partington
+  - canonical_name: Simon Carr
+    refs:
+      - source: crichq_pdf
+        id: S Carr
+        name: S Carr
+      - source: crichq_pdf
+        id: Simon Carr
+        name: Simon Carr
+      - source: cricketstatz
+        id: '9'
+        name: S Carr
+  - canonical_name: Carter Charlesworth
+    refs:
+      - source: play_cricket
+        id: '6241739'
+        name: Carter Charlesworth
+      - source: crichq_pdf
+        id: Cc Charlesworth
+        name: Cc Charlesworth
+      - source: crichq_pdf
+        id: Carter Charlesworth
+        name: Carter Charlesworth
+      - source: crichq_pdf
+        id: C Charlesworth
+        name: C Charlesworth
+  - canonical_name: Adam Hogg
+    refs:
+      - source: play_cricket
+        id: '6215653'
+        name: Adam Hogg
+      - source: crichq_pdf
+        id: Adam Hogg Hogg
+        name: Adam Hogg Hogg
+      - source: crichq_pdf
+        id: A Hogg
+        name: A Hogg
+  - canonical_name: Dwayne Pearson
+    refs:
+      - source: play_cricket
+        id: '6196930'
+        name: Dwayne Pearson
+      - source: crichq_pdf
+        id: D Pearson
+        name: D Pearson
+      - source: crichq_pdf
+        id: Dwayne Pearson
+        name: Dwayne Pearson
+      - source: cricketstatz
+        id: '673'
+        name: D Pearson
+  - canonical_name: Alan Redford
+    refs:
+      - source: play_cricket
+        id: '7125366'
+        name: Alan w Redford
+      - source: crichq_pdf
+        id: A Redford
+        name: A Redford
+      - source: crichq_pdf
+        id: Alan Redford
+        name: Alan Redford
+      - source: cricketstatz
+        id: '212'
+        name: A Redford
+  - canonical_name: Adam Sajewicz
+    refs:
+      - source: play_cricket
+        id: '6300746'
+        name: Adam Sajewicz
+      - source: crichq_pdf
+        id: APJ Sajewicz
+        name: APJ Sajewicz
+      - source: crichq_pdf
+        id: AP Sajewicz
+        name: AP Sajewicz
+      - source: cricketstatz
+        id: '1562'
+        name: A Sajewicz
+  - canonical_name: Conrad Saliparri
+    refs:
+      - source: crichq_pdf
+        id: C Saliparri
+        name: C Saliparri
+      - source: crichq_pdf
+        id: CLS Saripalli
+        name: CLS Saripall
+      - source: crichq_pdf
+        id: CL Saripalli
+        name: CL Saripalli
+      - source: crichq_pdf
+        id: C Saripalli
+        name: C Saripalli
+      - source: crichq_pdf
+        id: Conrad Saripalli
+        name: Conrad Saripalli
+      - source: crichq_pdf
+        id: Carl Saripalli
+        name: Carl Saripalli
+      - source: cricketstatz
+        id: '1202'
+        name: Con Saripalli
+  - canonical_name: Chris Saliparri
+    refs:
+      - source: crichq_pdf
+        id: Christian Saliparri
+        name: Christian Saliparri
+      - source: cricketstatz
+        id: '1201'
+        name: Ch Saliparri
+  - canonical_name: Kyle Bowkett
+    refs:
+      - source: play_cricket
+        id: '6260420'
+        name: Kyle Bowkett
+      - source: crichq_pdf
+        id: K Bowkett
+        name: K Bowkett
+      - source: crichq_pdf
+        id: Kyle Bowkett
+        name: Kyle Bowkett
+  - canonical_name: Lewis Mather
+    refs:
+      - source: play_cricket
+        id: '6627252'
+        name: Lewis G Mather
+      - source: crichq_pdf
+        id: L Mather
+        name: L Mather
+      - source: crichq_pdf
+        id: LG Mather
+        name: LG Mather
+  - canonical_name: Zac Newton
+    refs:
+      - source: play_cricket
+        id: '6218513'
+        name: Zac Newton
+      - source: crichq_pdf
+        id: Z Newton
+        name: Z Newton
+      - source: crichq_pdf
+        id: Zac Newton
+        name: Zac Newton
+      - source: crichq_pdf
+        id: Zack Newton
+        name: Zack Newton
+      - source: crichq_pdf
+        id: ZTN Newton
+        name: ZTN Newton
+      - source: crichq_pdf
+        id: ZN Newton
+        name: ZN Newton
+  - canonical_name: Anthony Whittaker
+    refs:
+      - source: play_cricket
+        id: '6315666'
+        name: Anthony Whittaker
+      - source: crichq_pdf
+        id: A Whittaker
+        name: A Whittaker
+      - source: crichq_pdf
+        id: TW Whittaker
+        name: TW Whittaker
+      - source: crichq_pdf
+        id: Tony Whittaker
+        name: Tony Whittaker
+  - canonical_name: Craig Holt
+    refs:
+      - source: play_cricket
+        id: '6944852'
+        name: Craig Holt
+      - source: cricketstatz
+        id: '467'
+        name: C Holt
+  - canonical_name: Jack Crompton
+    refs:
+      - source: crichq_pdf
+        id: J Crompton
+        name: J Crompton
+      - source: crichq_pdf
+        id: Jack Crompton
+        name: Jack Crompton
+      - source: cricketstatz
+        id: '869'
+        name: J Crompton
+  - canonical_name: Daniel Scott
+    refs:
+      - source: crichq_pdf
+        id: D Scott
+        name: D Scott
+      - source: crichq_pdf
+        id: DS Scott
+        name: DS Scott
+      - source: cricketstatz
+        id: '399'
+        name: D Scott
+  - canonical_name: Dave Barbe
+    refs:
+      - source: crichq_pdf
+        id: D Barbe
+        name: D Barbe
+      - source: crichq_pdf
+        id: D M Barbe
+        name: D M Barbe
+      - source: crichq_pdf
+        id: Dave Barbe
+        name: Dave Barbe
+  - canonical_name: Mark Patten
+    refs:
+      - source: play_cricket
+        id: '6196382'
+        name: Mark Patten
+      - source: crichq_pdf
+        id: MT Patten
+        name: MT Patten
+  - canonical_name: Daniel Caulfield
+    refs:
+      - source: play_cricket
+        id: '6196444'
+        name: Daniel Caulfield
+      - source: crichq_pdf
+        id: DJ Caulfield
+        name: DJ Caulfield
+      - source: crichq_pdf
+        id: D Willett
+        name: D Willett
+      - source: cricketstatz
+        id: '783'
+        name: D Willett
+  - canonical_name: Steve Stubbs
+    refs:
+      - source: play_cricket
+        id: '5015620'
+        name: Steve Stubbs
+      - source: crichq_pdf
+        id: S Stubbs
+        name: S Stubbs
+      - source: cricketstatz
+        id: '1264'
+        name: S Stubbs
+  - canonical_name: Ben Pattison
+    refs:
+      - source: crichq_pdf
+        id: BP Pattison
+        name: BP Pattison
+      - source: crichq_pdf
+        id: B Pattison
+        name: B Pattison
+      - source: crichq_pdf
+        id: Ben Pattison
+        name: Ben Pattison
+  - canonical_name: Matthew Hilton
+    refs:
+      - source: play_cricket
+        id: '6220148'
+        name: Matthew Hilton
+      - source: crichq_pdf
+        id: M.J. Hilton
+        name: M.J. Hilton
+      - source: crichq_pdf
+        id: MJH Hilton
+        name: MJH Hilton
+  - canonical_name: Lewis Warren
+    refs:
+      - source: play_cricket
+        id: '6241368'
+        name: Lewis Warren
+      - source: crichq_pdf
+        id: L Warren
+        name: L Warren
+      - source: crichq_pdf
+        id: Llw Warren
+        name: Llw Warren
+  - canonical_name: Daniel Moriarty
+    refs:
+      - source: play_cricket
+        id: '6192230'
+        name: Daniel Moriarty
+      - source: crichq_pdf
+        id: Daniel Moriarty
+        name: Daniel Moriarty
+      - source: crichq_pdf
+        id: DM Moriarty
+        name: DM Moriarty
+  - canonical_name: Mark Durrans
+    refs:
+      - source: crichq_pdf
+        id: M Durrans
+        name: M Durrans
+      - source: cricketstatz
+        id: '951'
+        name: M Durrans
+  - canonical_name: Mitchell Durrans
+    refs:
+      - source: cricketstatz
+        id: '954'
+        name: Mitchell Durrans
+  - canonical_name: Ryan Wilkes
+    refs:
+      - source: crichq_pdf
+        id: Rw Wilkes
+        name: Rw Wilkes
+      - source: crichq_pdf
+        id: R K R W Wilkes
+        name: R K R W Wilkes
+      - source: crichq_pdf
+        id: Ryan Wilkes
+        name: Ryan Wilkes
+  - canonical_name: Will Turnbull
+    refs:
+      - source: crichq_pdf
+        id: WT Turnbull
+        name: WT Turnbull
+      - source: cricketstatz
+        id: '1582'
+        name: W Turnbull
+  - canonical_name: Phil Partington
+    refs:
+      - source: crichq_pdf
+        id: Phil Partington
+        name: Phil Partington
+      - source: cricketstatz
+        id: '3'
+        name: P Partington
+  - canonical_name: Jack Leonard
+    refs:
+      - source: crichq_pdf
+        id: Jack P Leonard
+        name: Jack P Leonard
+      - source: crichq_pdf
+        id: Jack Leonard
+        name: Jack Leonard
+      - source: crichq_pdf
+        id: J P Leonard
+        name: J P Leonard
+  - canonical_name: Jordan Leonard
+    refs:
+      - source: play_cricket
+        id: '6403629'
+        name: Jordan Leonard
+      - source: crichq_pdf
+        id: Jordan C Leonard
+        name: Jordan C Leonard
+      - source: crichq_pdf
+        id: J Leonard
+        name: J Leonard
+  - canonical_name: Aca Albanese
+    refs:
+      - source: crichq_pdf
+        id: Aca Albanese
+        name: Aca Albanese
+  - canonical_name: Aaron Albanese
+    refs:
+      - source: crichq_pdf
+        id: Aaron albanese
+        name: Aaron albanese
+  - canonical_name: Norm Hussain
+    refs:
+      - source: crichq_pdf
+        id: Norm Hussain
+        name: Norm Hussain
+      - source: crichq_pdf
+        id: N H Hussain
+        name: N H Hussain
+  - canonical_name: Mujihad Shah
+    refs:
+      - source: crichq_pdf
+        id: MS Shah
+        name: MS Shah
+      - source: crichq_pdf
+        id: M H Shah
+        name: M H Shah
+      - source: crichq_pdf
+        id: Mujihad Shah
+        name: Mujihad Shah
+  - canonical_name: Chris Maidment
+    refs:
+      - source: play_cricket
+        id: '6935056'
+        name: Chris Maidment
+  - canonical_name: Charlie Maidment
+    refs:
+      - source: play_cricket
+        id: '6999618'
+        name: Charlie Maidment
+  - canonical_name: Adrian Campbell
+    refs:
+      - source: play_cricket
+        id: '6745391'
+        name: Adrian Campbell
+      - source: crichq_pdf
+        id: AC Campbell
+        name: AC Campbell
+  - canonical_name: Kyle Turner
+    refs:
+      - source: crichq_pdf
+        id: K Turner
+        name: K Turner
+      - source: crichq_pdf
+        id: KLT Turner
+        name: KLT Turner
+      - source: crichq_pdf
+        id: KT Turner
+        name: KT Turner
+      - source: crichq_pdf
+        id: Kyle Turner
+        name: Kyle Turner
+  - canonical_name: Josh Albanese
+    refs:
+      - source: crichq_pdf
+        id: J Albanese
+        name: J Albanese
+      - source: crichq_pdf
+        id: J A Albanese
+        name: J A Albanese
+      - source: crichq_pdf
+        id: Jja Albanese
+        name: Jja Albanese
+      - source: crichq_pdf
+        id: Josh albanese
+        name: Josh albanese
+  - canonical_name: Suleman Ishaq
+    refs:
+      - source: play_cricket
+        id: '5424334'
+        name: Suleman Ishaq
+      - source: crichq_pdf
+        id: S Ishaq
+        name: S Ishaq
+  - canonical_name: Lewis Hamilton
+    refs:
+      - source: play_cricket
+        id: '6640584'
+        name: Lewis Hamilton
+      - source: crichq_pdf
+        id: LJ Hamilton
+        name: LJ Hamilton
+      - source: crichq_pdf
+        id: Lewis Hamilton
+        name: Lewis Hamilton
+  - canonical_name: Kevin Dodson
+    refs:
+      - source: crichq_pdf
+        id: k dodson
+        name: k dodson
+      - source: cricketstatz
+        id: '849'
+        name: Kevin Dodson
+  - canonical_name: Craig Belston
+    refs:
+      - source: play_cricket
+        id: '6196620'
+        name: Craig Belston
+      - source: crichq_pdf
+        id: CB Belston
+        name: CB Belston
+      - source: cricketstatz
+        id: '1644'
+        name: C Belston
+  - canonical_name: Dave Wilkes
+    refs:
+      - source: crichq_pdf
+        id: DW Wilkes
+        name: DW Wilkes
+      - source: crichq_pdf
+        id: DJW wilkes
+        name: DJW wilkes
+      - source: crichq_pdf
+        id: Dave Wilkes
+        name: Dave Wilkes
+      - source: crichq_pdf
+        id: David Wilkes
+        name: David Wilkes
+  - canonical_name: Hamad Rabbi
+    refs:
+      - source: crichq_pdf
+        id: H Rabbi
+        name: H Rabbi
+      - source: crichq_pdf
+        id: HR Rabbi
+        name: HR Rabbi
+      - source: crichq_pdf
+        id: Hammed Rabbi
+        name: Hammed Rabbi
+      - source: crichq_pdf
+        id: Hamad rabbi
+        name: Hamad rabbi
+      - source: crichq_pdf
+        id: Ahmad Rabbi
+        name: Ahmad Rabbi
+      - source: crichq_pdf
+        id: Amad Rabbi
+        name: Amad Rabbi
+  - canonical_name: Sam Oldham
+    refs:
+      - source: crichq_pdf
+        id: SM Oldham
+        name: SM Oldham
+      - source: crichq_pdf
+        id: S Oldham
+        name: S Oldham
+  - canonical_name: David Eckersley
+    refs:
+      - source: play_cricket
+        id: '6196732'
+        name: David Leslie Eckersley
+      - source: crichq_pdf
+        id: Dave Eckersley
+        name: Dave Eckersley
+      - source: crichq_pdf
+        id: DE Eckersley
+        name: DE Eckersley
+      - source: crichq_pdf
+        id: D Eckersley
+        name: D Eckersley
+  - canonical_name: Graham Jebb
+    refs:
+      - source: crichq_pdf
+        id: GJ Jebb
+        name: GJ Jebb
+      - source: cricketstatz
+        id: '1425'
+        name: G Jebb
+  - canonical_name: Max Dearden
+    refs:
+      - source: crichq_pdf
+        id: MH Dearden
+        name: MH Dearden
+      - source: crichq_pdf
+        id: Max Dearden
+        name: Max Dearden
+  - canonical_name: C Brindle
+    refs:
+      - source: crichq_pdf
+        id: CB Brindle
+        name: CB Brindle
+      - source: crichq_pdf
+        id: C Brindle
+        name: C Brindle
+  - canonical_name: Daniel Roberts
+    refs:
+      - source: crichq_pdf
+        id: Danny Roberts
+        name: Danny Roberts
+      - source: cricketstatz
+        id: '1417'
+        name: D Roberts
+  - canonical_name: Simon Bowkett
+    refs:
+      - source: crichq_pdf
+        id: Simon Bowkett
+        name: Simon Bowkett
+      - source: crichq_pdf
+        id: S Bowkett
+        name: S Bowkett
+  - canonical_name: Jamie Dwyer
+    refs:
+      - source: crichq_pdf
+        id: J Dwyer
+        name: J Dwyer
+      - source: crichq_pdf
+        id: Jamie Dwyer
+        name: Jamie Dwyer
+  - canonical_name: D Bowkett
+    refs:
+      - source: crichq_pdf
+        id: D Bowkett
+        name: D Bowkett
+      - source: crichq_pdf
+        id: D B Bowkett
+        name: D B Bowkett
+  - canonical_name: Eddie Shah
+    refs:
+      - source: crichq_pdf
+        id: SS Shah
+        name: SS Shah
+  - canonical_name: S Shah
+    refs:
+      - source: crichq_pdf
+        id: SA Shah
+        name: SA Shah
+  - canonical_name: S F Shah
+    refs:
+      - source: crichq_pdf
+        id: S F Shah
+        name: S F Shah
 clubs:
 
   - canonical_name: "Westleigh Meths"
@@ -128,7 +973,546 @@ clubs:
       clubs: entry): checked and confirmed as two genuinely different
       real clubs, not a duplicate to merge.
 
-teams: []
+  - canonical_name: Radcliffe CC
+    refs:
+      - source: play_cricket
+        id: '9372'
+        name: Radcliffe CC, Lancs
+      - source: crichq_pdf
+        id: Radcliffe CC
+        name: Radcliffe CC
+      - source: cricketstatz
+        id: '47'
+        name: Radcliffe CC
+  - canonical_name: Swinton Moorside CC
+    refs:
+      - source: play_cricket
+        id: '6211'
+        name: Swinton Moorside CC, Salford
+      - source: cricketstatz
+        id: '33'
+        name: Swinton Moorside
+  - canonical_name: Elton CC
+    refs:
+      - source: play_cricket
+        id: '2564'
+        name: Elton CC, Lancs
+      - source: crichq_pdf
+        id: Elton CC
+        name: Elton CC
+      - source: cricketstatz
+        id: '11'
+        name: Elton CC
+  - canonical_name: Thornham CC
+    refs:
+      - source: play_cricket
+        id: '6331'
+        name: Thornham CC, Lancs
+      - source: crichq_pdf
+        id: Thornham CC
+        name: Thornham CC
+      - source: cricketstatz
+        id: '21'
+        name: Thornham CC
+  - canonical_name: Clifton CC
+    refs:
+      - source: play_cricket
+        id: '1925'
+        name: Clifton CC, Lancs
+      - source: crichq_pdf
+        id: Clifton CC
+        name: Clifton CC
+      - source: cricketstatz
+        id: '25'
+        name: Clifton CC
+  - canonical_name: Egerton CC
+    refs:
+      - source: play_cricket
+        id: '2531'
+        name: Egerton CC, Lancs
+      - source: crichq_pdf
+        id: Egerton CC
+        name: Egerton CC
+      - source: cricketstatz
+        id: '40'
+        name: Egerton CC
+  - canonical_name: Bradshaw CC
+    refs:
+      - source: play_cricket
+        id: '1333'
+        name: Bradshaw CC, Lancs
+      - source: crichq_pdf
+        id: Bradshaw CC
+        name: Bradshaw CC
+  - canonical_name: Winton CC
+    refs:
+      - source: play_cricket
+        id: '6991'
+        name: Winton CC, Lancs
+      - source: crichq_pdf
+        id: Winton CC
+        name: Winton CC
+      - source: cricketstatz
+        id: '39'
+        name: Winton CC
+  - canonical_name: Westleigh CC
+    refs:
+      - source: play_cricket
+        id: '201'
+        name: Westleigh CC, Leigh
+      - source: crichq_pdf
+        id: Westleigh CC
+        name: Westleigh CC
+      - source: cricketstatz
+        id: '50'
+        name: Westleigh CC
+teams:
+  - canonical_name: Tottington St Johns CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '124290'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Tottington St Johns CC, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Tottington St Johns CC, Tottington St Johns CC 2nd XI
+        name: Tottington St Johns CC 2nd XI
+      - source: cricketstatz
+        id: '23'
+        name: TSJ 2nd XI
+  - canonical_name: Tottington St Johns CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Tottington St Johns CC, 1st XI
+        name: 1st XI
+      - source: crichq_pdf
+        id: Tottington St Johns CC, Tottington St Johns CC 1st XI
+        name: Tottington St Johns CC 1st XI
+      - source: cricketstatz
+        id: '3'
+        name: TSJ 1st XI
+  - canonical_name: East Lancs Paper Mill CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '119947'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: East Lancs Paper Mill CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '2'
+        name: ELPM 2nd XI
+  - canonical_name: East Lancs Paper Mill CC 1st XI
+    refs:
+      - source: play_cricket
+        id: '87898'
+        name: 1st XI
+      - source: crichq_pdf
+        id: East Lancs Paper Mill CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '1'
+        name: ELPM 1st XI
+  - canonical_name: Edenfield CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '36533'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Edenfield CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '71'
+        name: Edenfield 2nd XI
+  - canonical_name: Edenfield CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Edenfield CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '75'
+        name: Edenfield 1st XI
+  - canonical_name: Prestwich CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Prestwich CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '78'
+        name: Prestwich 2nd XI
+  - canonical_name: Woodbank CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '361541'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Woodbank CC, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Woodbank CC, Woodbank CC 2nd XI
+        name: Woodbank CC 2nd XI
+      - source: cricketstatz
+        id: '64'
+        name: WB 2nd XI
+  - canonical_name: Woodbank CC 3rd XI
+    refs:
+      - source: crichq_pdf
+        id: Woodbank CC, 3rd XI
+        name: 3rd XI
+      - source: cricketstatz
+        id: '33'
+        name: WB 3rd XI
+  - canonical_name: Walshaw CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Walshaw CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '49'
+        name: WAL 2nd XI
+  - canonical_name: Bolton Indians CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '361571'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Bolton Indians CC, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Bolton Indians CC, Bolton Indians CC 2nd XI
+        name: Bolton Indians CC 2nd XI
+      - source: cricketstatz
+        id: '59'
+        name: Bolton Indians 2nd XI
+  - canonical_name: Brooksbottom CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '65961'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Brooksbottom CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '72'
+        name: BBM 2nd XI
+  - canonical_name: Adlington CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '68877'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Adlington CC, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Adlington CC, 2nd
+        name: 2nd
+  - canonical_name: Bury CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '361536'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Bury Cricket Club, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Bury CC, Bury CC 2nd XI
+        name: Bury CC 2nd XI
+      - source: cricketstatz
+        id: '53'
+        name: Bury 2nd XI
+  - canonical_name: Hindley St Peters CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Hindley St Peters CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '60'
+        name: Hindley St Peters 2nd XI
+  - canonical_name: Deane and Derby 2nd XI
+    refs:
+      - source: play_cricket
+        id: '361570'
+        name: 2nd XI
+      - source: cricketstatz
+        id: '66'
+        name: D&D 2nd XI
+  - canonical_name: Worsley CC 2nd XI
+    refs:
+      - source: play_cricket
+        id: '361579'
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Worsley CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '52'
+        name: Worsley 2nd XI
+  - canonical_name: Greenmount CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Greenmount CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '68'
+        name: GM 2nd XI
+  - canonical_name: Edgworth CC 3rd XI
+    refs:
+      - source: crichq_pdf
+        id: Edgworth CC, 3rd XI
+        name: 3rd XI
+      - source: cricketstatz
+        id: '44'
+        name: EDG 3rd XI
+  - canonical_name: Edgworth CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Edgworth CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '61'
+        name: EDG 2nd XI
+  - canonical_name: Roe Green CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Roe Green CC, Roe Green CC 2nd XI
+        name: Roe Green CC 2nd XI
+      - source: crichq_pdf
+        id: Roe Green CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '55'
+        name: Roe Green 2nd XI
+  - canonical_name: Shaw CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Shaw CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '77'
+        name: Shaw 1st XI
+  - canonical_name: Ashton Ladysmith CC 1st XI
+    refs:
+      - source: play_cricket
+        id: '361542'
+        name: 1st XI
+      - source: cricketstatz
+        id: '10'
+        name: AL 1st XI
+  - canonical_name: South West Manchester CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: South West Manchester CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '67'
+        name: SW Manchester 1st XI
+  - canonical_name: Westleigh CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Westleigh CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '73'
+        name: Westleigh 1st XI
+  - canonical_name: Westleigh CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Westleigh CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '70'
+        name: Westleigh 2nd XI
+  - canonical_name: Elton CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Elton CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '12'
+        name: Elton 1st XI
+  - canonical_name: Elton CC 3rd XI
+    refs:
+      - source: crichq_pdf
+        id: Elton CC, 3rd XI
+        name: 3rd XI
+      - source: cricketstatz
+        id: '30'
+        name: Elton 3rd XI
+  - canonical_name: Elton CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Elton CC, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Elton CC, Elton CC 2nd XI
+        name: Elton CC 2nd XI
+      - source: cricketstatz
+        id: '62'
+        name: Elton 2nd XI
+  - canonical_name: Clifton CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Clifton CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '76'
+        name: Clifton 2nd XI
+  - canonical_name: Clifton Kingfishers
+    refs:
+      - source: crichq_pdf
+        id: Clifton CC, Clifton Kingfishers
+        name: Clifton Kingfishers
+      - source: cricketstatz
+        id: '41'
+        name: Clifton
+  - canonical_name: Elton Vale CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Elton Vale CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '5'
+        name: EV 1st XI
+  - canonical_name: Glossop CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Glossop CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '74'
+        name: Glossop 2nd XI
+  - canonical_name: Hollinwood CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Hollinwood CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '79'
+        name: Hollinwood 1st XI
+  - canonical_name: Micklehurst CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Micklehurst CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '80'
+        name: MKH 1st XI
+  - canonical_name: Werneth CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Werneth CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '81'
+        name: Werneth 1st XI
+  - canonical_name: Droylsden CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Droylsden CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '82'
+        name: Droylsden 1st XI
+  - canonical_name: Daisy Hill CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Daisy Hill CC, 1st XI
+        name: 1st XI
+      - source: crichq_pdf
+        id: Daisy Hill CC, 1st
+        name: 1st
+  - canonical_name: Winton CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Winton CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '50'
+        name: Winton CC 2nd XI
+  - canonical_name: Bamford Fieldhouse CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Bamford Fieldhouse CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '69'
+        name: BAM 2nd XI
+  - canonical_name: Uppermill CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Uppermill CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '46'
+        name: UP 1st XI
+  - canonical_name: Blackley CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Blackley CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '29'
+        name: BL 1st XI
+  - canonical_name: Egerton CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Egerton CC, 2nd XI
+        name: 2nd XI
+      - source: crichq_pdf
+        id: Egerton CC, Egerton CC 2nd XI
+        name: Egerton CC 2nd XI
+      - source: cricketstatz
+        id: '51'
+        name: Egerton 2nd XI
+  - canonical_name: Whalley Range CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Whalley Range CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '56'
+        name: Whalley Range 2nd XI
+  - canonical_name: Rochdalians CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Rochdalians CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '4'
+        name: RD 1st XI
+  - canonical_name: Denton West CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Denton West CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '54'
+        name: Denton West 1st XI
+  - canonical_name: Irlam CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Irlam CC, Irlam 1st XI
+        name: Irlam 1st XI
+      - source: cricketstatz
+        id: '45'
+        name: IRM 1st XI
+  - canonical_name: Failsworth Macedonia CC 2nd XI
+    refs:
+      - source: crichq_pdf
+        id: Failsworth Macedonia CC, 2nd XI
+        name: 2nd XI
+      - source: cricketstatz
+        id: '19'
+        name: FM 2nd XI
+  - canonical_name: Radcliffe CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Radcliffe CC, 1st XI
+        name: 1st XI
+      - source: cricketstatz
+        id: '65'
+        name: RAD 1st XI
 
 grounds:
 
@@ -240,9 +1624,81 @@ rejected:
         double-booked like that can wrongly suppress a genuinely new
         candidate touching the real Ian Wade later.
 
+    - refs:
+        - source: play_cricket
+          id: '6267738'
+          name: Zakaria Ali
+        - source: cricketstatz
+          id: '1320'
+          name: Z Ali
+      status: rejected
   clubs: []
 
-  teams: []
+  teams:
+    - refs:
+        - source: play_cricket
+          id: '196920'
+          name: Under 9
+        - source: play_cricket
+          id: '368155'
+          name: Under 9 B
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '320514'
+          name: Under 9
+        - source: play_cricket
+          id: '363332'
+          name: Under 9 B
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '362583'
+          name: Under 11 B
+        - source: play_cricket
+          id: '120245'
+          name: Under 11
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '362571'
+          name: Under 11
+        - source: play_cricket
+          id: '362572'
+          name: Under 11 B
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '363325'
+          name: Under 9
+        - source: play_cricket
+          id: '368067'
+          name: Under 9 B
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '362591'
+          name: Under 11
+        - source: play_cricket
+          id: '362590'
+          name: Under 11 B
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '363331'
+          name: Under 9 B
+        - source: play_cricket
+          id: '196915'
+          name: Under 9
+      status: rejected
+    - refs:
+        - source: play_cricket
+          id: '106720'
+          name: Under 11
+        - source: play_cricket
+          id: '406683'
+          name: Under 11 B
+      status: rejected
 
   grounds: []
 
@@ -257,1666 +1713,61 @@ rejected:
 # Empty until reconcile_audit.py has been run at least once.
 
 pending:
-  clubs:
-    - canonical_name: Radcliffe CC
-      status: confirmed
-      decided: 2026-08-27
-      refs:
-        - source: play_cricket
-          id: '9372'
-          name: Radcliffe CC, Lancs
-        - source: crichq_pdf
-          id: Radcliffe CC
-          name: Radcliffe CC
-        - source: cricketstatz
-          id: '47'
-          name: Radcliffe CC
-    - canonical_name: Swinton Moorside CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6211'
-          name: Swinton Moorside CC, Salford
-        - source: cricketstatz
-          id: '33'
-          name: Swinton Moorside
-    - canonical_name: Elton CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '2564'
-          name: Elton CC, Lancs
-        - source: crichq_pdf
-          id: Elton CC
-          name: Elton CC
-        - source: cricketstatz
-          id: '11'
-          name: Elton CC
-    - canonical_name: Thornham CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6331'
-          name: Thornham CC, Lancs
-        - source: crichq_pdf
-          id: Thornham CC
-          name: Thornham CC
-        - source: cricketstatz
-          id: '21'
-          name: Thornham CC
-    - canonical_name: Clifton CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '1925'
-          name: Clifton CC, Lancs
-        - source: crichq_pdf
-          id: Clifton CC
-          name: Clifton CC
-        - source: cricketstatz
-          id: '25'
-          name: Clifton CC
-    - canonical_name: Egerton CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '2531'
-          name: Egerton CC, Lancs
-        - source: crichq_pdf
-          id: Egerton CC
-          name: Egerton CC
-        - source: cricketstatz
-          id: '40'
-          name: Egerton CC
-    - canonical_name: Bradshaw CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '1333'
-          name: Bradshaw CC, Lancs
-        - source: crichq_pdf
-          id: Bradshaw CC
-          name: Bradshaw CC
-    - canonical_name: Winton CC
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6991'
-          name: Winton CC, Lancs
-        - source: crichq_pdf
-          id: Winton CC
-          name: Winton CC
-        - source: cricketstatz
-          id: '39'
-          name: Winton CC
-    - canonical_name: Westleigh CC
-      status: confirmed
-      decided: 2026-08-27
-      refs:
-        - source: play_cricket
-          id: '201'
-          name: Westleigh CC, Leigh
-        - source: crichq_pdf
-          id: Westleigh CC
-          name: Westleigh CC
-        - source: cricketstatz
-          id: '50'
-          name: Westleigh CC
+  clubs: []
   teams:
-    - canonical_name: Tottington St Johns CC 2nd XI
-      status: confirmed
+    - canonical_name: 2nd XI
+      status: pending
       refs:
         - source: play_cricket
-          id: '124290'
+          id: '361737'
           name: 2nd XI
         - source: crichq_pdf
-          id: Tottington St Johns CC, 2nd XI
+          id: Radcliffe CC, 2nd XI
+          name: 2nd XI
+    - canonical_name: 4th XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '361742'
+          name: 4th XI
+        - source: crichq_pdf
+          id: Elton CC, 4th XI
+          name: 4th XI
+    - canonical_name: 2nd XI
+      status: pending
+      refs:
+        - source: play_cricket
+          id: '38029'
           name: 2nd XI
         - source: crichq_pdf
-          id: Tottington St Johns CC, Tottington St Johns CC 2nd XI
-          name: Tottington St Johns CC 2nd XI
-        - source: cricketstatz
-          id: '23'
-          name: TSJ 2nd XI
-    - canonical_name: Tottington St Johns CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Tottington St Johns CC, 1st XI
-          name: 1st XI
-        - source: crichq_pdf
-          id: Tottington St Johns CC, Tottington St Johns CC 1st XI
-          name: Tottington St Johns CC 1st XI
-        - source: cricketstatz
-          id: '3'
-          name: TSJ 1st XI
-    - canonical_name: East Lancs Paper Mill CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '119947'
+          id: Thornham CC, 2nd XI
           name: 2nd XI
-        - source: crichq_pdf
-          id: East Lancs Paper Mill CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '2'
-          name: ELPM 2nd XI
-    - canonical_name: East Lancs Paper Mill CC 1st XI
-      status: confirmed
+    - canonical_name: 3rd XI
+      status: pending
       refs:
         - source: play_cricket
-          id: '87898'
-          name: 1st XI
-        - source: crichq_pdf
-          id: East Lancs Paper Mill CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '1'
-          name: ELPM 1st XI
-    - canonical_name: Under 9
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '196920'
-          name: Under 9
-        - source: play_cricket
-          id: '368155'
-          name: Under 9 B
-      reason: >
-        Checked match dates: Stand CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
-    - canonical_name: Edenfield CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '36533'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Edenfield CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '71'
-          name: Edenfield 2nd XI
-    - canonical_name: Edenfield CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Edenfield CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '75'
-          name: Edenfield 1st XI
-    - canonical_name: Under 9
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '320514'
-          name: Under 9
-        - source: play_cricket
-          id: '363332'
-          name: Under 9 B
-      reason: >
-        Checked match dates: Elton CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
-    - canonical_name: Under 11 B
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '362583'
-          name: Under 11 B
-        - source: play_cricket
-          id: '120245'
-          name: Under 11
-      reason: >
-        Checked match dates: Prestwich CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
-    - canonical_name: Prestwich CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Prestwich CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '78'
-          name: Prestwich 2nd XI
-    - canonical_name: Woodbank CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '361541'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Woodbank CC, 2nd XI
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Woodbank CC, Woodbank CC 2nd XI
-          name: Woodbank CC 2nd XI
-        - source: cricketstatz
-          id: '64'
-          name: WB 2nd XI
-    - canonical_name: Woodbank CC 3rd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Woodbank CC, 3rd XI
+          id: '361736'
           name: 3rd XI
-        - source: cricketstatz
-          id: '33'
-          name: WB 3rd XI
-    - canonical_name: Under 11
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '362571'
-          name: Under 11
-        - source: play_cricket
-          id: '362572'
-          name: Under 11 B
-      reason: >
-        Checked match dates: Walshaw CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
-    - canonical_name: Walshaw CC 2nd XI
-      status: confirmed
-      refs:
         - source: crichq_pdf
-          id: Walshaw CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '49'
-          name: WAL 2nd XI
-    - canonical_name: Bolton Indians CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '361571'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Bolton Indians CC, 2nd XI
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Bolton Indians CC, Bolton Indians CC 2nd XI
-          name: Bolton Indians CC 2nd XI
-        - source: cricketstatz
-          id: '59'
-          name: Bolton Indians 2nd XI
-    - canonical_name: Brooksbottom CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '65961'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Brooksbottom CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '72'
-          name: BBM 2nd XI
-    - canonical_name: Adlington CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '68877'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Adlington CC, 2nd XI
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Adlington CC, 2nd
-          name: 2nd
-    - canonical_name: Under 9
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '363325'
-          name: Under 9
-        - source: play_cricket
-          id: '368067'
-          name: Under 9 B
-      reason: >
-        Checked match dates: Bury CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
-    - canonical_name: Bury CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '361536'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Bury Cricket Club, 2nd XI
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Bury CC, Bury CC 2nd XI
-          name: Bury CC 2nd XI
-        - source: cricketstatz
-          id: '53'
-          name: Bury 2nd XI
-    - canonical_name: Under 11
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '362591'
-          name: Under 11
-        - source: play_cricket
-          id: '362590'
-          name: Under 11 B
-      reason: >
-        Checked match dates: Clifton CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
-    - canonical_name: Hindley St Peters CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Hindley St Peters CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '60'
-          name: Hindley St Peters 2nd XI
-    - canonical_name: Deane and Derby 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '361570'
-          name: 2nd XI
-        - source: cricketstatz
-          id: '66'
-          name: D&D 2nd XI
-    - canonical_name: Under 9 B
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '363331'
-          name: Under 9 B
-        - source: play_cricket
-          id: '196915'
-          name: Under 9
-      reason: >
-        Checked match dates: Ramsbottom CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
-    - canonical_name: Worsley CC 2nd XI
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '361579'
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Worsley CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '52'
-          name: Worsley 2nd XI
-    - canonical_name: Under 11
-      status: rejected
-      refs:
-        - source: play_cricket
-          id: '106720'
-          name: Under 11
-        - source: play_cricket
-          id: '406683'
-          name: Under 11 B
-      reason: >
-        Checked match dates: Heaton CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
-    - canonical_name: Greenmount CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Greenmount CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '68'
-          name: GM 2nd XI
-    - canonical_name: Edgworth CC 3rd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Edgworth CC, 3rd XI
+          id: Egerton CC, 3rd XI
           name: 3rd XI
-        - source: cricketstatz
-          id: '44'
-          name: EDG 3rd XI
-    - canonical_name: Edgworth CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Edgworth CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '61'
-          name: EDG 2nd XI
-    - canonical_name: Roe Green CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Roe Green CC, Roe Green CC 2nd XI
-          name: Roe Green CC 2nd XI
-        - source: crichq_pdf
-          id: Roe Green CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '55'
-          name: Roe Green 2nd XI
-    - canonical_name: Shaw CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Shaw CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '77'
-          name: Shaw 1st XI
-    - canonical_name: Ashton Ladysmith CC 1st XI
-      status: confirmed
+    - canonical_name: 2nd XI
+      status: pending
       refs:
         - source: play_cricket
-          id: '361542'
-          name: 1st XI
-        - source: cricketstatz
-          id: '10'
-          name: AL 1st XI
-    - canonical_name: South West Manchester CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: South West Manchester CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '67'
-          name: SW Manchester 1st XI
-    - canonical_name: Westleigh CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Westleigh CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '73'
-          name: Westleigh 1st XI
-    - canonical_name: Westleigh CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Westleigh CC, 2nd XI
+          id: '106645'
           name: 2nd XI
-        - source: cricketstatz
-          id: '70'
-          name: Westleigh 2nd XI
-    - canonical_name: Elton CC 1st XI
-      status: confirmed
-      refs:
         - source: crichq_pdf
-          id: Elton CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '12'
-          name: Elton 1st XI
-    - canonical_name: Elton CC 3rd XI
-      status: confirmed
+          id: Bradshaw CC, 2nd XI
+          name: 2nd XI
+    - canonical_name: 3rd XI
+      status: pending
       refs:
-        - source: crichq_pdf
-          id: Elton CC, 3rd XI
+        - source: play_cricket
+          id: '41448'
           name: 3rd XI
-        - source: cricketstatz
-          id: '30'
-          name: Elton 3rd XI
-    - canonical_name: Elton CC 2nd XI
-      status: confirmed
-      refs:
         - source: crichq_pdf
-          id: Elton CC, 2nd XI
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Elton CC, Elton CC 2nd XI
-          name: Elton CC 2nd XI
-        - source: cricketstatz
-          id: '62'
-          name: Elton 2nd XI
-    - canonical_name: Clifton CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Clifton CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '76'
-          name: Clifton 2nd XI
-    - canonical_name: Clifton Kingfishers
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Clifton CC, Clifton Kingfishers
-          name: Clifton Kingfishers
-        - source: cricketstatz
-          id: '41'
-          name: Clifton
-    - canonical_name: Elton Vale CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Elton Vale CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '5'
-          name: EV 1st XI
-    - canonical_name: Glossop CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Glossop CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '74'
-          name: Glossop 2nd XI
-    - canonical_name: Hollinwood CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Hollinwood CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '79'
-          name: Hollinwood 1st XI
-    - canonical_name: Micklehurst CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Micklehurst CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '80'
-          name: MKH 1st XI
-    - canonical_name: Werneth CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Werneth CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '81'
-          name: Werneth 1st XI
-    - canonical_name: Droylsden CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Droylsden CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '82'
-          name: Droylsden 1st XI
-    - canonical_name: Daisy Hill CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Daisy Hill CC, 1st XI
-          name: 1st XI
-        - source: crichq_pdf
-          id: Daisy Hill CC, 1st
-          name: 1st
-    - canonical_name: Winton CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Winton CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '50'
-          name: Winton CC 2nd XI
-    - canonical_name: Bamford Fieldhouse CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Bamford Fieldhouse CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '69'
-          name: BAM 2nd XI
-    - canonical_name: Uppermill CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Uppermill CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '46'
-          name: UP 1st XI
-    - canonical_name: Blackley CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Blackley CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '29'
-          name: BL 1st XI
-    - canonical_name: Egerton CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Egerton CC, 2nd XI
-          name: 2nd XI
-        - source: crichq_pdf
-          id: Egerton CC, Egerton CC 2nd XI
-          name: Egerton CC 2nd XI
-        - source: cricketstatz
-          id: '51'
-          name: Egerton 2nd XI
-    - canonical_name: Whalley Range CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Whalley Range CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '56'
-          name: Whalley Range 2nd XI
-    - canonical_name: Rochdalians CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Rochdalians CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '4'
-          name: RD 1st XI
-    - canonical_name: Denton West CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Denton West CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '54'
-          name: Denton West 1st XI
-    - canonical_name: Irlam CC 1st XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Irlam CC, Irlam 1st XI
-          name: Irlam 1st XI
-        - source: cricketstatz
-          id: '45'
-          name: IRM 1st XI
-    - canonical_name: Failsworth Macedonia CC 2nd XI
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Failsworth Macedonia CC, 2nd XI
-          name: 2nd XI
-        - source: cricketstatz
-          id: '19'
-          name: FM 2nd XI
-    - canonical_name: Radcliffe CC 1st XI
-      status: confirmed
-      decided: 2026-08-27
-      refs:
-        - source: crichq_pdf
-          id: Radcliffe CC, 1st XI
-          name: 1st XI
-        - source: cricketstatz
-          id: '65'
-          name: RAD 1st XI
+          id: Winton CC, 3rd XI
+          name: 3rd XI
   grounds: []
-  players:
-    - canonical_name: Stephen Keyworth
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: S Keyworth
-          name: S Keyworth
-        - source: crichq_pdf
-          id: S Key worth
-          name: S Key worth
-        - source: cricketstatz
-          id: '5'
-          name: S Keyworth
-        - source: play_cricket
-          id: '6214557'
-          name: Stephen Keyworth
-        - source: crichq_pdf
-          id: SA Keyworth
-          name: SA Keyworth
-        - source: crichq_pdf
-          id: SK Keyworth
-          name: SK Keyworth
-        - source: crichq_pdf
-          id: Stephen Keyworth
-          name: Stephen Keyworth
-    - canonical_name: Matty Partington
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: M Parting ton
-          name: M Parting ton
-        - source: cricketstatz
-          id: '176'
-          name: M Partington
-        - source: crichq_pdf
-          id: M.P Partington
-          name: M.P Partington
-        - source: crichq_pdf
-          id: Mp Partington
-          name: Mp Partington
-        - source: crichq_pdf
-          id: M P Partington
-          name: M P Partington
-        - source: play_cricket
-          id: '5685621'
-          name: Matt Partington
-        - source: crichq_pdf
-          id: Mgp Partington
-          name: Mgp Partington
-    - canonical_name: Carl Dearden
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: C Dearden
-          name: C Dearden
-        - source: crichq_pdf
-          id: C Dear den
-          name: C Dear den
-        - source: cricketstatz
-          id: '860'
-          name: C Dearden
-        - source: play_cricket
-          id: '6196388'
-          name: Carl Dearden
-        - source: crichq_pdf
-          id: Carl Dearden
-          name: Carl Dearden
-    - canonical_name: Charlie Dearden
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: ChD Dearden
-          name: ChD Dearden
-    - canonical_name: Danny Dwyer
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: d dwyer
-          name: d dwyer
-        - source: cricketstatz
-          id: '458'
-          name: D Dwyer
-        - source: crichq_pdf
-          id: Danny Dwyer
-          name: Danny Dwyer
-        - source: crichq_pdf
-          id: DD Dwyer
-          name: DD Dwyer
-    - canonical_name: Ash birtwistle
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: AJB BIrtwistle
-          name: AJB BIrtwistle
-        - source: crichq_pdf
-          id: Ajb birtwistle
-          name: Ajb birtwistle
-        - source: play_cricket
-          id: '6195627'
-          name: Ashley Birtwistle
-        - source: crichq_pdf
-          id: Ashley Birtwistle
-          name: Ashley Birtwistle
-        - source: cricketstatz
-          id: '539'
-          name: A Birtwistle
-    - canonical_name: Daniel McCaffery
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: D Mccaffrey
-          name: D Mccaffrey
-        - source: cricketstatz
-          id: '1256'
-          name: D McCaffrey
-        - source: crichq_pdf
-          id: D J McCaffrey
-          name: D J McCaffrey
-        - source: crichq_pdf
-          id: Daniel Mccaffrey
-          name: Daniel Mccaffrey
-        - source: crichq_pdf
-          id: D J McCaffery
-          name: D J McCaffery
-        - source: crichq_pdf
-          id: D . J McCaffery
-          name: D . J McCaffery
-        - source: play_cricket
-          id: '6196415'
-          name: Daniel McCaffery
-        - source: crichq_pdf
-          id: L.D.J McCaffery
-          name: L.D.J McCaffery
-        - source: crichq_pdf
-          id: LDJ McCaffery
-          name: LDJ McCaffery
-        - source: crichq_pdf
-          id: L . D . J McCaffery
-          name: L . D . J McCaffery
-    - canonical_name: Paul Hewart
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: P Hewart
-          name: P Hewart
-        - source: crichq_pdf
-          id: PH Hewart
-          name: PH Hewart
-        - source: cricketstatz
-          id: '10'
-          name: P Hewart
-    - canonical_name: Ian Wade
-      status: confirmed
-      note: >-
-        WARNING: canonical_name 'Ian Wade' matches an entry already
-        confirmed elsewhere in this file (see players: above), but this
-        candidate's refs are not part of that entry -- promoting it as-is
-        via --promote creates a second, disconnected entity with the same
-        name rather than extending the existing one. These look like more
-        raw CricHQ spelling variants of the same confirmed Ian Wade (216
-        games) rather than a different person -- check and, if so, add
-        these two refs to the confirmed entry above instead of promoting
-        this as its own entity.
-      refs:
-        - source: crichq_pdf
-          id: IW wade
-          name: IW wade
-        - source: crichq_pdf
-          id: Ian Wade
-          name: Ian Wade
-    - canonical_name: Louis Birmingham
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '5899972'
-          name: Louis Birmingham
-        - source: crichq_pdf
-          id: L Birmingham
-          name: L Birmingham
-        - source: crichq_pdf
-          id: LD Birmingham
-          name: LD Birmingham
-        - source: crichq_pdf
-          id: Louis Birmingham
-          name: Louis Birmingham
-        - source: crichq_pdf
-          id: LDB Birmingham
-          name: LDB Birmingham
-        - source: cricketstatz
-          id: '839'
-          name: Lewis Birmingham
-    - canonical_name: Andrew Lomax
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6204163'
-          name: Andrew Lomax
-        - source: crichq_pdf
-          id: A Lomax
-          name: A Lomax
-        - source: crichq_pdf
-          id: Andrew Lomax
-          name: Andrew Lomax
-        - source: cricketstatz
-          id: '207'
-          name: A Lomax
-    - canonical_name: Luke Lomax
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6195623'
-          name: Luke Lomax
-        - source: crichq_pdf
-          id: L Lomax
-          name: L Lomax
-        - source: crichq_pdf
-          id: LL Lomax
-          name: LL Lomax
-        - source: crichq_pdf
-          id: Luke Lomax
-          name: Luke Lomax
-        - source: cricketstatz
-          id: '1496'
-          name: L Lomax
-    - canonical_name: Ben Birtwistle
-      status: confirmed
-      decided: 2026-08-27
-      refs:
-        - source: play_cricket
-          id: '6480114'
-          name: Ben Birtwistle
-        - source: crichq_pdf
-          id: B Birtwistle
-          name: B Birtwistle
-        - source: crichq_pdf
-          id: Ben Birtwistle
-          name: Ben Birtwistle
-        - source: cricketstatz
-          id: '672'
-          name: B Birtwistle
-    - canonical_name: Mark Robinson
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '5315731'
-          name: Mark Robinson
-        - source: crichq_pdf
-          id: MR Robinson
-          name: MR Robinson
-        - source: crichq_pdf
-          id: MA Robinson
-          name: MA Robinson
-        - source: crichq_pdf
-          id: M Robinson
-          name: M Robinson
-    - canonical_name: Shasvat Kakkar
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '5316742'
-          name: Shasvat Kakkar
-        - source: crichq_pdf
-          id: S Kakkar
-          name: S Kakkar
-        - source: crichq_pdf
-          id: SK Kakkar
-          name: SK Kakkar
-        - source: crichq_pdf
-          id: Shasvat kakkar Kakkar
-          name: Shasvat kakkar Kakkar
-        - source: cricketstatz
-          id: '1666'
-          name: S Kakkar
-    - canonical_name: Tom Partington
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6191602'
-          name: Tom Partington
-        - source: crichq_pdf
-          id: Tgp Partington
-          name: Tgp Partington
-        - source: crichq_pdf
-          id: Tp Partington
-          name: Tp Partington
-        - source: cricketstatz
-          id: '1430'
-          name: T Partington
-    - canonical_name: Simon Carr
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: S Carr
-          name: S Carr
-        - source: crichq_pdf
-          id: Simon Carr
-          name: Simon Carr
-        - source: cricketstatz
-          id: '9'
-          name: S Carr
-    - canonical_name: Carter Charlesworth
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6241739'
-          name: Carter Charlesworth
-        - source: crichq_pdf
-          id: Cc Charlesworth
-          name: Cc Charlesworth
-        - source: crichq_pdf
-          id: Carter Charlesworth
-          name: Carter Charlesworth
-        - source: crichq_pdf
-          id: C Charlesworth
-          name: C Charlesworth
-    - canonical_name: Adam Hogg
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6215653'
-          name: Adam Hogg
-        - source: crichq_pdf
-          id: Adam Hogg Hogg
-          name: Adam Hogg Hogg
-        - source: crichq_pdf
-          id: A Hogg
-          name: A Hogg
-    - canonical_name: Dwayne Pearson
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6196930'
-          name: Dwayne Pearson
-        - source: crichq_pdf
-          id: D Pearson
-          name: D Pearson
-        - source: crichq_pdf
-          id: Dwayne Pearson
-          name: Dwayne Pearson
-        - source: cricketstatz
-          id: '673'
-          name: D Pearson
-    - canonical_name: Alan Redford
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '7125366'
-          name: Alan w Redford
-        - source: crichq_pdf
-          id: A Redford
-          name: A Redford
-        - source: crichq_pdf
-          id: Alan Redford
-          name: Alan Redford
-        - source: cricketstatz
-          id: '212'
-          name: A Redford
-    - canonical_name: Adam Sajewicz
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6300746'
-          name: Adam Sajewicz
-        - source: crichq_pdf
-          id: APJ Sajewicz
-          name: APJ Sajewicz
-        - source: crichq_pdf
-          id: AP Sajewicz
-          name: AP Sajewicz
-        - source: cricketstatz
-          id: '1562'
-          name: A Sajewicz
-    - canonical_name: Conrad Saliparri
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: C Saliparri
-          name: C Saliparri
-        - source: crichq_pdf
-          id: CLS Saripalli
-          name: CLS Saripall
-        - source: crichq_pdf
-          id: CL Saripalli
-          name: CL Saripalli
-        - source: crichq_pdf
-          id: C Saripalli
-          name: C Saripalli
-        - source: crichq_pdf
-          id: Conrad Saripalli
-          name: Conrad Saripalli
-        - source: crichq_pdf
-          id: Carl Saripalli
-          name: Carl Saripalli
-        - source: cricketstatz
-          id: '1202'
-          name: Con Saripalli
-    - canonical_name: Chris Saliparri
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Christian Saliparri
-          name: Christian Saliparri
-        - source: cricketstatz
-          id: '1201'
-          name: Ch Saliparri
-    - canonical_name: Kyle Bowkett
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6260420'
-          name: Kyle Bowkett
-        - source: crichq_pdf
-          id: K Bowkett
-          name: K Bowkett
-        - source: crichq_pdf
-          id: Kyle Bowkett
-          name: Kyle Bowkett
-    - canonical_name: Lewis Mather
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6627252'
-          name: Lewis G Mather
-        - source: crichq_pdf
-          id: L Mather
-          name: L Mather
-        - source: crichq_pdf
-          id: LG Mather
-          name: LG Mather
-    - canonical_name: Zac Newton
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6218513'
-          name: Zac Newton
-        - source: crichq_pdf
-          id: Z Newton
-          name: Z Newton
-        - source: crichq_pdf
-          id: Zac Newton
-          name: Zac Newton
-        - source: crichq_pdf
-          id: Zack Newton
-          name: Zack Newton
-        - source: crichq_pdf
-          id: ZTN Newton
-          name: ZTN Newton
-        - source: crichq_pdf
-          id: ZN Newton
-          name: ZN Newton
-    - canonical_name: Anthony Whittaker
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6315666'
-          name: Anthony Whittaker
-        - source: crichq_pdf
-          id: A Whittaker
-          name: A Whittaker
-        - source: crichq_pdf
-          id: TW Whittaker
-          name: TW Whittaker
-        - source: crichq_pdf
-          id: Tony Whittaker
-          name: Tony Whittaker
-    - canonical_name: Craig Holt
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6944852'
-          name: Craig Holt
-        - source: cricketstatz
-          id: '467'
-          name: C Holt
-    - canonical_name: Jack Crompton
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: J Crompton
-          name: J Crompton
-        - source: crichq_pdf
-          id: Jack Crompton
-          name: Jack Crompton
-        - source: cricketstatz
-          id: '869'
-          name: J Crompton
-    - canonical_name: Daniel Scott
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: D Scott
-          name: D Scott
-        - source: crichq_pdf
-          id: DS Scott
-          name: DS Scott
-        - source: cricketstatz
-          id: '399'
-          name: D Scott
-    - canonical_name: Dave Barbe
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: D Barbe
-          name: D Barbe
-        - source: crichq_pdf
-          id: D M Barbe
-          name: D M Barbe
-        - source: crichq_pdf
-          id: Dave Barbe
-          name: Dave Barbe
-    - canonical_name: Mark Patten
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6196382'
-          name: Mark Patten
-        - source: crichq_pdf
-          id: MT Patten
-          name: MT Patten
-    - canonical_name: Daniel Caulfield
-      status: confirmed
-      decided: 2026-08-27
-      refs:
-        - source: play_cricket
-          id: '6196444'
-          name: Daniel Caulfield
-        - source: crichq_pdf
-          id: DJ Caulfield
-          name: DJ Caulfield
-        - source: crichq_pdf
-          id: D Willett
-          name: D Willett
-        - source: cricketstatz
-          id: '783'
-          name: D Willett
-      reason: >
-        Same real person under a former name (Daniel/Danny Willett),
-        confirmed by the user. Data supports it: both identities play
-        exclusively for East Lancs Paper Mill CC with no season overlap
-        -- "D Willett" 2014-2017, "Daniel/DJ Caulfield" 2022-2026 -- a
-        clean gap consistent with a name change, not two different
-        people. NOT included: cricketstatz "D Willetts" (id 946) and
-        crichq_pdf "DN Willetts" (a different club, Greenmount CC, in
-        2015/2017 and 2019/2020) -- a different real person who happens
-        to share a similar surname. Checked for other misspellings
-        (Wilett/Willet/Willit etc.) -- none found in the archive.
-    - canonical_name: Steve Stubbs
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '5015620'
-          name: Steve Stubbs
-        - source: crichq_pdf
-          id: S Stubbs
-          name: S Stubbs
-        - source: cricketstatz
-          id: '1264'
-          name: S Stubbs
-    - canonical_name: Ben Pattison
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: BP Pattison
-          name: BP Pattison
-        - source: crichq_pdf
-          id: B Pattison
-          name: B Pattison
-        - source: crichq_pdf
-          id: Ben Pattison
-          name: Ben Pattison
-    - canonical_name: Matthew Hilton
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6220148'
-          name: Matthew Hilton
-        - source: crichq_pdf
-          id: M.J. Hilton
-          name: M.J. Hilton
-        - source: crichq_pdf
-          id: MJH Hilton
-          name: MJH Hilton
-    - canonical_name: Lewis Warren
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6241368'
-          name: Lewis Warren
-        - source: crichq_pdf
-          id: L Warren
-          name: L Warren
-        - source: crichq_pdf
-          id: Llw Warren
-          name: Llw Warren
-    - canonical_name: Daniel Moriarty
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6192230'
-          name: Daniel Moriarty
-        - source: crichq_pdf
-          id: Daniel Moriarty
-          name: Daniel Moriarty
-        - source: crichq_pdf
-          id: DM Moriarty
-          name: DM Moriarty
-    - canonical_name: Mark Durrans
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: M Durrans
-          name: M Durrans
-        - source: cricketstatz
-          id: '951'
-          name: M Durrans
-    - canonical_name: Mitchell Durrans
-      status: confirmed
-      refs:
-        - source: cricketstatz
-          id: '954'
-          name: Mitchell Durrans
-    - canonical_name: Ryan Wilkes
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Rw Wilkes
-          name: Rw Wilkes
-        - source: crichq_pdf
-          id: R K R W Wilkes
-          name: R K R W Wilkes
-        - source: crichq_pdf
-          id: Ryan Wilkes
-          name: Ryan Wilkes
-    - canonical_name: Will Turnbull
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: WT Turnbull
-          name: WT Turnbull
-        - source: cricketstatz
-          id: '1582'
-          name: W Turnbull
-    - canonical_name: Phil Partington
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Phil Partington
-          name: Phil Partington
-        - source: cricketstatz
-          id: '3'
-          name: P Partington
-    - canonical_name: Jack Leonard
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Jack P Leonard
-          name: Jack P Leonard
-        - source: crichq_pdf
-          id: Jack Leonard
-          name: Jack Leonard
-        - source: crichq_pdf
-          id: J P Leonard
-          name: J P Leonard
-    - canonical_name: Jordan Leonard
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6403629'
-          name: Jordan Leonard
-        - source: crichq_pdf
-          id: Jordan C Leonard
-          name: Jordan C Leonard
-        - source: crichq_pdf
-          id: J Leonard
-          name: J Leonard
-    - canonical_name: Aca Albanese
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Aca Albanese
-          name: Aca Albanese
-    - canonical_name: Aaron Albanese
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Aaron albanese
-          name: Aaron albanese
-    - canonical_name: Norm Hussain
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Norm Hussain
-          name: Norm Hussain
-        - source: crichq_pdf
-          id: N H Hussain
-          name: N H Hussain
-    - canonical_name: Mujihad Shah
-      status: confirmed
-      decided: 2026-08-27
-      refs:
-        - source: crichq_pdf
-          id: MS Shah
-          name: MS Shah
-        - source: crichq_pdf
-          id: M H Shah
-          name: M H Shah
-        - source: crichq_pdf
-          id: Mujihad Shah
-          name: Mujihad Shah
-      reason: >
-        Same person, all 2022 season, never marked as wicketkeeper --
-        "Mujihad Shah" gives the real full name the other two spell
-        with a slightly different middle initial. NOT included:
-        crichq_pdf "M Z Shah" -- 2023 season only (no overlap), 23
-        games vs. 11 combined here, and consistently marked
-        wicketkeeper (dagger in 8/23 raw appearances vs. never for
-        this cluster) -- confirmed by the user as a different real
-        person who happens to share the surname and first initial
-        ("Shah" is common at this club: M/H/A/SA/E Shah and "S F Shah
-        Hussain" all appear as clearly distinct people in the same
-        matches).
-    - canonical_name: Chris Maidment
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6935056'
-          name: Chris Maidment
-    - canonical_name: Charlie Maidment
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6999618'
-          name: Charlie Maidment
-    - canonical_name: Adrian Campbell
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6745391'
-          name: Adrian Campbell
-        - source: crichq_pdf
-          id: AC Campbell
-          name: AC Campbell
-    - canonical_name: Kyle Turner
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: K Turner
-          name: K Turner
-        - source: crichq_pdf
-          id: KLT Turner
-          name: KLT Turner
-        - source: crichq_pdf
-          id: KT Turner
-          name: KT Turner
-        - source: crichq_pdf
-          id: Kyle Turner
-          name: Kyle Turner
-    - canonical_name: Josh Albanese
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: J Albanese
-          name: J Albanese
-        - source: crichq_pdf
-          id: J A Albanese
-          name: J A Albanese
-        - source: crichq_pdf
-          id: Jja Albanese
-          name: Jja Albanese
-        - source: crichq_pdf
-          id: Josh albanese
-          name: Josh albanese
-    - canonical_name: Suleman Ishaq
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '5424334'
-          name: Suleman Ishaq
-        - source: crichq_pdf
-          id: S Ishaq
-          name: S Ishaq
-    - canonical_name: Zakaria Ali
-      status: rejected
-      decided: 2026-08-27
-      refs:
-        - source: play_cricket
-          id: '6267738'
-          name: Zakaria Ali
-        - source: cricketstatz
-          id: '1320'
-          name: Z Ali
-      reason: >
-        Confirmed by the user as two different real people: Zakaria
-        Ali (play_cricket, 2024-2026, a junior player) is not Zeeshan
-        Ali (cricketstatz "Z Ali", 2017) -- "Ali" is one of the most
-        common surnames in this archive, so a shared "Z Ali" is not
-        strong evidence on its own (same lesson as the Shah surname
-        cluster).
-    - canonical_name: Lewis Hamilton
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6640584'
-          name: Lewis Hamilton
-        - source: crichq_pdf
-          id: LJ Hamilton
-          name: LJ Hamilton
-        - source: crichq_pdf
-          id: Lewis Hamilton
-          name: Lewis Hamilton
-    - canonical_name: Kevin Dodson
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: k dodson
-          name: k dodson
-        - source: cricketstatz
-          id: '849'
-          name: Kevin Dodson
-    - canonical_name: Craig Belston
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6196620'
-          name: Craig Belston
-        - source: crichq_pdf
-          id: CB Belston
-          name: CB Belston
-        - source: cricketstatz
-          id: '1644'
-          name: C Belston
-    - canonical_name: Dave Wilkes
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: DW Wilkes
-          name: DW Wilkes
-        - source: crichq_pdf
-          id: DJW wilkes
-          name: DJW wilkes
-        - source: crichq_pdf
-          id: Dave Wilkes
-          name: Dave Wilkes
-        - source: crichq_pdf
-          id: David Wilkes
-          name: David Wilkes
-    - canonical_name: Hamad Rabbi
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: H Rabbi
-          name: H Rabbi
-        - source: crichq_pdf
-          id: HR Rabbi
-          name: HR Rabbi
-        - source: crichq_pdf
-          id: Hammed Rabbi
-          name: Hammed Rabbi
-        - source: crichq_pdf
-          id: Hamad rabbi
-          name: Hamad rabbi
-        - source: crichq_pdf
-          id: Ahmad Rabbi
-          name: Ahmad Rabbi
-        - source: crichq_pdf
-          id: Amad Rabbi
-          name: Amad Rabbi
-    - canonical_name: Sam Oldham
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: SM Oldham
-          name: SM Oldham
-        - source: crichq_pdf
-          id: S Oldham
-          name: S Oldham
-    - canonical_name: David Eckersley
-      status: confirmed
-      refs:
-        - source: play_cricket
-          id: '6196732'
-          name: David Leslie Eckersley
-        - source: crichq_pdf
-          id: Dave Eckersley
-          name: Dave Eckersley
-        - source: crichq_pdf
-          id: DE Eckersley
-          name: DE Eckersley
-        - source: crichq_pdf
-          id: D Eckersley
-          name: D Eckersley
-    - canonical_name: Graham Jebb
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: GJ Jebb
-          name: GJ Jebb
-        - source: cricketstatz
-          id: '1425'
-          name: G Jebb
-    - canonical_name: Max Dearden
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: MH Dearden
-          name: MH Dearden
-        - source: crichq_pdf
-          id: Max Dearden
-          name: Max Dearden
-    - canonical_name: C Brindle
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: CB Brindle
-          name: CB Brindle
-        - source: crichq_pdf
-          id: C Brindle
-          name: C Brindle
-    - canonical_name: Daniel Roberts
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Danny Roberts
-          name: Danny Roberts
-        - source: cricketstatz
-          id: '1417'
-          name: D Roberts
-    - canonical_name: Simon Bowkett
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: Simon Bowkett
-          name: Simon Bowkett
-        - source: crichq_pdf
-          id: S Bowkett
-          name: S Bowkett
-    - canonical_name: Jamie Dwyer
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: J Dwyer
-          name: J Dwyer
-        - source: crichq_pdf
-          id: Jamie Dwyer
-          name: Jamie Dwyer
-    - canonical_name: D Bowkett
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: D Bowkett
-          name: D Bowkett
-        - source: crichq_pdf
-          id: D B Bowkett
-          name: D B Bowkett
-    - canonical_name: Eddie Shah
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: SS Shah
-          name: SS Shah
-    - canonical_name: S Shah
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: SA Shah
-          name: SA Shah
-    - canonical_name: S F Shah
-      status: confirmed
-      refs:
-        - source: crichq_pdf
-          id: S F Shah
-          name: S F Shah
+  players: []

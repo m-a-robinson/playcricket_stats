@@ -277,6 +277,10 @@ def _merge_entities(
         )
 
         for table, column in fact_id_columns:
+
+            if table == "match_appearances" and column == "player_id":
+                _coalesce_match_appearances(conn, survivor, duplicate)
+
             conn.execute(
                 f"UPDATE {table} SET {column} = ? WHERE {column} = ?",
                 (survivor, duplicate)
@@ -285,6 +289,52 @@ def _merge_entities(
         conn.execute(f"DELETE FROM {entity_table} WHERE {id_column} = ?", (duplicate,))
 
     return survivor
+
+
+def _coalesce_match_appearances(conn, survivor, duplicate):
+    """
+    Before repointing a duplicate player's match_appearances rows onto
+    the survivor, resolve any match both already have a row for --
+    match_appearances.UNIQUE(match_id, player_id) means the blind
+    UPDATE right after this call would otherwise raise
+    IntegrityError. Real, not hypothetical: the same real player can
+    get two different raw name spellings within a SINGLE scorecard --
+    e.g. "D J McCaffrey" on the batting card but "L.D.J McCaffery" in
+    that match's own bowling figures -- so merging two refs that are
+    genuinely the same person can still leave both with their own
+    appearance row for one match. For each such match, folds the
+    duplicate's captain/wicket_keeper flags (true wins) and position
+    (survivor's own, if set, otherwise the duplicate's) into the
+    survivor's existing row, then deletes the duplicate's -- never
+    inserts a second row for the same match.
+    """
+
+    conflicts = conn.execute(
+        """
+        SELECT d.match_id, d.appearance_id, d.position, d.captain, d.wicket_keeper
+        FROM match_appearances d
+        WHERE d.player_id = ?
+          AND EXISTS (
+              SELECT 1 FROM match_appearances s
+              WHERE s.player_id = ? AND s.match_id = d.match_id
+          )
+        """,
+        (duplicate, survivor)
+    ).fetchall()
+
+    for match_id, appearance_id, position, captain, wicket_keeper in conflicts:
+
+        conn.execute(
+            """
+            UPDATE match_appearances
+            SET position = COALESCE(position, ?),
+                captain = MAX(captain, ?),
+                wicket_keeper = MAX(wicket_keeper, ?)
+            WHERE player_id = ? AND match_id = ?
+            """,
+            (position, captain or 0, wicket_keeper or 0, survivor, match_id)
+        )
+        conn.execute("DELETE FROM match_appearances WHERE appearance_id = ?", (appearance_id,))
 
 
 def merge_players(conn, source_refs, known_as=None):
