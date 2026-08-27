@@ -189,6 +189,69 @@ def _load_rejected(decisions_path=DEFAULT_DECISIONS_PATH):
     return result
 
 
+def _load_claimed_refs(decisions_path=DEFAULT_DECISIONS_PATH):
+    """
+    Every (source, id) ref already spoken for anywhere in
+    decisions.yaml -- a confirmed merge, rejected:, or pending: --
+    keyed by entity type, plus every canonical_name already confirmed
+    for that entity type. Used two ways: stripping already-claimed
+    refs out of a freshly-found candidate cluster before it's written
+    to pending: (the refs), and warning when a fresh candidate's
+    suggested name matches a confirmed entry it has no refs in common
+    with (the names) -- see render_player_candidates()'s use of
+    `confirmed_names` for why that second case matters.
+
+    Needed because a confirmed merge's own survivor row can later look,
+    to the clustering logic, just like a fresh candidate: once
+    reconcile.py sets a survivor's canonical_name (e.g. "Ian Wade"),
+    any other still-separate row that happens to share that name (a
+    different source's own raw-text id, say) clusters with it again on
+    the next audit run -- and without the refs filter, the resulting
+    "candidate" would re-list the confirmed refs the survivor already
+    owns, exactly the ref-in-two-places hazard reconcile.py's
+    find_ref_conflicts()/--check exists to catch. Filtering here means
+    that never gets written in the first place: only the genuinely new,
+    unclaimed refs make it into the candidate -- which is exactly what
+    then needs the names warning: a "new refs only" candidate promoted
+    as its own separate players: entry does NOT fold into the existing
+    confirmed player of the same name, it creates a second, disconnected
+    one -- promoting it is very likely the wrong action; adding its refs
+    directly to the existing confirmed entry instead is usually right.
+    """
+
+    try:
+        with open(decisions_path, "r", encoding="utf-8") as f:
+            data = _yaml_engine().load(f) or {}
+    except FileNotFoundError:
+        data = {}
+
+    claimed_refs = {}
+    confirmed_names = {}
+
+    for entity in ("players", "clubs", "teams", "grounds"):
+
+        refs = set()
+        names = set()
+
+        for entry in data.get(entity) or []:
+            names.add((entry.get("canonical_name") or "").casefold())
+            for ref in entry["refs"]:
+                refs.add((ref["source"], str(ref["id"])))
+
+        for entry in ((data.get("rejected") or {}).get(entity) or []):
+            for ref in entry["refs"]:
+                refs.add((ref["source"], str(ref["id"])))
+
+        for entry in ((data.get("pending") or {}).get(entity) or []):
+            for ref in entry["refs"]:
+                refs.add((ref["source"], str(ref["id"])))
+
+        claimed_refs[entity] = refs
+        confirmed_names[entity] = names
+
+    return claimed_refs, confirmed_names
+
+
 def _match_rejected(cluster_refs, rejected_entries):
     """
     The rejected entry that shares at least one ref with this candidate
@@ -273,6 +336,9 @@ def _merge_ref_group(primary, other):
         primary["canonical_name"] = other["canonical_name"]
         primary["status"] = other["status"]
 
+    if other.get("note") and not primary.get("note"):
+        primary["note"] = other["note"]
+
     primary_refs = _ref_set(primary)
 
     for ref in other["refs"]:
@@ -331,7 +397,45 @@ def _consolidate_pending(entries):
     return merged
 
 
-def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS_PATH):
+def _annotate_name_collisions(pending_by_entity, confirmed_names):
+    """
+    Flags any freshly-found pending candidate whose canonical_name
+    matches an entity already confirmed elsewhere in decisions.yaml --
+    e.g. a fresh "Ian Wade" cluster surfacing again after the real Ian
+    Wade merge is confirmed (see _load_claimed_refs()'s docstring for
+    how that happens). Promoting such a candidate via --promote would
+    create a second, disconnected entity with the same display name
+    rather than folding into the one that already exists, so each
+    flagged entry gets a `note:` field (written into pending: by
+    write_pending_candidates()) plus an entry in the returned
+    {entity: [canonical_name, ...]} map for the report to warn about --
+    the human still has to decide by hand whether the refs actually
+    belong in the existing confirmed entry instead.
+
+    Mutates the pending_by_entity entries in place.
+    """
+
+    collisions = defaultdict(list)
+
+    for entity, entries in pending_by_entity.items():
+        confirmed = confirmed_names.get(entity, set())
+        for entry in entries:
+            if (entry.get("canonical_name") or "").casefold() in confirmed:
+                entry["note"] = (
+                    f"WARNING: canonical_name {entry['canonical_name']!r} matches "
+                    "an entry already confirmed elsewhere in this file, but this "
+                    "candidate's refs are not part of that entry -- promoting it "
+                    "as-is via --promote creates a second, disconnected entity "
+                    "with the same name rather than extending the existing one. "
+                    "Check whether these refs belong in the existing confirmed "
+                    "entry instead."
+                )
+                collisions[entity].append(entry["canonical_name"])
+
+    return collisions
+
+
+def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS_PATH, confirmed_names=None):
     """
     Append newly-found candidates into decisions.yaml's `pending:`
     section, in place -- the alternative this project's user asked for
@@ -339,6 +443,13 @@ def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS
     and everything else already in the file are preserved (see
     reconcile._yaml_engine()'s docstring for why this needs ruamel, not
     plain PyYAML).
+
+    Each ref gets a `name` alongside its `source`/`id` -- the row's
+    current display name at that source (known_as/club_name/team_name/
+    ground_name, whichever applies), so a ref reads as something a
+    human can actually check ("crichq_pdf: MP Partington") rather than
+    a bare opaque id. Purely informational: reconcile.py's merge logic
+    only ever reads `source`/`id`.
 
     A candidate whose refs already appear (even partially) in an
     existing `pending:` entry is treated as already represented: any
@@ -351,7 +462,21 @@ def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS
     the same run are also consolidated with each other and with what
     was already there -- see _consolidate_pending().
 
-    Returns (added_count, grown_count) across all entity types.
+    If `confirmed_names` is given (the first item _load_claimed_refs()
+    returns), every existing `pending:` entry -- not just ones fresh
+    this run -- gets re-checked against it, and any whose
+    canonical_name matches an already-confirmed entry gets a `note:`
+    warning added if it doesn't already have one. This is what keeps a
+    stale collision self-healing: an entry written to pending: before
+    this warning existed, or before the name it now collides with was
+    confirmed, gets flagged the next time this runs rather than staying
+    silently dangerous forever (see _annotate_name_collisions() for why
+    it's dangerous -- promoting it as-is creates a second, disconnected
+    entity with the same name instead of extending the existing one).
+
+    Returns (added_count, grown_count, collisions) -- collisions is
+    {entity: [canonical_name, ...]} for every pending entry (fresh or
+    pre-existing) currently flagged with a collision note.
     """
 
     yaml = _yaml_engine()
@@ -367,6 +492,8 @@ def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS
 
     added = 0
     grown = 0
+    collisions = defaultdict(list)
+    confirmed_names = confirmed_names or {}
 
     for entity, new_entries in pending_by_entity.items():
 
@@ -378,7 +505,11 @@ def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS
             {
                 "canonical_name": c["canonical_name"],
                 "status": "pending",
-                "refs": [{"source": s, "id": str(i)} for s, i in c["refs"]],
+                **({"note": c["note"]} if c.get("note") else {}),
+                "refs": [
+                    {"source": s, "id": str(i), "name": c.get("ref_names", {}).get((s, i))}
+                    for s, i in c["refs"]
+                ],
             }
             for c in new_entries
         ]
@@ -397,12 +528,27 @@ def write_pending_candidates(pending_by_entity, decisions_path=DEFAULT_DECISIONS
             elif refs - prior_match:
                 grown += 1
 
+        confirmed = confirmed_names.get(entity, set())
+        for entry in combined:
+            if (entry.get("canonical_name") or "").casefold() in confirmed:
+                if not entry.get("note"):
+                    entry["note"] = (
+                        f"WARNING: canonical_name {entry['canonical_name']!r} matches "
+                        "an entry already confirmed elsewhere in this file, but this "
+                        "candidate's refs are not part of that entry -- promoting it "
+                        "as-is via --promote creates a second, disconnected entity "
+                        "with the same name rather than extending the existing one. "
+                        "Check whether these refs belong in the existing confirmed "
+                        "entry instead."
+                    )
+                collisions[entity].append(entry["canonical_name"])
+
         data["pending"][entity] = combined
 
     with open(decisions_path, "w", encoding="utf-8") as f:
         yaml.dump(data, f)
 
-    return added, grown
+    return added, grown, collisions
 
 
 # ==================================================================
@@ -655,7 +801,7 @@ def _elpmcc_exclusive_player_ids(conn, elpmcc_name):
     return {row[0] for row in rows}
 
 
-def render_club_candidates(conn, rejected_entries=()):
+def render_club_candidates(conn, rejected_entries=(), claimed_refs=frozenset()):
 
     lines = ["### Clubs", ""]
     lines.append(
@@ -719,10 +865,17 @@ def render_club_candidates(conn, rejected_entries=()):
 
         lines.append("")
 
-        all_refs = [ref for cid, _ in group for ref in _club_source_refs(conn, cid)]
+        all_refs = [
+            ref for cid, _ in group for ref in _club_source_refs(conn, cid)
+            if ref not in claimed_refs
+        ]
+        if len(all_refs) < 2:
+            continue
+        ref_names = {ref: name for cid, name in group for ref in _club_source_refs(conn, cid)}
         pending_entries.append({
             "canonical_name": group[0][1],
             "refs": all_refs,
+            "ref_names": ref_names,
         })
 
     return lines, pending_entries
@@ -777,7 +930,7 @@ def _near_duplicate_clusters_ids(id_name_pairs):
     return clusters
 
 
-def render_team_candidates(conn, rejected_entries=()):
+def render_team_candidates(conn, rejected_entries=(), claimed_refs=frozenset()):
 
     lines = ["### Teams", ""]
 
@@ -833,10 +986,17 @@ def render_team_candidates(conn, rejected_entries=()):
 
         lines.append("")
 
-        all_refs = [ref for tid, _ in group for ref in _team_source_refs(conn, tid)]
+        all_refs = [
+            ref for tid, _ in group for ref in _team_source_refs(conn, tid)
+            if ref not in claimed_refs
+        ]
+        if len(all_refs) < 2:
+            continue
+        ref_names = {ref: name for tid, name in group for ref in _team_source_refs(conn, tid)}
         pending_entries.append({
             "canonical_name": group[0][1],
             "refs": all_refs,
+            "ref_names": ref_names,
         })
 
     return lines, pending_entries
@@ -856,7 +1016,7 @@ def _club_acronym(club_name):
     return "".join(w[0] for w in words).casefold()
 
 
-def render_ground_candidates(conn, rejected_entries=()):
+def render_ground_candidates(conn, rejected_entries=(), claimed_refs=frozenset()):
     """
     Grouped by home club, NOT by name similarity: ground names vary far
     too much in form across sources for text matching to find these
@@ -983,10 +1143,19 @@ def render_ground_candidates(conn, rejected_entries=()):
 
             lines.append("")
 
-            all_refs = [ref for gid, _, _ in group for ref in _ground_source_refs(conn, gid)]
+            all_refs = [
+                ref for gid, _, _ in group for ref in _ground_source_refs(conn, gid)
+                if ref not in claimed_refs
+            ]
+            if len(all_refs) < 2:
+                continue
+            ref_names = {
+                ref: gname for gid, gname, _ in group for ref in _ground_source_refs(conn, gid)
+            }
             pending_entries.append({
                 "canonical_name": "???",
                 "refs": all_refs,
+                "ref_names": ref_names,
             })
 
     else:
@@ -1041,7 +1210,7 @@ def render_ground_candidates(conn, rejected_entries=()):
     return lines, pending_entries
 
 
-def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=()):
+def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=(), claimed_refs=frozenset()):
 
     lines = ["### Players", ""]
     lines.append(
@@ -1080,6 +1249,9 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=())
     def _refs(group):
         return [ref for pid, _ in group for ref in _player_source_refs(conn, pid)]
 
+    def _ref_names(group):
+        return {ref: name for pid, name in group for ref in _player_source_refs(conn, pid)}
+
     found_exact = [
         group for group in loose_groups.values()
         if len(group) > 1 and len({name for _, name in group}) > 1
@@ -1116,9 +1288,13 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=())
             games = _player_appearance_count(conn, pid)
             lines.append(f"  - player_id {pid} ({games} games): {ref_text}")
 
+        new_refs = [ref for ref in _refs(group) if ref not in claimed_refs]
+        if len(new_refs) < 2:
+            continue
         pending_entries.append({
             "canonical_name": max(group, key=lambda pn: _player_appearance_count(conn, pn[0]))[1],
-            "refs": _refs(group),
+            "refs": new_refs,
+            "ref_names": _ref_names(group),
         })
 
     lines.append("")
@@ -1178,9 +1354,13 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=())
             games = _player_appearance_count(conn, pid)
             lines.append(f"  - player_id {pid} ({games} games): {ref_text}")
 
+        new_refs = [ref for ref in _refs(group) if ref not in claimed_refs]
+        if len(new_refs) < 2:
+            continue
         pending_entries.append({
             "canonical_name": max(group, key=lambda pn: _player_appearance_count(conn, pn[0]))[1],
-            "refs": _refs(group),
+            "refs": new_refs,
+            "ref_names": _ref_names(group),
         })
 
     lines.append("")
@@ -1206,6 +1386,7 @@ def render_player_candidates(conn, elpmcc_name=ELPMCC_NAME, rejected_entries=())
 def generate_report(conn, elpmcc_name=ELPMCC_NAME, decisions_path=DEFAULT_DECISIONS_PATH):
 
     rejected = _load_rejected(decisions_path)
+    claimed_refs, confirmed_names = _load_claimed_refs(decisions_path)
 
     lines = ["# Data Quality & Reconciliation Report", ""]
     lines.append(
@@ -1233,16 +1414,15 @@ def generate_report(conn, elpmcc_name=ELPMCC_NAME, decisions_path=DEFAULT_DECISI
     lines.append("## Part 2 -- Reconciliation candidates")
     lines.append("")
 
-    club_lines, club_pending = render_club_candidates(conn, rejected["clubs"])
-    team_lines, team_pending = render_team_candidates(conn, rejected["teams"])
-    ground_lines, ground_pending = render_ground_candidates(conn, rejected["grounds"])
-    player_lines, player_pending = render_player_candidates(conn, elpmcc_name, rejected["players"])
+    club_lines, club_pending = render_club_candidates(conn, rejected["clubs"], claimed_refs["clubs"])
+    team_lines, team_pending = render_team_candidates(conn, rejected["teams"], claimed_refs["teams"])
+    ground_lines, ground_pending = render_ground_candidates(conn, rejected["grounds"], claimed_refs["grounds"])
+    player_lines, player_pending = render_player_candidates(conn, elpmcc_name, rejected["players"], claimed_refs["players"])
 
     lines.extend(club_lines)
     lines.extend(team_lines)
     lines.extend(ground_lines)
     lines.extend(player_lines)
-    lines.extend(render_deferred_section(rejected))
 
     pending_by_entity = {
         "clubs": club_pending,
@@ -1250,6 +1430,53 @@ def generate_report(conn, elpmcc_name=ELPMCC_NAME, decisions_path=DEFAULT_DECISI
         "grounds": ground_pending,
         "players": player_pending,
     }
+
+    name_collisions = _annotate_name_collisions(pending_by_entity, confirmed_names)
+
+    # Also flag collisions already sitting in pending: from an earlier
+    # run, not just fresh ones from this run -- a candidate whose own
+    # refs are already claimed by itself in pending: (see
+    # _load_claimed_refs()'s docstring) never gets rediscovered by the
+    # clustering above, so without this a stale collision written
+    # before this check existed (or before the name it collides with
+    # was confirmed) would never resurface here. Read-only: the actual
+    # `note:` field on these gets (re)written by write_pending_candidates(),
+    # not here -- this function only ever reads the report's own text.
+    try:
+        with open(decisions_path, "r", encoding="utf-8") as f:
+            existing_pending = (_yaml_engine().load(f) or {}).get("pending") or {}
+    except FileNotFoundError:
+        existing_pending = {}
+
+    for entity, entries in existing_pending.items():
+        confirmed = confirmed_names.get(entity, set())
+        already_flagged = set(name_collisions.get(entity, []))
+        for entry in entries or []:
+            name = entry.get("canonical_name")
+            if (name or "").casefold() in confirmed and name not in already_flagged:
+                name_collisions[entity].append(name)
+                already_flagged.add(name)
+
+    if any(name_collisions.values()):
+        lines.append("### Name collisions with already-confirmed entries")
+        lines.append("")
+        lines.append(
+            "The candidates below share a canonical_name with an entry "
+            "already confirmed elsewhere in decisions.yaml, but share none "
+            "of its refs. Promoting one as-is via `--promote` creates a "
+            "second, disconnected entity with the same display name rather "
+            "than extending the existing one -- each is also flagged with "
+            "a `note:` field in `pending:` itself. Check whether the refs "
+            "actually belong in the existing confirmed entry instead of "
+            "accepting the suggested canonical_name here."
+        )
+        lines.append("")
+        for entity, names in name_collisions.items():
+            for name in names:
+                lines.append(f"- **{entity}**: {name!r}")
+        lines.append("")
+
+    lines.extend(render_deferred_section(rejected))
 
     return "\n".join(lines) + "\n", pending_by_entity
 
@@ -1292,7 +1519,10 @@ if __name__ == "__main__":
 
     if not args.no_write_pending:
 
-        added, grown = write_pending_candidates(pending_by_entity, decisions_path=args.decisions)
+        _, confirmed_names = _load_claimed_refs(args.decisions)
+        added, grown, collisions = write_pending_candidates(
+            pending_by_entity, decisions_path=args.decisions, confirmed_names=confirmed_names
+        )
 
         if added or grown:
             print(
@@ -1303,3 +1533,11 @@ if __name__ == "__main__":
             )
         else:
             print(f"{args.decisions}: no new candidates to add to pending:.")
+
+        for entity, names in collisions.items():
+            for name in names:
+                print(
+                    f"  WARNING: pending: {entity}: {name!r} collides with an "
+                    f"already-confirmed entry of the same name -- see its `note:` "
+                    f"field in {args.decisions}."
+                )

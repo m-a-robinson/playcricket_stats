@@ -113,6 +113,83 @@ def load_decisions(path=DEFAULT_DECISIONS_PATH):
     }
 
 
+def find_ref_conflicts(path=DEFAULT_DECISIONS_PATH):
+    """
+    Every (source, id) ref that appears in more than one place within
+    the same entity type across the whole file -- the real merge
+    section, rejected:, and pending: combined. A ref should belong to
+    exactly one of those at a time: the same ref in two places means
+    two decisions disagree about the same source row, which is either
+    a copy-paste mistake or (worse) a real hazard for
+    reconcile_audit.py's rejected:/pending: suppression logic, which
+    matches candidates by ref overlap -- a ref a confirmed merge
+    already owns showing up in an unrelated rejected: entry can cause
+    that confirmed entity's own future candidates to be wrongly
+    suppressed as "already reviewed". Found in practice, not
+    hypothetical: an early rejected: entry for a father/son pair with
+    the same name accidentally also listed the son's own
+    play_cricket ref, which the real, confirmed Ian Wade merge already
+    owned.
+
+    Returns {entity: {(source, id): [location strings]}} -- empty dict
+    if the file is clean. Called automatically by apply_decisions() and
+    promote_pending(), which raise rather than proceed on a conflict;
+    call this directly for a dry-run check.
+    """
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = _yaml_engine().load(f) or {}
+
+    conflicts = {}
+
+    for entity in ("players", "clubs", "teams", "grounds"):
+
+        locations = {}
+
+        for entry in data.get(entity) or []:
+            label = f"{entity}: {entry.get('canonical_name')!r} (confirmed)"
+            for ref in entry["refs"]:
+                key = (ref["source"], str(ref["id"]))
+                locations.setdefault(key, []).append(label)
+
+        for entry in ((data.get("rejected") or {}).get(entity) or []):
+            label = f"rejected.{entity}: status={entry.get('status')}"
+            for ref in entry["refs"]:
+                key = (ref["source"], str(ref["id"]))
+                locations.setdefault(key, []).append(label)
+
+        for entry in ((data.get("pending") or {}).get(entity) or []):
+            label = f"pending.{entity}: {entry.get('canonical_name')!r} (status={entry.get('status')})"
+            for ref in entry["refs"]:
+                key = (ref["source"], str(ref["id"]))
+                locations.setdefault(key, []).append(label)
+
+        bad = {key: locs for key, locs in locations.items() if len(locs) > 1}
+
+        if bad:
+            conflicts[entity] = bad
+
+    return conflicts
+
+
+def _raise_on_ref_conflicts(decisions_path):
+
+    conflicts = find_ref_conflicts(decisions_path)
+
+    if not conflicts:
+        return
+
+    lines = [f"reconcile/decisions.yaml has ref(s) listed in more than one place ({decisions_path}):"]
+
+    for entity, bad in conflicts.items():
+        for (source, ref_id), locations in bad.items():
+            lines.append(f"  [{entity}] (source={source!r}, id={ref_id!r}) appears in: " + "; ".join(locations))
+
+    lines.append("Fix by hand -- a ref should belong to exactly one place -- then re-run.")
+
+    raise ValueError("\n".join(lines))
+
+
 # ==================================================================
 # MERGE
 # ==================================================================
@@ -378,6 +455,8 @@ def apply_decisions(conn, decisions=None, decisions_path=DEFAULT_DECISIONS_PATH)
     out of its "new candidates" section.
     """
 
+    _raise_on_ref_conflicts(decisions_path)
+
     if decisions is None:
         decisions = load_decisions(decisions_path)
 
@@ -450,6 +529,8 @@ def promote_pending(decisions_path=DEFAULT_DECISIONS_PATH):
 
     Returns {entity: (promoted_count, deferred_count)}.
     """
+
+    _raise_on_ref_conflicts(decisions_path)
 
     yaml = _yaml_engine()
 
@@ -530,8 +611,33 @@ if __name__ == "__main__":
             "database. Run again without --promote afterwards to apply."
         )
     )
+    parser.add_argument(
+        "--check", action="store_true",
+        help=(
+            "Report any ref listed in more than one place in decisions.yaml "
+            "(a confirmed merge, rejected:, and pending: are meant to be "
+            "mutually exclusive per ref) and exit -- doesn't touch the "
+            "database or decisions.yaml. apply/--promote already run this "
+            "automatically and refuse to proceed on a conflict; use this to "
+            "check without applying anything."
+        )
+    )
 
     args = parser.parse_args()
+
+    if args.check:
+
+        conflicts = find_ref_conflicts(args.decisions)
+
+        if not conflicts:
+            print(f"{args.decisions}: no ref conflicts found.")
+            raise SystemExit(0)
+
+        for entity, bad in conflicts.items():
+            for (source, ref_id), locations in bad.items():
+                print(f"[{entity}] (source={source!r}, id={ref_id!r}) appears in: " + "; ".join(locations))
+
+        raise SystemExit(1)
 
     if args.promote:
 

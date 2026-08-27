@@ -224,7 +224,23 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   (see "If in doubt" below) — there's no separate undo, since a merge
   deletes rows. Edited via `ruamel.yaml`'s round-trip mode, not plain
   PyYAML, specifically so `reconcile_audit.py`/`reconcile.py --promote`
-  can rewrite it without silently stripping every comment in it.
+  can rewrite it without silently stripping every comment in it. Every ref
+  (`{source, id, ...}`) also carries a `name:` — the row's display name at
+  that source at the time it was written — so a bare id is never the only
+  thing to check a decision against; `reconcile_audit.py` fills this in
+  automatically for anything it writes, hand-added refs need it added by
+  hand. A given `(source, id)` ref is meant to belong to exactly one place
+  in this file at a time (one confirmed merge, one `rejected:` entry, or
+  one `pending:` entry, never two) — `python3 reconcile.py --check` scans
+  for violations without touching anything, and `apply`/`--promote` both
+  run the same check first and refuse to proceed on a conflict. Found for
+  real once: a `rejected:` entry for Ian Wade's father (same name,
+  different real person) had accidentally also listed the *real* Ian
+  Wade's own `play_cricket` ref — harmless by itself, but a real hazard,
+  since `reconcile_audit.py`'s `rejected:`/`pending:` suppression matches
+  on any shared ref, so a ref double-booked like that can wrongly suppress
+  a genuinely new candidate touching the entry that ref actually belongs
+  to.
 - **`reconcile.py`** — Cross-source identity merging for players, clubs,
   teams, *and* grounds (see roadmap item 4), plus applying club home
   grounds and ground overrides — all read from `reconcile/decisions.yaml`
@@ -254,7 +270,10 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   section by each entry's `status` — `confirmed`/`audited` moves it into
   the real merge section, anything else (still `pending`, or explicitly
   `rejected`) moves into `rejected:` — then run `reconcile.py` again
-  (without `--promote`) to actually apply what got confirmed.
+  (without `--promote`) to actually apply what got confirmed. `python3
+  reconcile.py --check` runs the same "no ref in two places" validation
+  `apply`/`--promote` already run automatically before touching anything
+  (see the `decisions.yaml` bullet above), as a standalone dry-run.
 - **`reconcile_audit.py`** — Generates a Markdown report over an
   already-built SQLite store: a data-quality scan (distinct competitions/
   leagues/grounds/seasons, rarest-first so a likely typo surfaces near the
@@ -282,7 +301,24 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   run both overlap a third (confirmed happening in practice: an
   exact-match cluster and a separate, broader first-initial+surname
   cluster both touching "M Partington"/"M.P Partington"/"Mp Partington").
-  Club/team candidate
+  A ref already claimed anywhere in `decisions.yaml` (a confirmed merge,
+  `rejected:`, or `pending:` itself) is stripped out of a fresh candidate
+  before it's written — otherwise a confirmed merge's own survivor row
+  can look, to the clustering, just like a fresh candidate the moment its
+  `canonical_name` gets set (e.g. to "Ian Wade"), re-listing refs the
+  survivor already owns and tripping `reconcile.py --check`. That
+  filtering has its own follow-on risk, though: a candidate built only
+  from the refs it still has left, after the claimed ones are stripped
+  out, can end up suggesting a `canonical_name` that matches an entry
+  already confirmed elsewhere — promoting it as-is via `--promote` would
+  then create a *second*, disconnected entity with the same display name
+  rather than folding into the one that already exists. Every such
+  collision — freshly found this run, or already sitting unflagged in
+  `pending:` from an earlier one — gets a `note:` warning written onto
+  the entry (self-healing: re-running the audit restores the note if it's
+  ever stripped) and a line printed to the console; the human still has to
+  decide by hand whether the refs belong in the existing confirmed entry
+  instead. Club/team candidate
   clustering is deliberately exact-equality-only (on a normalised key
   looser than the automatic merge's — e.g. also drops a trailing regional
   qualifier like "Bradshaw CC, **Lancs**") rather than fuzzy/substring
