@@ -1066,6 +1066,17 @@ clubs:
       - source: cricketstatz
         id: '50'
         name: Westleigh CC
+      - source: crichq_pdf
+        id: "Unknown (GMCL Division 5 - GMCL Division 5 N & W (GMCLDIV5NW), Sat, 16 July"
+        name: "Unknown (opponent placeholder)"
+    reason: >
+      The 16/07/2016 match's crichq_pdf "Unknown (...)" placeholder
+      opponent identified from the scorecard's own "Toss Details:
+      Westleigh CC, 2nd XI" line and the dismissal text naming the
+      opposition's own fielder/bowler (E Whittle, A Barclay) -- the
+      match itself only recorded one ball (rain abandonment), so
+      crichq_pdf.py's normal parsing never found a second `Batting:`
+      header to read the opponent's name from.
 teams:
   - canonical_name: Tottington St Johns CC 2nd XI
     refs:
