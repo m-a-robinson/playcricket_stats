@@ -265,10 +265,19 @@ def _split_dismissal(rest):
     """
     'name-with-markers dismissal-text' -> (name, dismissal_text).
 
-    The first token is always part of the name (initials or a first
-    name), so scanning for the dismissal keyword starts at index 1 --
-    otherwise a single-letter surname like "B Birtwistle" collides
-    with the "b" (bowled) keyword.
+    Matches dismissal keywords case-SENSITIVELY: throughout this PDF
+    export, dismissal keywords ("c", "b", "st", "lbw", "run", "hit",
+    "retired", "not") are always written lowercase, while a name token
+    that happens to share the letters -- a middle initial "B", say --
+    is always uppercase. Case-insensitive matching (tried first) broke
+    on exactly that collision: "C B Bega c A Whittaker b Ajb
+    birtwistle" (a real opposition batsman with two initials) had its
+    own middle initial "B" mistaken for the "b" (bowled) keyword,
+    splitting the name after just "C" and leaving "B Bega ..." to be
+    misparsed as the dismissal. Skipping index 0 (an earlier, weaker
+    fix, still harmless to keep) only guards a keyword-letter *first*
+    initial, e.g. "B Birtwistle" -- it doesn't help once the collision
+    can happen on a later initial too.
     """
 
     tokens = rest.split(" ")
@@ -278,7 +287,7 @@ def _split_dismissal(rest):
         if i == 0:
             continue
 
-        if tok.lower() in _DISMISSAL_KEYWORDS:
+        if tok in _DISMISSAL_KEYWORDS:
 
             name = " ".join(tokens[:i]).strip()
             dismissal = " ".join(tokens[i:]).strip()
@@ -325,15 +334,30 @@ def _parse_dismissal(dismissal_text):
         return "ct", bowler, bowler
 
     if low.startswith("c "):
-        m = re.match(r"^c\s+(?P<fielder>.+?)\s+b\s+(?P<bowler>.+)$", text, re.IGNORECASE)
+        # NOT re.IGNORECASE: the "b" separating fielder from bowler is
+        # always lowercase in this format, while a fielder's own middle
+        # initial ("C B Bega") is always uppercase -- matching "b"
+        # case-insensitively let the non-greedy fielder group stop at
+        # that initial instead of the real separator, e.g. "c C B Bega
+        # b Sam Wright Wright" wrongly split fielder="C",
+        # bowler="Bega b Sam Wright Wright" (a real, found-in-the-wild
+        # case; the actual fielder is "C B Bega"). The fielder group is
+        # also optional: CricHQ sometimes records a catch with the
+        # fielder left blank ("c  b C Saliparri", double space, fielder
+        # genuinely not recorded) -- also real, and without this the
+        # fallback below made "b C Saliparri" (the literal leftover "b
+        # <bowler>" text) look like a fielder's name.
+        m = re.match(r"^c\s+(?:(?P<fielder>.+?)\s+)?b\s+(?P<bowler>.+)$", text)
         if m:
-            return "ct", m.group("bowler").strip(), m.group("fielder").strip()
+            return "ct", m.group("bowler").strip(), (m.group("fielder") or "").strip() or None
         return "ct", None, text[2:].strip()
 
     if low.startswith("st "):
-        m = re.match(r"^st\s+(?P<fielder>.+?)\s+b\s+(?P<bowler>.+)$", text, re.IGNORECASE)
+        # Same case-sensitivity and optional-fielder reasoning as the
+        # "c " branch above.
+        m = re.match(r"^st\s+(?:(?P<fielder>.+?)\s+)?b\s+(?P<bowler>.+)$", text)
         if m:
-            return "st", m.group("bowler").strip(), m.group("fielder").strip()
+            return "st", m.group("bowler").strip(), (m.group("fielder") or "").strip() or None
         return "st", None, text[3:].strip()
 
     if low.startswith("lbw"):

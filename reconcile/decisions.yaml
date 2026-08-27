@@ -1156,9 +1156,6 @@ pending:
         - source: crichq_pdf
           id: Ben Birtwistle
           name: Ben Birtwistle
-        - source: crichq_pdf
-          id: Bega c A Whittaker b Ajb birtwistle
-          name: Bega c A Whittaker b Ajb birtwistle
         - source: cricketstatz
           id: '672'
           name: B Birtwistle
@@ -1846,15 +1843,6 @@ pending:
         - source: crichq_pdf
           id: S F Shah
           name: S F Shah
-    - canonical_name: Jordan b LDB Birmingham
-      status: pending
-      refs:
-        - source: crichq_pdf
-          id: Jordan b LDB Birmingham
-          name: Jordan b LDB Birmingham
-        - source: crichq_pdf
-          id: Jordan c Shasvat kakkar Kakkar b LDB Birmingham
-          name: Jordan c Shasvat kakkar Kakkar b LDB Birmingham
     - canonical_name: Ahmad Rabbi
       status: pending
       refs:
