@@ -415,7 +415,7 @@ pending:
           id: '1'
           name: ELPM 1st XI
     - canonical_name: Under 9
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '196920'
@@ -423,6 +423,8 @@ pending:
         - source: play_cricket
           id: '368155'
           name: Under 9 B
+      reason: >
+        Checked match dates: Stand CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
     - canonical_name: Edenfield CC 2nd XI
       status: confirmed
       refs:
@@ -445,7 +447,7 @@ pending:
           id: '75'
           name: Edenfield 1st XI
     - canonical_name: Under 9
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '320514'
@@ -453,8 +455,10 @@ pending:
         - source: play_cricket
           id: '363332'
           name: Under 9 B
+      reason: >
+        Checked match dates: Elton CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
     - canonical_name: Under 11 B
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '362583'
@@ -462,6 +466,8 @@ pending:
         - source: play_cricket
           id: '120245'
           name: Under 11
+      reason: >
+        Checked match dates: Prestwich CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
     - canonical_name: Prestwich CC 2nd XI
       status: confirmed
       refs:
@@ -496,7 +502,7 @@ pending:
           id: '33'
           name: WB 3rd XI
     - canonical_name: Under 11
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '362571'
@@ -504,6 +510,8 @@ pending:
         - source: play_cricket
           id: '362572'
           name: Under 11 B
+      reason: >
+        Checked match dates: Walshaw CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
     - canonical_name: Walshaw CC 2nd XI
       status: confirmed
       refs:
@@ -553,7 +561,7 @@ pending:
           id: Adlington CC, 2nd
           name: 2nd
     - canonical_name: Under 9
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '363325'
@@ -561,6 +569,8 @@ pending:
         - source: play_cricket
           id: '368067'
           name: Under 9 B
+      reason: >
+        Checked match dates: Bury CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
     - canonical_name: Bury CC 2nd XI
       status: confirmed
       refs:
@@ -577,7 +587,7 @@ pending:
           id: '53'
           name: Bury 2nd XI
     - canonical_name: Under 11
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '362591'
@@ -585,6 +595,8 @@ pending:
         - source: play_cricket
           id: '362590'
           name: Under 11 B
+      reason: >
+        Checked match dates: Clifton CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
     - canonical_name: Hindley St Peters CC 2nd XI
       status: confirmed
       refs:
@@ -604,7 +616,7 @@ pending:
           id: '66'
           name: D&D 2nd XI
     - canonical_name: Under 9 B
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '363331'
@@ -612,6 +624,8 @@ pending:
         - source: play_cricket
           id: '196915'
           name: Under 9
+      reason: >
+        Checked match dates: Ramsbottom CC's two junior sides played on the SAME date under both names (a same-day double-header), which is only possible if they're two concurrent real squads (an A/B pair), not one team recorded two ways. Rejected as a merge.
     - canonical_name: Worsley CC 2nd XI
       status: confirmed
       refs:
@@ -625,7 +639,7 @@ pending:
           id: '52'
           name: Worsley 2nd XI
     - canonical_name: Under 11
-      status: pending
+      status: rejected
       refs:
         - source: play_cricket
           id: '106720'
@@ -633,6 +647,8 @@ pending:
         - source: play_cricket
           id: '406683'
           name: Under 11 B
+      reason: >
+        Checked match dates: Heaton CC's two junior sides show no date overlap in this archive, but the same A/B-squad pattern confirmed for real (same-date fixtures) at Elton, Bury, Clifton and Ramsbottom CCs makes it more likely these are also two distinct concurrent squads than the same team recorded inconsistently -- rejected as a merge rather than risk combining two real different teams.
     - canonical_name: Greenmount CC 2nd XI
       status: confirmed
       refs:
