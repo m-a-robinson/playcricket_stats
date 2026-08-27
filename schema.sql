@@ -59,6 +59,43 @@ CREATE TABLE IF NOT EXISTS team_source_ids (
 );
 
 -- ================================================================
+-- GROUNDS
+-- ================================================================
+--
+-- Canonical grounds, resolved the same way as clubs/teams -- source-
+-- specific identifiers (a CricketStatz numeric ground id, or a raw
+-- ground_name string where a source has no id of its own) map onto one
+-- canonical row via ground_source_ids. CricHQ's own "Venue:" field is
+-- always county-level ("England - Lancashire"), never a real ground
+-- name -- see reconcile/decisions.yaml's ground_overrides for how a
+-- club's confirmed home ground fills that gap for its own home
+-- matches specifically (away fixtures aren't covered by this).
+
+CREATE TABLE IF NOT EXISTS grounds (
+    ground_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    ground_name   TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ground_source_ids (
+    source               TEXT NOT NULL,
+    source_ground_key    TEXT NOT NULL,   -- numeric where a source has one, else the raw ground_name
+    ground_id            INTEGER NOT NULL REFERENCES grounds (ground_id),
+    PRIMARY KEY (source, source_ground_key)
+);
+
+-- A club's confirmed home ground(s) -- a manually-curated fact
+-- (reconcile/decisions.yaml's club_home_grounds), not something ever
+-- inferred automatically. Used by ground_overrides to resolve a
+-- source's unusably vague per-match venue text for a club's own home
+-- fixtures.
+CREATE TABLE IF NOT EXISTS club_grounds (
+    club_id     INTEGER NOT NULL REFERENCES clubs (club_id),
+    ground_id   INTEGER NOT NULL REFERENCES grounds (ground_id),
+    is_home     INTEGER NOT NULL DEFAULT 1,   -- 0/1
+    PRIMARY KEY (club_id, ground_id)
+);
+
+-- ================================================================
 -- PLAYERS
 -- ================================================================
 
@@ -103,8 +140,8 @@ CREATE TABLE IF NOT EXISTS matches (
     home_team_id                    INTEGER REFERENCES teams (team_id),
     away_team_id                     INTEGER REFERENCES teams (team_id),
 
-    ground_id                         INTEGER,
-    ground_name                        TEXT,
+    ground_id                         INTEGER REFERENCES grounds (ground_id),
+    ground_name                        TEXT,   -- display text; may be overwritten by a ground_override (see grounds above)
 
     no_of_innings                       INTEGER,
     no_of_overs                          INTEGER,

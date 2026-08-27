@@ -200,61 +200,103 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   brings them back. Nothing else in this project treats junior cricket as
   second-class — it's ingested and stored exactly like senior fixtures —
   this is purely a default view on top, not a data restriction.
+- **`reconcile/decisions.yaml`** — The single, human-curated, human-readable
+  record of every reconciliation decision: which `(source, source_*_id)`
+  refs are the same real player/club/team/ground (with a `canonical_name`
+  you write, not just accept — see its own header for the full "how to
+  edit this" guide), a club's confirmed home ground (`club_home_grounds`),
+  and rules that fix a source's own unusably vague per-match venue text
+  for one club's home fixtures (`ground_overrides`). Also holds
+  `rejected:` — candidates a human has looked at and explicitly *not*
+  merged, either confirmed different (`status: rejected`) or genuinely
+  undecided (`status: pending`, i.e. postponed for later) — read only by
+  `reconcile_audit.py`, to keep something already reviewed out of its "new
+  candidates" list without losing the decision (or non-decision) already
+  made. This file is data, not code: `reconcile.py` applies it exactly as
+  written, and it's the "readable file" the reconciliation process
+  produces once populated, not a separate report generated from something
+  else. Changing a decision later means editing this file and rebuilding
+  the `.sqlite` from scratch (see "If in doubt" below) — there's no
+  separate undo, since a merge deletes rows.
 - **`reconcile.py`** — Cross-source identity merging for players, clubs,
-  *and* teams (see roadmap item 4). `merge_players(conn, source_refs)` /
-  `merge_clubs(...)` / `merge_teams(...)` each repoint a confirmed list of
-  `(source, source_*_id)` refs, and every fact-table row that references
-  them, onto one surviving canonical row — sharing one generic
-  `_merge_entities()` implementation. `PLAYER_MERGES` / `CLUB_MERGES` /
-  `TEAM_MERGES` are the growable registries of confirmed groups — run
-  `python3 reconcile.py --sqlite-db <path>` after ingesting (all) sources to
-  apply every entry; re-running is idempotent. Player identity gets no
-  automatic pass at all (names are too ambiguous — initials, nicknames, two
-  different people sharing a surname+initial — to guess at safely), so every
-  `PLAYER_MERGES` entry is a from-scratch human confirmation; clubs/teams get
-  a conservative automatic merge for the exact/near-exact case already
-  (`SQLiteStore._upsert_club()`/`._upsert_team()`, see above) — `CLUB_MERGES`/
-  `TEAM_MERGES` are for what that can't safely guess at. Candidates for all
-  three come from `reconcile_audit.py` (below), not from this module itself.
-  No query-layer changes are needed after a merge: `career_stats()`/
-  `SQLPlayerStats` already aggregate by `player_id` alone, across every
-  source. `merge_players()` shares its underlying mechanism with
-  `SQLiteStore.merge_players()` above, built independently — see that
-  bullet for the overlap.
+  teams, *and* grounds (see roadmap item 4), plus applying club home
+  grounds and ground overrides — all read from `reconcile/decisions.yaml`
+  (above). `merge_players(conn, source_refs)` / `merge_clubs(...)` /
+  `merge_teams(...)` / `merge_grounds(...)` each repoint a confirmed list
+  of `(source, source_*_id)` refs, and every fact-table row that
+  references them, onto one surviving canonical row — sharing one generic
+  `_merge_entities()` implementation. Run `python3 reconcile.py
+  --sqlite-db <path>` after ingesting (all) sources to apply every
+  decision; re-running is idempotent, including the ground overrides
+  (they only touch a match whose `ground_id` doesn't already point at the
+  target). Player identity gets no automatic pass at all (names are too
+  ambiguous — initials, nicknames, two different people sharing a
+  surname+initial — to guess at safely), so every player decision is a
+  from-scratch human confirmation; clubs/teams/grounds get a conservative
+  automatic merge for the exact/near-exact case already
+  (`SQLiteStore._upsert_club()`/`._upsert_team()`/`._upsert_ground()`, see
+  above) — `decisions.yaml`'s merge lists are for what that can't safely
+  guess at. Candidates for all four come from `reconcile_audit.py`
+  (below), not from this module itself. No query-layer changes are needed
+  after a merge: `career_stats()`/`SQLPlayerStats` already aggregate by
+  `player_id` alone, across every source. `merge_players()` shares its
+  underlying mechanism with `SQLiteStore.merge_players()` above, built
+  independently — see that bullet for the overlap.
 - **`reconcile_audit.py`** — Generates a Markdown report over an
   already-built SQLite store: a data-quality scan (distinct competitions/
   leagues/grounds/seasons, rarest-first so a likely typo surfaces near the
   top, plus any crichq_pdf.py "Unknown (...)" placeholder rows) and
-  reconciliation candidates for clubs, teams, and players that look like the
-  same real thing split across canonical rows but aren't safe to merge
-  automatically. Read-only — it never writes to the database. Run
-  `python3 reconcile_audit.py --sqlite-db <path> --out
+  reconciliation candidates for clubs, teams, grounds, and players that
+  look like the same real thing split across canonical rows but aren't
+  safe to merge automatically. Read-only — it never writes to the
+  database. Run `python3 reconcile_audit.py --sqlite-db <path> --out
   reconcile/data_quality_report.md` after ingesting (all) sources; a
   confirmed candidate becomes a permanent decision by hand-copying its
-  `(source, source_*_id)` refs into `reconcile.py`'s `PLAYER_MERGES`/
-  `CLUB_MERGES`/`TEAM_MERGES`, then re-running `reconcile.py`. Club/team
-  candidate clustering is deliberately exact-equality-only (on a normalised
-  key looser than the automatic merge's — e.g. also drops a trailing
-  regional qualifier like "Bradshaw CC, **Lancs**") rather than fuzzy/
-  substring matching: a bare similarity/containment check was tried during
+  `(source, source_*_id)` refs into the right section of
+  `reconcile/decisions.yaml` (a ready-to-paste snippet is included under
+  each candidate), then re-running `reconcile.py`. A candidate already
+  recorded under `decisions.yaml`'s `rejected:` (confirmed different, or
+  still undecided) is held out of the "new candidates" lists and shown
+  separately instead, so a decision already made — including a "not yet"
+  one — doesn't get suggested again as if it were new. Club/team candidate
+  clustering is deliberately exact-equality-only (on a normalised key
+  looser than the automatic merge's — e.g. also drops a trailing regional
+  qualifier like "Bradshaw CC, **Lancs**") rather than fuzzy/substring
+  matching: a bare similarity/containment check was tried during
   development and produced real false positives (short club names being
   substrings of unrelated ones — "Shaw CC" / "Bradshaw CC" / "Walshaw CC"
   are three different real clubs — and "Prestwich 2nd XI" / "Prestwich 3rd
   XI" reading as near-identical text despite the differing ordinal being
   exactly what makes them different teams), so anything that digit-conflicts
   or merely resembles another name without matching it exactly is left out
-  rather than risking a wrong suggestion. Player-name candidates are looser
+  rather than risking a wrong suggestion. Ground candidates are grouped by
+  home club instead, not by name similarity at all — ground names vary far
+  too much in form across sources for text matching to find them
+  ("ELPMCC" / "Croft Lane, ELPM" share no substring, despite being the
+  same real ground) — filtered to only count a ground as a same-club
+  candidate when its name contains that club's own name-initials acronym
+  (≥3 letters), after finding that CricketStatz's `home_team_id` isn't a
+  reliable "who actually hosted this" signal (it sometimes names the
+  visiting side as home even though `ground_name` still correctly shows
+  the true venue — discovered via the ground-candidate report itself
+  flooding every real club with dozens of unrelated one-off "candidates"
+  before this filter existed). A ground shared across many different
+  clubs' home matches is reported separately, and split by match-count
+  concentration into "likely a vague placeholder" (no club has a
+  majority — CricHQ's `"England - Lancashire"` is the example) vs "likely
+  that same CricketStatz home/away unreliability" (one club has the clear
+  majority) — only the former gets a suggested `ground_overrides` action;
+  the latter is a data-quality note about that source's own field, not
+  something a merge or override can fix. Player-name candidates are looser
   in exchange for being explicitly labelled non-authoritative — a shared
   initial+surname, or the exact same name after stripping case/whitespace/
   punctuation — sorted by combined appearance count so the highest-signal
-  groups surface first. See `reconcile/data_quality_report.md` — a committed
-  snapshot from the full 933-match, three-source archive (see the milestone
-  note at the top of this README), itself a live example of what running
-  this finds (a "Bradshaw CC, Lancs"/"Bradshaw CC" club split, one of 9; an
-  "Ian Wade"/"IW wade" pair that `PLAYER_MERGES`'s existing entry doesn't yet
-  cover; an "Add New Ground" placeholder value on 47 matches; and more) —
-  regenerate it any time; it's disposable, derived output, not a
-  hand-maintained decision record like the `*_MERGES` lists it feeds.
+  groups surface first. See `reconcile/data_quality_report.md` — a
+  committed snapshot from the full 933-match, three-source archive (see
+  the milestone note at the top of this README), itself a live example of
+  what running this finds — regenerate it any time; it's disposable,
+  derived output, not a hand-maintained decision record like
+  `decisions.yaml`.
 
 ### Retired
 
@@ -479,7 +521,7 @@ progress is to import the pieces directly in an `ipython` session and look
 at what comes back. One-time setup:
 
 ```bash
-pip install ipython pandas numpy requests pypdf
+pip install ipython pandas numpy requests pypdf pyyaml
 cd playcricket_stats
 ipython
 ```

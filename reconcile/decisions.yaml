@@ -1,0 +1,172 @@
+# reconcile/decisions.yaml
+#
+# The single, human-curated record of every cross-source reconciliation
+# decision made for this database: players, clubs, teams, and grounds
+# that are the same real thing split across canonical rows, plus club
+# home grounds and the vague-venue overrides those enable.
+#
+# This file IS the decision -- reconcile.py applies it exactly as
+# written, nothing more. Candidates are found by reconcile_audit.py
+# (read-only, never writes here); turning a candidate into a decision
+# means copying its (source, id) refs from that report into the right
+# section below, by hand, with your own reasoning in `reason:`.
+#
+# HOW TO EDIT THIS FILE
+# ----------------------
+# - A merge entry (players/clubs/teams/grounds) says "these refs are
+#   the same real thing" and gives it a `canonical_name`. That name is
+#   yours to write -- reconcile_audit.py can suggest a candidate
+#   grouping, but it has no way to know what the *correct* name is
+#   (e.g. it cannot know East Lancs Paper Mill CC's ground is actually
+#   called "Croft Lane"). Editing `canonical_name` on an existing entry
+#   and re-running reconcile.py renames the survivor everywhere.
+# - `club_home_grounds` records a club's own ground -- a fact, not a
+#   merge -- which `ground_overrides` then uses to fix a source whose
+#   own per-match venue text is too vague to be useful (see the CricHQ
+#   example below).
+# - Not sure yet, or looked at it and decided it's NOT a match? Add it
+#   under `rejected:` instead, with `status: rejected` (confirmed
+#   different -- stop suggesting this pair) or `status: pending` (undecided
+#   -- keep flagging it, but separately from brand-new candidates, so it
+#   doesn't get lost or re-merged by accident). See the two examples
+#   below.
+# - Changing your mind later: edit or delete the entry here, then
+#   rebuild the .sqlite from scratch (delete it, re-ingest every
+#   source, re-run reconcile.py). A merge deletes rows in the database,
+#   so there's no separate "undo" -- this file is the thing you edit;
+#   the database is always just its current output. This is the same
+#   rebuild story the rest of the project already follows (see the
+#   README's "If in doubt: everything here is safely rebuildable").
+# - Re-running `python3 reconcile.py --sqlite-db <path>` is always
+#   idempotent -- safe to run again after every ingest, whether or not
+#   this file changed.
+
+players:
+
+  - canonical_name: "Ian Wade"
+    decided: 2026-08-26
+    refs:
+      - {source: play_cricket, id: "6216362"}
+      - {source: crichq_pdf,   id: "I Wade"}
+      - {source: cricketstatz, id: "4"}
+    reason: >
+      Confirmed the same player across all three sources by season
+      overlap and playing career shape (see README roadmap item 4).
+      NOT included: crichq_pdf "I Wade/MR Robinson" -- that ref only
+      ever appears as a joint run-out fielder credit, which
+      crichq_pdf.py keeps as one combined name (the schema has only one
+      fielder_player_id slot per dismissal) -- merging it in would
+      wrongly also attribute MR Robinson's share of that run-out to
+      Wade. Left out; slightly undercounts his run-out assists by one,
+      which is a smaller, more honest error than misattributing a
+      joint credit.
+
+clubs: []
+
+teams: []
+
+grounds:
+
+  - canonical_name: "ELPMCC, Croft Lane"
+    decided: 2026-08-27
+    refs:
+      - {source: play_cricket, id: "49298"}
+      - {source: play_cricket, id: "East Lancs Paper Mill CC - Croft Lane"}
+      - {source: cricketstatz, id: "1"}
+    reason: >
+      Same real ground under three spellings: Play-Cricket calls it
+      "ELPMCC" on 107 matches (ground id 49298) and, separately,
+      "East Lancs Paper Mill CC - Croft Lane" on 2 matches (no ground
+      id recorded for those); CricketStatz calls it "Croft Lane, ELPM"
+      (its own ground id "1"). CricHQ never records a real ground name
+      at all for any match -- see ground_overrides below for how this
+      entry fills that gap for East Lancs Paper Mill CC's own home
+      matches specifically.
+
+# ==================================================================
+# CLUB HOME GROUNDS
+# ==================================================================
+#
+# A club's own ground -- confirmed by hand, never inferred. Used by
+# ground_overrides below, and available generally (e.g. a future
+# "grounds this club has played at" report).
+
+club_home_grounds:
+
+  - club: "East Lancs Paper Mill CC"
+    ground: "ELPMCC, Croft Lane"
+
+# ==================================================================
+# GROUND OVERRIDES
+# ==================================================================
+#
+# For a source whose recorded venue text is real but useless (CricHQ's
+# "Venue:" field is always just a county, e.g. "England - Lancashire" --
+# confirmed by checking the raw PDF text directly: only 4 distinct
+# values across the whole 381-match archive) -- replaces the ground on
+# every match matching `when` with the named ground, which must already
+# have a club_home_grounds entry above.
+#
+# Scope is deliberately narrow: `when.home_club` only matches a match
+# where that club is the HOME side, i.e. its own home fixtures. CricHQ
+# away fixtures (played at one of ~75 different opposition grounds)
+# are NOT covered by this and are not safe to guess at the same way --
+# there's no single "away ground" to fall back to. Flagged as a known
+# gap, not silently left unresolved: see the reconcile_audit.py report,
+# which lists every match this doesn't reach.
+#
+# `overwrite_name: true` also replaces the stored ground_name text
+# (not just the ground_id link) -- appropriate here since "England -
+# Lancashire" carries no information worth preserving on the scorecard;
+# leave it false (or omit it) for an override where the original text
+# is still worth keeping visible alongside the corrected link.
+
+ground_overrides:
+
+  - when: {source: crichq_pdf, home_club: "East Lancs Paper Mill CC"}
+    ground: "ELPMCC, Croft Lane"
+    overwrite_name: true
+    decided: 2026-08-27
+    reason: >
+      East Lancs Paper Mill CC's own home matches in the CricHQ archive
+      all record "England - Lancashire" as the venue -- meaningless on
+      its own, but every one of these matches really was played at
+      Croft Lane. Away fixtures are a separate, harder problem (see
+      note above) -- deliberately not attempted here.
+
+# ==================================================================
+# REJECTED / PENDING
+# ==================================================================
+#
+# Refs a human has already looked at and NOT merged -- either
+# confirmed different (status: rejected -- stop suggesting this pair
+# to me again) or genuinely undecided (status: pending -- keep
+# flagging it, but separately from brand-new candidates, so review
+# work already done isn't lost or repeated). Never applied by
+# reconcile.py; read only by reconcile_audit.py, to keep these out of
+# the "new candidates" section of its report.
+
+rejected:
+
+  players:
+
+    - refs:
+        - {source: cricketstatz, id: "1062"}
+        - {source: play_cricket, id: "6216362"}
+      status: rejected
+      decided: 2026-08-26
+      reason: >
+        Originally assumed to be Ian Wade re-entered under a second
+        CricketStatz id (single match, 74 off the bowling, 09/08/2015 --
+        no independent record under that id to check the assumption
+        against). Confirmed wrong: this "I Wade" played for Swinton
+        Moorside, the opposition that day -- it's his father, a
+        different real person who happens to share the name. Caught by
+        noticing this "Ian Wade" had an appearance for a second club at
+        all, which prompted checking rather than assuming.
+
+  clubs: []
+
+  teams: []
+
+  grounds: []
