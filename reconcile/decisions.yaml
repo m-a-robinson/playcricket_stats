@@ -1043,6 +1043,32 @@ players:
         id: MELW Wilkes
         name: MELW Wilkes
     reason: "Rename: confirmed by the user as the player's real name."
+  - canonical_name: M Hodson
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: M Hodson
+        name: M Hodson
+      - source: cricketstatz
+        id: '6'
+        name: M Hodson
+      - source: cricketstatz
+        id: '1653'
+        name: M Hodson
+    reason: Confirmed by the user as the same person across all three source rows.
+  - canonical_name: S Dwyer
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: S Dwyer
+        name: S Dwyer
+      - source: cricketstatz
+        id: '393'
+        name: S Dwyer
+      - source: cricketstatz
+        id: '532'
+        name: S Dwyer
+    reason: Confirmed by the user as the same person across all three source rows.
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
