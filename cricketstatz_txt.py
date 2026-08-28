@@ -41,7 +41,8 @@ _MONTHS = {
 HEADER_LINE = re.compile(r"^(?P<home>.+?)\s+Vs\s+(?P<away>.+)$")
 
 MATCH_INFO_LINE = re.compile(
-    r"^\S*Innings Match Played At (?P<ground>[^,]+),\s*(?P<club_tag>[^,]*),\s*"
+    r"^\S*Innings Match Played At (?P<ground>[^,]+),\s*"
+    r"(?:(?P<club_tag>[^,]+),\s*)?"
     r"(?P<date>\d{1,2}-\w{3}-\d{2,4}),\s*(?P<competition>.+)$"
 )
 
@@ -53,7 +54,7 @@ TOSS_LINE = re.compile(r"^Toss won by\s+(?P<team>.+)$")
 
 INNINGS_HEADER = re.compile(
     r"^(?P<team>.+?) (?:1st|2nd) Innings (?P<runs>\d+)/(?P<wickets>\d+)\s+"
-    r"(?P<status>Closed|All Out|Declared)\s*\(Overs (?P<overs>[\d.]+)\)$"
+    r"(?P<status>Closed|All Out|Declared|Abandoned)\s*\(Overs (?P<overs>[\d.]+)\)$"
 )
 
 BATTING_TABLE_HEADER = re.compile(r"^Batsman\s+Fieldsman\s+Bowler\s+Runs\s+4s\s+6s$")
@@ -220,36 +221,52 @@ def _parse_dismissal(middle_text):
     return text, None, None
 
 
+_TRAILING_STATS = re.compile(r"(?P<runs>\d+)\s+(?P<fours>\d+)\s+(?P<sixes>\d+)\s*$")
+_TRAILING_DASH = re.compile(r"-\s*$")
+
+
 def _split_batting_row(line):
     """
     Tokenise one batting-table row. Columns aren't fixed-width, so
-    split on runs of 2+ spaces, then peel the trailing Runs/4s/6s (or
-    a single '-' for dnb/absent) off the back -- everything else,
-    rejoined, is the dismissal text for _parse_dismissal().
+    first peel the trailing Runs/4s/6s (or a single '-' for dnb/absent)
+    off the back by anchoring on the END of the line, THEN split what's
+    left (name + dismissal text) on runs of 2+ spaces.
+
+    Anchoring the trailing numbers matters: they're right-aligned in a
+    fixed-width column, so a two-digit value (e.g. a score of 87, or
+    16 fours) leaves LESS padding before it than a one-digit value --
+    "87 16 1" can be separated by single spaces even though every
+    other column boundary on the same row uses 2+. Splitting the whole
+    line on a single 2+-space rule first (the previous approach) could
+    silently swallow the runs/4s/6s numbers into the dismissal text
+    instead of recognising them as separate columns.
 
     Returns (name_raw, dismissal_text, runs, fours, sixes) with
-    runs/fours/sixes as ints, or None for dnb/absent-hurt rows (no '-'
-    dash into an int).
+    runs/fours/sixes as ints, or all None for dnb/absent-hurt rows.
     """
 
-    tokens = re.split(r" {2,}", line.strip())
-    tokens = [t for t in tokens if t != ""]
+    stripped = line.strip()
+
+    if not stripped:
+        return None
+
+    m = _TRAILING_STATS.search(stripped)
+
+    if m:
+        runs, fours, sixes = int(m.group("runs")), int(m.group("fours")), int(m.group("sixes"))
+        rest = stripped[:m.start()].strip()
+    else:
+        dm = _TRAILING_DASH.search(stripped)
+        runs, fours, sixes = None, None, None
+        rest = stripped[:dm.start()].strip() if dm else stripped
+
+    tokens = [t for t in re.split(r" {2,}", rest) if t != ""]
 
     if not tokens:
         return None
 
     name_raw = tokens[0]
-
-    if len(tokens) >= 4 and tokens[-1].isdigit() and tokens[-2].isdigit() and tokens[-3].isdigit():
-        runs, fours, sixes = int(tokens[-3]), int(tokens[-2]), int(tokens[-1])
-        dismissal = " ".join(tokens[1:-3]).strip()
-    elif len(tokens) >= 2 and tokens[-1] == "-":
-        runs, fours, sixes = None, None, None
-        dismissal = " ".join(tokens[1:-1]).strip()
-    else:
-        # Unrecognised trailing shape -- keep the row rather than lose it.
-        runs, fours, sixes = None, None, None
-        dismissal = " ".join(tokens[1:]).strip()
+    dismissal = " ".join(tokens[1:]).strip()
 
     return name_raw, dismissal, runs, fours, sixes
 
@@ -283,7 +300,15 @@ def parse_match_text(text, filename=None):
     competition = info_m.group("competition").strip()
     match_date, season = _parse_date(info_m.group("date"))
 
-    source_match_id = filename or f"{home_full}|{away_full}|{info_m.group('date')}"
+    # Derived from match content (home|away|date), NOT the filename --
+    # these are individually-saved files, and duplicate/mislabelled
+    # filenames are real (confirmed against a batch of 2010 scans:
+    # some files are byte-identical copies of another match under a
+    # different name). A content-derived id means a genuine duplicate
+    # file collapses onto the same match via insert_match()'s existing
+    # (source, source_match_id) idempotency, instead of silently
+    # double-counting it as two different matches.
+    source_match_id = f"{home_full}|{away_full}|{info_m.group('date')}"
 
     result = None
     result_applied_to = None
@@ -527,6 +552,33 @@ def parse_file(path):
     return parse_match_text(text, filename=path.rsplit("/", 1)[-1])
 
 
+_FILENAME_DATE = re.compile(r"(?P<day>\d{1,2})\.(?P<month>\d{1,2})\.(?P<year>\d{2,4})(?=\.\w+$)")
+
+
+def date_from_filename(path):
+    """
+    Best-effort 'DD.M.YY' pulled from a filename like
+    'ELPM l v WLM 11.9.10.txt' -> '11/09/2010'. Used only as a sanity
+    check against the date parsed from the file's own content -- these
+    files are individually named/saved by hand, and a mismatch is a
+    real, previously-found signal (a file saved under the wrong name,
+    or two different fixtures' files swapped) worth flagging loudly
+    rather than silently trusting either one.
+    """
+
+    m = _FILENAME_DATE.search(path.rsplit("/", 1)[-1])
+
+    if not m:
+        return None
+
+    day, month, year = int(m.group("day")), int(m.group("month")), int(m.group("year"))
+
+    if year < 100:
+        year += 2000 if year < 70 else 1900
+
+    return f"{day:02d}/{month:02d}/{year}"
+
+
 if __name__ == "__main__":
 
     import argparse
@@ -546,6 +598,7 @@ if __name__ == "__main__":
     store = SQLiteStore(args.sqlite_db)
 
     all_matches = []
+    warnings = []
 
     for path in args.txt_paths:
 
@@ -553,6 +606,26 @@ if __name__ == "__main__":
 
         if match is None:
             print(f"  {path}: not recognised as this format, skipped.")
+            continue
+
+        filename_date = date_from_filename(path)
+        if filename_date and match["match_date"] and filename_date != match["match_date"]:
+            warnings.append(
+                f"  WARNING: {path} -- filename implies {filename_date} but the file's "
+                f"own content says {match['match_date']} ({match['home_team_name']} v "
+                f"{match['away_team_name']}). Likely saved under the wrong name -- the "
+                f"real fixture for {filename_date} may be missing."
+            )
+
+        existing = store.conn.execute(
+            "SELECT 1 FROM matches WHERE source = ? AND source_match_id = ?",
+            (SOURCE, match["id"])
+        ).fetchone()
+        if existing:
+            warnings.append(
+                f"  WARNING: {path} -- duplicate content of an already-ingested match "
+                f"({match['home_team_name']} v {match['away_team_name']}, {match['match_date']}); skipped."
+            )
             continue
 
         season = match["match_date"][-4:] if match["match_date"] else None
@@ -563,6 +636,12 @@ if __name__ == "__main__":
 
     store.conn.commit()
     store.close()
+
+    if warnings:
+        print()
+        print("=== Warnings ===")
+        for w in warnings:
+            print(w)
 
     if args.json_out:
         with open(args.json_out, "w", encoding="utf-8") as f:
