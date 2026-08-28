@@ -1179,12 +1179,12 @@ players:
         id: '1214'
         name: L Withington
     reason: Same name, same season (2016) -- confirmed by the user.
-  - canonical_name: A Berry
+  - canonical_name: Andy Berry
     refs:
       - source: cricketstatz
         id: '57'
         name: A Berry
-  - canonical_name: A Cambell
+  - canonical_name: Adrian Cambell
     refs:
       - source: crichq_pdf
         id: A Cambell
@@ -1194,7 +1194,7 @@ players:
       - source: cricketstatz
         id: '976'
         name: A Glover
-  - canonical_name: A Greenwood
+  - canonical_name: Andy Greenwood
     refs:
       - source: crichq_pdf
         id: A Greenwood
@@ -1209,12 +1209,12 @@ players:
       - source: cricketstatz
         id: '1079'
         name: A Holden
-  - canonical_name: A Jenkins
+  - canonical_name: Adam Jenkins
     refs:
       - source: cricketstatz
         id: '428'
         name: A Jenkins
-  - canonical_name: A McCheyne
+  - canonical_name: Andy McCheyne
     refs:
       - source: cricketstatz
         id: '199'
@@ -1229,7 +1229,7 @@ players:
       - source: crichq_pdf
         id: A Redmond
         name: A Redmond
-  - canonical_name: A Wilkinson
+  - canonical_name: Aaron Wilkinson
     refs:
       - source: cricketstatz
         id: '400'
@@ -1244,7 +1244,7 @@ players:
       - source: crichq_pdf
         id: B Bitrtwistle
         name: B Bitrtwistle
-  - canonical_name: B Chapman
+  - canonical_name: Ben Chapman
     refs:
       - source: cricketstatz
         id: '430'
@@ -1254,17 +1254,17 @@ players:
       - source: cricketstatz
         id: '953'
         name: B Glover
-  - canonical_name: C O'Beirne
+  - canonical_name: Chris O'Beirne
     refs:
       - source: cricketstatz
         id: '124'
         name: C O'Beirne
-  - canonical_name: Carr,N
+  - canonical_name: N Carr
     refs:
       - source: cricketstatz
         id: '236'
         name: Carr,N
-  - canonical_name: CM Dempsey
+  - canonical_name: Chris Dempsey
     refs:
       - source: crichq_pdf
         id: CM Dempsey
@@ -1274,27 +1274,27 @@ players:
       - source: cricketstatz
         id: '789'
         name: D Birmingham
-  - canonical_name: D Brickles
+  - canonical_name: Dom Brickles
     refs:
       - source: crichq_pdf
         id: D Brickles
         name: D Brickles
-  - canonical_name: D Chapman
+  - canonical_name: Don Chapman
     refs:
       - source: cricketstatz
         id: '447'
         name: D Chapman
-  - canonical_name: D Hadcroft
+  - canonical_name: Dave Hadcroft
     refs:
       - source: cricketstatz
         id: '210'
         name: D Hadcroft
-  - canonical_name: D Morris
+  - canonical_name: Dom Morris
     refs:
       - source: cricketstatz
         id: '1133'
         name: D Morris
-  - canonical_name: D Salmon
+  - canonical_name: Dave Salmon
     refs:
       - source: cricketstatz
         id: '418'
@@ -1309,12 +1309,12 @@ players:
       - source: cricketstatz
         id: '1092'
         name: D Worthington
-  - canonical_name: Dalton,S
+  - canonical_name: Ste Dalton
     refs:
       - source: cricketstatz
         id: '8'
         name: Dalton,S
-  - canonical_name: F Daly
+  - canonical_name: Fran Daly
     refs:
       - source: cricketstatz
         id: '1'
@@ -1324,12 +1324,12 @@ players:
       - source: cricketstatz
         id: '358'
         name: G Merriman
-  - canonical_name: G Young
+  - canonical_name: Gareth Young
     refs:
       - source: cricketstatz
         id: '366'
         name: G Young
-  - canonical_name: Gaygan,M
+  - canonical_name: Mark Gaygan
     refs:
       - source: cricketstatz
         id: '254'
@@ -1344,62 +1344,60 @@ players:
       - source: crichq_pdf
         id: H Shah
         name: H Shah
-  - canonical_name: Halliwell,R
+  - canonical_name: Ryan Halliwell
     refs:
       - source: cricketstatz
         id: '195'
         name: Halliwell,R
-  - canonical_name: Hocking,K
+  - canonical_name: Kev Hocking
     refs:
       - source: cricketstatz
         id: '135'
         name: Hocking,K
-  - canonical_name: I Simpson
+  - canonical_name: Ian Simpson
     refs:
       - source: cricketstatz
         id: '388'
         name: I Simpson
-  - canonical_name: I Wilkinson
+  - canonical_name: Ian Wilkinson
     refs:
       - source: cricketstatz
         id: '497'
         name: I Wilkinson
-  - canonical_name: J Kenyon
+  - canonical_name: John Kenyon
     refs:
       - source: crichq_pdf
         id: J Kenyon
         name: J Kenyon
-  - canonical_name: J Seagar
+  - canonical_name: Jake Seagar
     refs:
       - source: crichq_pdf
         id: J Seagar
         name: J Seagar
-  - canonical_name: J Segar
-    refs:
       - source: cricketstatz
         id: '887'
         name: J Segar
-  - canonical_name: J Shiels
+  - canonical_name: Joe Shiels
     refs:
       - source: cricketstatz
         id: '2'
         name: J Shiels
-  - canonical_name: Jones,A
+  - canonical_name: Adam Jones
     refs:
       - source: cricketstatz
         id: '190'
         name: Jones,A
-  - canonical_name: K Dobson
+  - canonical_name: Kevin Dobson
     refs:
       - source: crichq_pdf
         id: K Dobson
         name: K Dobson
-  - canonical_name: K Green
+  - canonical_name: Kyle Green
     refs:
       - source: cricketstatz
         id: '1508'
         name: K Green
-  - canonical_name: Kilcoyne,M
+  - canonical_name: Mark Kilcoyne
     refs:
       - source: cricketstatz
         id: '191'
@@ -1419,17 +1417,17 @@ players:
       - source: crichq_pdf
         id: L Lorax
         name: L Lorax
-  - canonical_name: L Santos
+  - canonical_name: Leyton Santos
     refs:
       - source: cricketstatz
         id: '311'
         name: L Santos
-  - canonical_name: Lavery,M
+  - canonical_name: Mark Lavery
     refs:
       - source: cricketstatz
         id: '194'
         name: Lavery,M
-  - canonical_name: M Coates
+  - canonical_name: Martyn Coates
     refs:
       - source: cricketstatz
         id: '1400'
@@ -1439,12 +1437,12 @@ players:
       - source: cricketstatz
         id: '908'
         name: M Flaherty
-  - canonical_name: M Hay
+  - canonical_name: Mike Hay
     refs:
       - source: cricketstatz
         id: '525'
         name: M Hay
-  - canonical_name: M Holt
+  - canonical_name: Mark Holt
     refs:
       - source: cricketstatz
         id: '256'
@@ -1459,12 +1457,12 @@ players:
       - source: crichq_pdf
         id: M Parkinson
         name: M Parkinson
-  - canonical_name: M Smalley
+  - canonical_name: Matthew Smalley
     refs:
       - source: cricketstatz
         id: '1091'
         name: M Smalley
-  - canonical_name: M Young
+  - canonical_name: Marcus Young
     refs:
       - source: cricketstatz
         id: '137'
@@ -1474,7 +1472,7 @@ players:
       - source: crichq_pdf
         id: M Z Shah
         name: M Z Shah
-  - canonical_name: Moore,G
+  - canonical_name: Gerald Moore
     refs:
       - source: cricketstatz
         id: '211'
@@ -1484,7 +1482,7 @@ players:
       - source: crichq_pdf
         id: N Hussian
         name: N Hussian
-  - canonical_name: N Warne
+  - canonical_name: Nigel Warne
     refs:
       - source: cricketstatz
         id: '189'
@@ -1499,7 +1497,7 @@ players:
       - source: crichq_pdf
         id: PH Hoskin
         name: PH Hoskin
-  - canonical_name: R Moore
+  - canonical_name: Ryan Moore
     refs:
       - source: cricketstatz
         id: '238'
@@ -1544,17 +1542,17 @@ players:
       - source: crichq_pdf
         id: SD Deshmukh
         name: SD Deshmukh
-  - canonical_name: Smith,P
+  - canonical_name: Paul Smith
     refs:
       - source: cricketstatz
         id: '209'
         name: Smith,P
-  - canonical_name: SPM Moriarty
+  - canonical_name: S Moriarty
     refs:
       - source: crichq_pdf
         id: SPM Moriarty
         name: SPM Moriarty
-  - canonical_name: T Birtwistle
+  - canonical_name: Terry Birtwistle
     refs:
       - source: cricketstatz
         id: '213'
@@ -1569,12 +1567,12 @@ players:
       - source: crichq_pdf
         id: W Redford
         name: W Redford
-  - canonical_name: Wade,J
+  - canonical_name: James Wade
     refs:
       - source: cricketstatz
         id: '34'
         name: Wade,J
-  - canonical_name: Woodward,D
+  - canonical_name: Dave Woodward
     refs:
       - source: cricketstatz
         id: '186'
