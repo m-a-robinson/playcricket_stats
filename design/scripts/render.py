@@ -124,30 +124,30 @@ def demo_career_context() -> dict:
             "name": "Ian Wade",
             "summary": "East Lancs Paper Mill CC · 1st &amp; 2nd XI · batting all-rounder",
             "tiles": [
-                {"value": "168", "label": "Games"},
-                {"value": "4,260", "label": "Runs"},
-                {"value": "31.79", "label": "Average"},
+                {"value": "264", "label": "Games"},
+                {"value": "5,948", "label": "Runs"},
+                {"value": "27.92", "label": "Average"},
                 {"value": "188", "label": "Highest score"},
                 {"value": "8", "label": "Hundreds"},
-                {"value": "19", "label": "Fifties"},
-                {"value": "107", "label": "Wickets"},
-                {"value": "74", "label": "Catches"},
+                {"value": "26", "label": "Fifties"},
+                {"value": "183", "label": "Wickets"},
+                {"value": "120", "label": "Catches"},
             ],
             "batting": {
-                "innings": 157, "not_outs": 23, "runs": 4260,
-                "average": 31.79, "highest": "188", "fifties": 19, "hundreds": 8,
+                "innings": 248, "not_outs": 35, "runs": 5948,
+                "average": 27.92, "highest": "188", "fifties": 26, "hundreds": 8,
             },
             "bowling": {
-                "wickets": 107, "average": 15.53, "best": "8-13", "five_fors": 7,
+                "wickets": 183, "average": 15.08, "best": "8-13", "five_fors": 8,
             },
-            "fielding": {"catches": 74, "run_outs": 6},
+            "fielding": {"catches": 120, "run_outs": 13},
             "milestones": [
                 {"headline": "188", "detail": "highest first-team score (Play-Cricket era)"},
                 {"headline": "163", "detail": "v Failsworth Macedonia, 11 Jul 2010 — 339-run 3rd-wicket stand with Gavin Greaves (170)"},
-                {"headline": "8 centuries, 19 half-centuries", "detail": "across 157 recorded innings"},
-                {"headline": "107 wickets at 15.53", "detail": "including 7 five-wicket hauls"},
+                {"headline": "8 centuries, 26 half-centuries", "detail": "across 248 recorded innings"},
+                {"headline": "183 wickets at 15.08", "detail": "including 8 five-wicket hauls"},
             ],
-            "note": "Figures from a partial rebuild (Play-Cricket 2024-26 + CricketStatz 2005-18 + scorebooks) — CricHQ years (2016, 2018-23) not yet in this build, so totals are undercounts of the full career.",
+            "note": "Scorecard-only totals from the fully-reconciled store (all six sources merged per reconcile/decisions.yaml). Excludes NMCL season-aggregate residuals (+400 runs 2003, +403 2012, +518 2013, +6 wickets 2010 — see root README) not yet folded in by career(); cross-checked against a manually-compiled career line and found a small unresolved gap on runs/games (see README).",
         }
     }
 
