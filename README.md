@@ -68,12 +68,11 @@ scorebook pages the user photographed and uploaded, starting with the
 11-Jul-2010 ELPM 1st XI v Failsworth Macedonia CC match (Gavin Greaves
 170, Ian Wade 163, a 339-run 3rd-wicket stand) — a match `nmcl_stats.py`'s
 2010 residual-total rows already knew was missing but couldn't supply
-match-level detail for. That's **964 matches raw, 935 once `reconcile.py`
-applies `duplicate_matches`**. 2011-2013, and the rest of 2010 beyond
-what's now captured, still have no match-level source, only season
-aggregates; if genuine scorecards or scorebook pages for those turn up,
-the same `cricketstatz_txt.py`/`scorebooks.py` pipelines would replace
-the aggregate figures with real per-match data.
+match-level detail for. 2011-2013, and the rest of 2010 beyond what's now
+captured, still have no match-level source, only season aggregates; if
+genuine scorecards or scorebook pages for those turn up, the same
+`cricketstatz_txt.py`/`scorebooks.py` pipelines would replace the
+aggregate figures with real per-match data.
 
 Building a season-by-season match export as an early cross-check tool for
 the scorebook-digitisation effort (a workbook with one sheet per season,
