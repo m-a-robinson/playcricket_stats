@@ -221,6 +221,7 @@ _PLAYER_ID_COLUMNS = [
     ("batting_innings", "fielder_player_id"),
     ("bowling_innings", "player_id"),
     ("match_appearances", "player_id"),
+    ("nmcl_season_stats", "player_id"),
 ]
 
 # Every column that references clubs.club_id, beyond club_source_ids.
@@ -300,6 +301,9 @@ def _merge_entities(
             if table == "match_appearances" and column == "player_id":
                 _coalesce_match_appearances(conn, survivor, duplicate)
 
+            if table == "nmcl_season_stats" and column == "player_id":
+                _coalesce_nmcl_season_stats(conn, survivor, duplicate)
+
             conn.execute(
                 f"UPDATE {table} SET {column} = ? WHERE {column} = ?",
                 (survivor, duplicate)
@@ -354,6 +358,37 @@ def _coalesce_match_appearances(conn, survivor, duplicate):
             (position, captain or 0, wicket_keeper or 0, survivor, match_id)
         )
         conn.execute("DELETE FROM match_appearances WHERE appearance_id = ?", (appearance_id,))
+
+
+def _coalesce_nmcl_season_stats(conn, survivor, duplicate):
+    """
+    Before repointing a duplicate player's nmcl_season_stats rows onto
+    the survivor, drop any duplicate row that would collide with a
+    (season, division, discipline) the survivor already has --
+    nmcl_season_stats.UNIQUE(player_id, season, division, discipline)
+    means the blind UPDATE right after this call would otherwise raise
+    IntegrityError. Unlike _coalesce_match_appearances there's no
+    sensible field-level merge for two conflicting archival season
+    averages (they're read-only transcriptions of a printed sheet, not
+    facts this database derives itself), so this keeps the survivor's
+    existing row and discards the duplicate's rather than guessing
+    which one is more correct.
+    """
+
+    conn.execute(
+        """
+        DELETE FROM nmcl_season_stats
+        WHERE player_id = ?
+          AND EXISTS (
+              SELECT 1 FROM nmcl_season_stats s
+              WHERE s.player_id = ?
+                AND s.season = nmcl_season_stats.season
+                AND s.division = nmcl_season_stats.division
+                AND s.discipline = nmcl_season_stats.discipline
+          )
+        """,
+        (duplicate, survivor)
+    )
 
 
 def merge_players(conn, source_refs, known_as=None):

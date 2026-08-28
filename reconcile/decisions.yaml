@@ -108,6 +108,12 @@ players:
       - source: crichq_pdf
         id: Ian Wade
         name: Ian Wade
+      - source: nmcl_stats
+        id: I WADE
+        name: I Wade
+      - source: cricketstatz_txt
+        id: I Wade
+        name: I Wade
     reason: >
       Confirmed the same player across all three sources by season
       overlap and playing career shape (see README roadmap item 4).
@@ -146,6 +152,12 @@ players:
       - source: crichq_pdf
         id: Stephen Keyeorth
         name: Stephen Keyeorth
+      - source: cricketstatz_txt
+        id: S Keyworth
+        name: S Keyworth
+      - source: nmcl_stats
+        id: S KEYWORTH
+        name: S Keyworth
   - canonical_name: Matty Partington
     refs:
       - source: crichq_pdf
@@ -172,6 +184,15 @@ players:
       - source: crichq_pdf
         id: M Parkinson
         name: M Parkinson
+      - source: cricketstatz_txt
+        id: W Street
+        name: W Street
+      - source: nmcl_stats
+        id: W STREET
+        name: W Street
+      - source: nmcl_stats
+        id: M PARTINGTON
+        name: M Partington
   - canonical_name: Carl Dearden
     refs:
       - source: crichq_pdf
@@ -217,6 +238,9 @@ players:
       - source: crichq_pdf
         id: DD Dwyer
         name: DD Dwyer
+      - source: cricketstatz_txt
+        id: D Dwyer
+        name: D Dwyer
   - canonical_name: Ash birtwistle
     refs:
       - source: crichq_pdf
@@ -237,6 +261,9 @@ players:
       - source: crichq_pdf
         id: Mr Ashley J birtwistle birtwistle
         name: Mr Ashley J birtwistle birtwistle
+      - source: cricketstatz_txt
+        id: A Birtwistle
+        name: A Birtwistle
   - canonical_name: Daniel McCaffery
     refs:
       - source: crichq_pdf
@@ -283,6 +310,12 @@ players:
       - source: cricketstatz
         id: '10'
         name: P Hewart
+      - source: nmcl_stats
+        id: P HEWART
+        name: P Hewart
+      - source: cricketstatz_txt
+        id: P Hewart
+        name: P Hewart
   - canonical_name: Louis Birmingham
     refs:
       - source: play_cricket
@@ -320,6 +353,12 @@ players:
       - source: crichq_pdf
         id: Andrew Lomas
         name: Andrew Lomas
+      - source: cricketstatz_txt
+        id: A Lomax
+        name: A Lomax
+      - source: nmcl_stats
+        id: A LOMAX
+        name: A Lomax
   - canonical_name: Luke Lomax
     refs:
       - source: play_cricket
@@ -360,6 +399,9 @@ players:
       - source: crichq_pdf
         id: B Bitrtwistle
         name: B Bitrtwistle
+      - source: cricketstatz_txt
+        id: B Birtwistle
+        name: B Birtwistle
   - canonical_name: Mark Robinson
     refs:
       - source: play_cricket
@@ -376,6 +418,12 @@ players:
         name: M Robinson
       - source: cricketstatz
         id: '11'
+        name: Robinson,M
+      - source: nmcl_stats
+        id: M ROBINSON
+        name: M Robinson
+      - source: cricketstatz_txt
+        id: Robinson,M
         name: Robinson,M
   - canonical_name: Shasvat Kakkar
     refs:
@@ -419,6 +467,12 @@ players:
       - source: cricketstatz
         id: '9'
         name: S Carr
+      - source: nmcl_stats
+        id: S CARR
+        name: S Carr
+      - source: cricketstatz_txt
+        id: S Carr
+        name: S Carr
   - canonical_name: Carter Charlesworth
     refs:
       - source: play_cricket
@@ -461,6 +515,12 @@ players:
       - source: cricketstatz
         id: '673'
         name: D Pearson
+      - source: cricketstatz_txt
+        id: D Pearson
+        name: D Pearson
+      - source: nmcl_stats
+        id: D PEARSON
+        name: D Pearson
   - canonical_name: Alan Redford
     refs:
       - source: play_cricket
@@ -478,6 +538,9 @@ players:
       - source: crichq_pdf
         id: A Redders
         name: A Redders
+      - source: cricketstatz_txt
+        id: A Redford
+        name: A Redford
   - canonical_name: Adam Sajewicz
     refs:
       - source: play_cricket
@@ -590,6 +653,12 @@ players:
       - source: cricketstatz
         id: '467'
         name: C Holt
+      - source: cricketstatz_txt
+        id: C Holt
+        name: C Holt
+      - source: nmcl_stats
+        id: C HOLT
+        name: C Holt
   - canonical_name: Jack Crompton
     refs:
       - source: crichq_pdf
@@ -611,6 +680,9 @@ players:
         name: DS Scott
       - source: cricketstatz
         id: '399'
+        name: D Scott
+      - source: cricketstatz_txt
+        id: D Scott
         name: D Scott
   - canonical_name: Dave Barbe
     refs:
@@ -644,6 +716,12 @@ players:
         name: D Willett
       - source: cricketstatz
         id: '783'
+        name: D Willett
+      - source: cricketstatz_txt
+        id: D Willett
+        name: D Willett
+      - source: nmcl_stats
+        id: D WILLETT
         name: D Willett
   - canonical_name: Steve Stubbs
     refs:
@@ -739,6 +817,12 @@ players:
         name: Phil Partington
       - source: cricketstatz
         id: '3'
+        name: P Partington
+      - source: cricketstatz_txt
+        id: P Partington
+        name: P Partington
+      - source: nmcl_stats
+        id: P PARTINGTON
         name: P Partington
   - canonical_name: Jack Leonard
     refs:
@@ -877,6 +961,9 @@ players:
       - source: cricketstatz
         id: '849'
         name: Kevin Dodson
+      - source: nmcl_stats
+        id: K DODSON
+        name: K Dodson
   - canonical_name: Craig Belston
     refs:
       - source: play_cricket
@@ -1047,12 +1134,21 @@ players:
       - source: cricketstatz
         id: '193'
         name: Greaves,C
+      - source: cricketstatz_txt
+        id: C Greaves
+        name: C Greaves
+      - source: nmcl_stats
+        id: C GREAVES
+        name: C Greaves
     reason: Confirmed by the user as the same person across sources.
   - canonical_name: Mark Dawes
     decided: '2026-08-28'
     refs:
       - source: cricketstatz
         id: '84'
+        name: Dawes,M
+      - source: cricketstatz_txt
+        id: Dawes,M
         name: Dawes,M
     reason: >
       Rename only, not a merge -- the user confirmed Max Dawes
@@ -1109,6 +1205,9 @@ players:
       - source: cricketstatz
         id: '1653'
         name: M Hodson
+      - source: cricketstatz_txt
+        id: M Hodson
+        name: M Hodson
     reason: Confirmed by the user as the same person across all three source rows.
   - canonical_name: Steve Dwyer
     decided: '2026-08-28'
@@ -1122,6 +1221,12 @@ players:
       - source: cricketstatz
         id: '532'
         name: S Dwyer
+      - source: cricketstatz_txt
+        id: S Dwyer
+        name: S Dwyer
+      - source: nmcl_stats
+        id: S DWYER
+        name: S Dwyer
     reason: Confirmed by the user as the same person across all three source rows.
   - canonical_name: Gavin Greaves
     decided: '2026-08-28'
@@ -1131,6 +1236,12 @@ players:
         name: G Greaves
       - source: cricketstatz
         id: '7'
+        name: G Greaves
+      - source: nmcl_stats
+        id: G GREAVES
+        name: G Greaves
+      - source: cricketstatz_txt
+        id: G Greaves
         name: G Greaves
     reason: Season overlap (2016, 2018) between the two sources -- same 'two systems, same transition era' pattern as other confirmed merges. Confirmed by the user.
   - canonical_name: Andy Hodson
@@ -1152,6 +1263,9 @@ players:
       - source: cricketstatz
         id: '208'
         name: Openshaw,A
+      - source: nmcl_stats
+        id: A OPENSHAW
+        name: A Openshaw
     reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
   - canonical_name: Josh Kobryn
     decided: '2026-08-28'
@@ -1208,6 +1322,9 @@ players:
       - source: cricketstatz
         id: '57'
         name: A Berry
+      - source: cricketstatz_txt
+        id: A Berry
+        name: A Berry
   - canonical_name: Adrian Cambell
     refs:
       - source: crichq_pdf
@@ -1221,6 +1338,9 @@ players:
   - canonical_name: Andy Greenwood
     refs:
       - source: crichq_pdf
+        id: A Greenwood
+        name: A Greenwood
+      - source: cricketstatz_txt
         id: A Greenwood
         name: A Greenwood
   - canonical_name: A Greenwood
@@ -1243,6 +1363,9 @@ players:
       - source: cricketstatz
         id: '199'
         name: A McCheyne
+      - source: cricketstatz_txt
+        id: A McCheyne
+        name: A McCheyne
   - canonical_name: A Redmond
     refs:
       - source: crichq_pdf
@@ -1252,6 +1375,9 @@ players:
     refs:
       - source: cricketstatz
         id: '400'
+        name: A Wilkinson
+      - source: cricketstatz_txt
+        id: A Wilkinson
         name: A Wilkinson
   - canonical_name: AZ Zain
     refs:
@@ -1303,6 +1429,9 @@ players:
       - source: cricketstatz
         id: '210'
         name: D Hadcroft
+      - source: cricketstatz_txt
+        id: D Hadcroft
+        name: D Hadcroft
   - canonical_name: Dom Morris
     refs:
       - source: cricketstatz
@@ -1328,10 +1457,22 @@ players:
       - source: cricketstatz
         id: '8'
         name: Dalton,S
+      - source: nmcl_stats
+        id: S DALTON
+        name: S Dalton
+      - source: cricketstatz_txt
+        id: Dalton,S
+        name: Dalton,S
   - canonical_name: Fran Daly
     refs:
       - source: cricketstatz
         id: '1'
+        name: F Daly
+      - source: nmcl_stats
+        id: F DALY
+        name: F Daly
+      - source: cricketstatz_txt
+        id: F Daly
         name: F Daly
   - canonical_name: G Merriman
     refs:
@@ -1342,6 +1483,12 @@ players:
     refs:
       - source: cricketstatz
         id: '366'
+        name: G Young
+      - source: nmcl_stats
+        id: G YOUNG
+        name: G Young
+      - source: cricketstatz_txt
+        id: G Young
         name: G Young
   - canonical_name: Mark Gaygan
     refs:
@@ -1368,6 +1515,9 @@ players:
       - source: cricketstatz
         id: '388'
         name: I Simpson
+      - source: cricketstatz_txt
+        id: I Simpson
+        name: I Simpson
   - canonical_name: Ian Wilkinson
     refs:
       - source: cricketstatz
@@ -1390,6 +1540,12 @@ players:
     refs:
       - source: cricketstatz
         id: '2'
+        name: J Shiels
+      - source: nmcl_stats
+        id: J SHIELS
+        name: J Shiels
+      - source: cricketstatz_txt
+        id: J Shiels
         name: J Shiels
   - canonical_name: Adam Jones
     refs:
@@ -1441,10 +1597,19 @@ players:
       - source: cricketstatz
         id: '525'
         name: M Hay
+      - source: cricketstatz_txt
+        id: M Hay
+        name: M Hay
+      - source: nmcl_stats
+        id: M HAY
+        name: M Hay
   - canonical_name: Mark Holt
     refs:
       - source: cricketstatz
         id: '256'
+        name: M Holt
+      - source: cricketstatz_txt
+        id: M Holt
         name: M Holt
   - canonical_name: M Kobryn
     refs:
@@ -1461,6 +1626,12 @@ players:
       - source: cricketstatz
         id: '137'
         name: M Young
+      - source: cricketstatz_txt
+        id: M Young
+        name: M Young
+      - source: nmcl_stats
+        id: M YOUNG
+        name: M Young
   - canonical_name: M Z Shah
     refs:
       - source: crichq_pdf
@@ -1476,6 +1647,12 @@ players:
       - source: cricketstatz
         id: '189'
         name: N Warne
+      - source: nmcl_stats
+        id: N WARNE
+        name: N Warne
+      - source: cricketstatz_txt
+        id: N Warne
+        name: N Warne
   - canonical_name: P Hodgkin
     refs:
       - source: crichq_pdf
@@ -1490,6 +1667,9 @@ players:
     refs:
       - source: cricketstatz
         id: '238'
+        name: R Moore
+      - source: cricketstatz_txt
+        id: R Moore
         name: R Moore
   - canonical_name: S Ali Mirza
     refs:
@@ -1541,6 +1721,12 @@ players:
       - source: cricketstatz
         id: '213'
         name: T Birtwistle
+      - source: nmcl_stats
+        id: T BIRTWISTLE
+        name: T Birtwistle
+      - source: cricketstatz_txt
+        id: T Birtwistle
+        name: T Birtwistle
   - canonical_name: T McMahon
     refs:
       - source: crichq_pdf
@@ -1556,6 +1742,9 @@ players:
       - source: cricketstatz
         id: '34'
         name: Wade,J
+      - source: nmcl_stats
+        id: J WADE
+        name: J Wade
   - canonical_name: Dave Woodward
     refs:
       - source: cricketstatz
@@ -1570,12 +1759,47 @@ players:
       Real name confirmed by the user (see the rejected Zakaria Ali /
       Z Ali candidate below -- this is the "Z Ali" side of that
       rejection, now given its own identity rather than left unnamed).
+  - canonical_name: James Richardson
+    refs:
+      - source: play_cricket
+        id: '6191899'
+        name: James Richardson
+      - source: nmcl_stats
+        id: J RICHARDSON
+        name: J Richardson
+    reason: Confirmed by the user.
+  - canonical_name: Richard Savage
+    refs:
+      - source: nmcl_stats
+        id: R SAVAGE
+        name: R Savage
+  - canonical_name: Gary Wade
+    refs:
+      - source: cricketstatz_txt
+        id: G Wade
+        name: G Wade
+      - source: nmcl_stats
+        id: G WADE
+        name: G Wade
+    reason: Confirmed by the user.
+  - canonical_name: Joe Bailey
+    refs:
+      - source: cricketstatz_txt
+        id: J Bailey
+        name: J Bailey
+      - source: nmcl_stats
+        id: J BAILEY
+        name: J Bailey
+    reason: Confirmed by the user.
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
     decided: 2026-08-27
     refs:
       - {source: cricketstatz, id: "8", name: "West Leigh Meths"}
+      - source: cricketstatz_txt
+        id: WLM
+        name: WLM
     reason: >
       Single-source club (CricketStatz only, no play_cricket/crichq_pdf
       presence in this archive) -- a pure rename, not a merge, to fix
@@ -1700,6 +1924,9 @@ clubs:
     decided: 2026-08-27
     refs:
       - {source: cricketstatz, id: "14", name: "Springhead"}
+      - source: cricketstatz_txt
+        id: SH
+        name: SH
     reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
   - canonical_name: "Broadway CC"
     decided: 2026-08-27
@@ -1741,6 +1968,76 @@ clubs:
     refs:
       - {source: cricketstatz, id: "31", name: "Roytonians"}
     reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
+  - canonical_name: East Lancs Paper Mill CC
+    refs:
+      - source: play_cricket
+        id: '9653'
+        name: East Lancs Paper Mill CC
+      - source: crichq_pdf
+        id: East Lancs Paper Mill CC
+        name: East Lancs Paper Mill CC
+      - source: cricketstatz
+        id: '1'
+        name: East Lancs Paper Mill
+      - source: cricketstatz_txt
+        id: ELPM
+        name: ELPM
+    reason: The three existing sources already auto-merged onto one club via the near-exact-name dedup at insert time (no manual entry needed until now). cricketstatz_txt uses the short code "ELPM" instead, which the auto-dedup does not catch -- explicit merge.
+  - canonical_name: Ashton Ladysmith CC
+    refs:
+      - source: play_cricket
+        id: '9413'
+        name: Ashton Ladysmith CC
+      - source: cricketstatz
+        id: '9'
+        name: Ashton Ladysmith
+      - source: cricketstatz_txt
+        id: AL
+        name: AL
+  - canonical_name: Elton Vale CC
+    refs:
+      - source: crichq_pdf
+        id: Elton Vale CC
+        name: Elton Vale CC
+      - source: cricketstatz
+        id: '4'
+        name: Elton Vale
+      - source: cricketstatz_txt
+        id: EV
+        name: EV
+  - canonical_name: Tottington St Johns CC
+    refs:
+      - source: play_cricket
+        id: '6426'
+        name: Tottington St Johns CC
+      - source: crichq_pdf
+        id: Tottington St Johns CC
+        name: Tottington St Johns CC
+      - source: cricketstatz
+        id: '2'
+        name: Tottington St Johns
+      - source: cricketstatz_txt
+        id: TSJ
+        name: TSJ
+  - canonical_name: Fothergill & Harvey CC
+    refs:
+      - source: crichq_pdf
+        id: Fothergill & Harvey CC
+        name: Fothergill & Harvey CC
+      - source: cricketstatz
+        id: '15'
+        name: Fothergill & Harvey
+      - source: cricketstatz_txt
+        id: F&H
+        name: F&H
+  - canonical_name: Rochdale Catholic Club
+    refs:
+      - source: cricketstatz
+        id: '10'
+        name: Rochdale Catholic Club
+      - source: cricketstatz_txt
+        id: RCC
+        name: RCC
 teams:
   - canonical_name: Tottington St Johns CC 2nd XI
     refs:
@@ -1767,6 +2064,9 @@ teams:
       - source: cricketstatz
         id: '3'
         name: TSJ 1st XI
+      - source: cricketstatz_txt
+        id: TSJ 1st XI
+        name: TSJ 1st XI
   - canonical_name: East Lancs Paper Mill CC 2nd XI
     refs:
       - source: play_cricket
@@ -1778,6 +2078,9 @@ teams:
       - source: cricketstatz
         id: '2'
         name: ELPM 2nd XI
+      - source: cricketstatz_txt
+        id: ELPM 2nd XI
+        name: ELPM 2nd XI
   - canonical_name: East Lancs Paper Mill CC 1st XI
     refs:
       - source: play_cricket
@@ -1788,6 +2091,9 @@ teams:
         name: 1st XI
       - source: cricketstatz
         id: '1'
+        name: ELPM 1st XI
+      - source: cricketstatz_txt
+        id: ELPM 1st XI
         name: ELPM 1st XI
   - canonical_name: Edenfield CC 2nd XI
     refs:
@@ -1974,6 +2280,9 @@ teams:
       - source: cricketstatz
         id: '10'
         name: AL 1st XI
+      - source: cricketstatz_txt
+        id: AL 1st XI
+        name: AL 1st XI
   - canonical_name: South West Manchester CC 1st XI
     refs:
       - source: crichq_pdf
@@ -2057,6 +2366,9 @@ teams:
         name: 1st XI
       - source: cricketstatz
         id: '5'
+        name: EV 1st XI
+      - source: cricketstatz_txt
+        id: EV 1st XI
         name: EV 1st XI
   - canonical_name: Glossop CC 2nd XI
     refs:
@@ -2264,6 +2576,73 @@ teams:
       "Friends United CC, Friends United CC"), so named after the
       full club name rather than invent an XI number the source
       doesn't give.
+  - canonical_name: Elton Vale CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '18'
+        name: EV 2nd XI
+      - source: cricketstatz_txt
+        id: EV 2nd XI
+        name: EV 2nd XI
+  - canonical_name: Westleigh Meths CC 1st XI
+    refs:
+      - source: cricketstatz
+        id: '9'
+        name: WLM 1st XI
+      - source: cricketstatz_txt
+        id: WLM 1st XI
+        name: WLM 1st XI
+  - canonical_name: Westleigh Meths CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '31'
+        name: WLM 2nd XI
+  - canonical_name: Springhead CC 1st XI
+    refs:
+      - source: cricketstatz
+        id: '15'
+        name: SH 1st XI
+      - source: cricketstatz_txt
+        id: SH 1st XI
+        name: SH 1st XI
+  - canonical_name: Springhead CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '42'
+        name: SH 2nd XI
+  - canonical_name: Fothergill & Harvey CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Fothergill & Harvey CC, Fothergill & Harvey CC 1st XI
+        name: Fothergill & Harvey CC 1st XI
+      - source: cricketstatz
+        id: '16'
+        name: F&H 1st XI
+      - source: cricketstatz_txt
+        id: F&H 1st XI
+        name: F&H 1st XI
+    reason: crichq_pdf and cricketstatz had already split this into two unmerged team rows pre-dating this batch; merged all three sources into one while adding cricketstatz_txt.
+  - canonical_name: Fothergill & Harvey CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '25'
+        name: F&H 2nd XI
+      - source: cricketstatz_txt
+        id: F&H 2nd XI
+        name: F&H 2nd XI
+  - canonical_name: Rochdale Catholic Club 1st XI
+    refs:
+      - source: cricketstatz
+        id: '11'
+        name: RCC 1st XI
+      - source: cricketstatz_txt
+        id: RCC 1st XI
+        name: RCC 1st XI
+  - canonical_name: Rochdale Catholic Club 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '35'
+        name: RCC 2nd XI
 grounds:
 
   - canonical_name: "ELPMCC, Croft Lane"
@@ -2467,7 +2846,25 @@ rejected:
 
 pending:
   clubs: []
-  teams: []
+  teams:
+    - canonical_name: Prestwich 3rd XI
+      status: pending
+      refs:
+        - source: cricketstatz
+          id: '14'
+          name: Prestwich 3rd XI
+        - source: cricketstatz_txt
+          id: Prestwich 3rd XI
+          name: 3rd XI
+    - canonical_name: Rochdale 3rd XI
+      status: pending
+      refs:
+        - source: cricketstatz
+          id: '39'
+          name: Rochdale 3rd XI
+        - source: cricketstatz_txt
+          id: Rochdale 3rd XI
+          name: 3rd XI
   grounds: []
   players: []
 duplicate_matches:
