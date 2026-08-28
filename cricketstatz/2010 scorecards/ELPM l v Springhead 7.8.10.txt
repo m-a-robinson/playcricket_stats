@@ -1,0 +1,61 @@
+SH 1st XI Vs ELPM 1st XI
+1-Innings Match Played At Springhead, 07-Aug-2010, Division 1
+
+SH 1st XI Win by 14 runs
+
+Toss won by       SH 1st XI
+
+
+SH 1st XI 1st Innings 155/10 All Out (Overs 37.2)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Shaw,R                                        b I Wade              20  0  0
+    Milner,A             c W Street               b I Wade               0  0  0
+    A Raw                c S Keyworth             b W Street            24  0  0
+    Dehaviland,T                                c&b W Street            47  0  0
+    P Boggine            c C Greaves              b W Street            11  0  0
+    D Percival  snr                               b P Hewart            20  0  0
+    J Whyatt             lbw                      b S Keyworth           7  0  0
+    D Percival  jnr      lbw                      b J Shiels             6  0  0
+    D Lees                                      c&b J Shiels             0  0  0
+    Sweeting,M           not out                                         6  0  0
+    N Beaver                                      b J Shiels             1  0  0
+      extras                                      (b9 lb2 w2 nb0)       13
+    TOTAL                                         10 wickets for       155
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    P Hewart           12    3    35   1   1   -  
+    I Wade             6     1    22   2   1   -  
+    W Street           7     0    40   3   -   -  
+    S Keyworth         7     0    41   1   -   -  
+    J Shiels           5.2   0    6    3   -   -  
+
+ELPM 1st XI 1st Innings 141/10 All Out (Overs 33)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    A McCheyne           c ?                      b D Lees               3  0  0
+    J Shiels             lbw                      b Dehaviland,T        57  5  2
+    W Street             c ?                      b D Lees               0  0  0
+    C Greaves                                     b D Lees               4  1  0
+    I Wade*                                       b N Beaver            31  3  2
+    G Wade                                      c&b Dehaviland,T        14  0  1
+    M Hay+                                        b J Whyatt             5  0  0
+    S Keyworth                                    b J Whyatt             1  0  0
+    P Hewart             c ?                      b Dehaviland,T         1  0  0
+    T Birtwistle         not out                                         8  1  0
+    D Willett            c ?                      b J Whyatt             0  0  0
+      extras                                      (b6 lb5 w6 nb0)       17
+    TOTAL                                         10 wickets for       141
+
+    FOW
+    1-5(A McCheyne) 2-5(W Street) 3-9(C Greaves) 4-66(I Wade) 5-104(G Wade)
+    6-123(M Hay) 7-128(S Keyworth) 8-131(P Hewart) 9-136(J Shiels) 10-141(D Willett)
+
+    Bowler             O     M    R    W   wd  nb
+    Dehaviland,T       11    3    32   3   -   -  
+    D Lees             10    1    36   3   -   -  
+    Sweeting,M         2     0    18   0   -   -  
+    N Beaver           4     0    25   1   -   -  
+    J Whyatt           6     1    19   3   -   -  
+

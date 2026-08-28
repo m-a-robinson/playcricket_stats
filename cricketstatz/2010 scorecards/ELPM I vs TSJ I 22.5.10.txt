@@ -1,0 +1,64 @@
+ELPM 1st XI Vs TSJ 1st XI
+1-Innings Match Played At Croft Lane, ELPM, 22-May-2010, Division 1
+
+ELPM 1st XI Win by 64 runs
+
+Toss won by       ELPM 1st XI
+
+
+ELPM 1st XI 1st Innings 191/10 All Out (Overs 43.1)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    I Wade               c S Marsh                b Meehan,P            13  3  0
+    G Greaves            lbw                      b S Marsh             23  4  0
+    W Street             c Parkinson,C            b A Iqbal             60  8  3
+    J Shiels             lbw                      b A Iqbal              5  1  0
+    M Hay+                                        b A Iqbal              1  0  0
+    G Wade               c Parkinson,C            b A Iqbal             42  5  1
+    S Keyworth*          lbw                      b C Barrett            0  0  0
+    D Willett            st Brooks,C              b Meehan,P            17  2  1
+    C Greaves                                     b A Iqbal             23  2  1
+    D Dwyer              lbw                      b A Iqbal              0  0  0
+    B Birtwistle         not out                                         1  0  0
+      extras                                      (b0 lb5 w1 nb0)        6
+    TOTAL                                         10 wickets for       191
+
+    FOW
+    1-24(I Wade) 2-64(G Greaves) 3-98(J Shiels) 4-103(W Street) 5-110(M Hay)
+    6-120(S Keyworth) 7-165(D Willett) 8-176(G Wade) 9-181(D Dwyer) 10-191(C Greaves)
+
+    Bowler             O     M    R    W   wd  nb
+    Meehan,P           10    1    29   2   -   -  
+    A Parkinson        5     0    34   0   -   -  
+    Brooks,R           4     0    26   0   -   -  
+    S Marsh            7     1    36   1   -   -  
+    A Iqbal            12.1  3    26   6   -   -  
+    C Barrett          4     1    28   1   -   -  
+    Butterworth,N      1     0    7    0   -   -  
+
+TSJ 1st XI 1st Innings 127/10 All Out (Overs 28.3)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Coe,K                c J Shiels               b D Willett            0  0  0
+    A Parkinson          c G Wade                 b I Wade               6  0  0
+    Brooks,R             c J Shiels               b W Street            12  0  0
+    Meehan,P             c B Birtwistle           b W Street            17  0  0
+    S Marsh              c C Greaves              b W Street             8  0  0
+    C Barrett                                     b I Wade              40  0  0
+    Skundric,P           lbw                      b W Street             4  0  0
+    Butterworth,N        run out M Hay/W Street                          2  0  0
+    Parkinson,C          c D Dwyer                b I Wade               7  0  0
+    A Iqbal              c I Wade                 b B Birtwistle        15  0  0
+    Brooks,C             not out                                         0  0  0
+      extras                                      (b0 lb5 w8 nb3)       16
+    TOTAL                                         10 wickets for       127
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    D Willett          2     0    29   1   5   -  
+    I Wade             10    3    38   3   -   1  
+    W Street           9     1    32   4   -   -  
+    G Greaves          4     1    16   0   -   -  
+    S Keyworth         2     0    9    0   -   -  
+    B Birtwistle       1.3   0    8    1   1   -  
+

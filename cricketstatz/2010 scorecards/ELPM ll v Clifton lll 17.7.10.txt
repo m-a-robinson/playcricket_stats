@@ -1,0 +1,56 @@
+Clifton Vs ELPM 2nd XI
+1-Innings Match Played At Croft Lane, ELPM, 10-Jul-2010, Division 2
+
+Clifton Win by 114 runs
+
+Toss won by       Clifton
+
+
+Clifton 1st Innings 191/7 Closed (Overs 45)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    P Royle              lbw                      b S Keyworth          61  0  0
+    J Unwin                                       b S Keyworth          40  0  0
+    M Ferry              st N Warne               b M Young             15  0  0
+    T Hubber             c A Berry                b M Young              0  0  0
+    A Lord               c D Dwyer                b M Young              3  0  0
+    D Rogers             c ?                      b M Young             16  0  0
+    S Brown              c D Dwyer                b S Keyworth          19  0  0
+    J Barton             not out                                        13  0  0
+    M Unwin              not out                                         0  0  0
+      extras                                      (b16 lb1 w7 nb0)      24
+    TOTAL                                         7 wickets for        191
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0
+
+    Bowler             O     M    R    W   wd  nb
+    A Berry            7     1    34   0   3   -  
+    S Dwyer            8     1    26   0   2   -  
+    M Young            18    0    73   4   2   -  
+    S Keyworth         12    1    41   3   -   -  
+
+ELPM 2nd XI 1st Innings 77/10 All Out (Overs 20)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    D Dwyer              c ?                      b A Lord               8  0  1
+    R Moore              c ?                      b M Ferry              9  2  0
+    S Dwyer              c ?                      b A Lord               9  2  0
+    S Keyworth           c ?                      b A Lord               4  1  0
+    A Berry                                       b S Eccles            29  5  0
+    D Scott                                       b A Lord               2  0  0
+    A Redford            c ?                      b A Lord               0  0  0
+    M Young              c ?                      b M Ferry              2  0  0
+    C Eden               c ?                      b S Eccles             0  0  0
+    D Hadcroft           c ?                      b S Eccles             4  0  0
+    N Warne*+            not out                                         0  0  0
+      extras                                      (b5 lb3 w2 nb0)       10
+    TOTAL                                         10 wickets for        77
+
+    FOW
+    1-17(D Dwyer) 2-18(R Moore) 3-31(S Keyworth) 4-31(S Dwyer) 5-41(D Scott)
+    6-43(A Redford) 7-48(M Young) 8-53(C Eden) 9-77(D Hadcroft) 10-77(A Berry)
+
+    Bowler             O     M    R    W   wd  nb
+    A Lord             10    0    35   5   -   -  
+    M Ferry            7     0    26   2   -   -  
+    S Eccles           3     0    8    3   -   -  
+

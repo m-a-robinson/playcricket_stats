@@ -1,0 +1,59 @@
+TSJ 1st XI Vs ELPM 1st XI
+1-Innings Match Played At TSJ, 31-Jul-2010, Division 1
+
+TSJ 1st XI Win by 97 runs
+
+Toss won by       TSJ 1st XI
+
+
+TSJ 1st XI 1st Innings 181/10 All Out (Overs 44.4)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    D Phillips           c C Greaves              b I Wade              15  0  0
+    A Parkinson          lbw                      b P Hewart            24  0  0
+    Brooks,R                                      b W Street            61  0  0
+    Meehan,P                                      b P Hewart             0  0  0
+    Skundric,P           c P Partington           b I Wade              15  0  0
+    C Barrett            c P Partington           b D Willett           12  0  0
+    A Iqbal                                     c&b I Wade               5  0  0
+    S Marsh                                       b P Hewart            36  0  0
+    Parkinson,C          c P Partington           b D Willett            4  0  0
+    M Marsh              c P Partington           b P Hewart             5  0  0
+    Brooks,C+            not out                                         1  0  0
+      extras                                      (b2 lb0 w0 nb1)        3
+    TOTAL                                         10 wickets for       181
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    P Hewart           16    2    62   4   -   -  
+    I Wade             14    6    35   3   -   -  
+    W Street           8     0    37   1   -   -  
+    D Willett          6.4   0    50   2   -   1  
+
+ELPM 1st XI 1st Innings 84/10 All Out (Overs 23.3)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    C Holt                                        b A Iqbal             10  1  0
+    P Partington+                                 b A Iqbal             10  1  0
+    C Greaves            lbw                      b C Barrett           23  3  0
+    W Street                                      b A Iqbal              0  0  0
+    I Wade*                                       b A Iqbal             24  3  1
+    G Wade               c ?                      b S Marsh             10  1  0
+    P Hewart             c ?                      b Brooks,R             7  1  0
+    A Wilkinson                                   b S Marsh              0  0  0
+    D Willett            not out                                         0  0  0
+    D Pearson            c ?                      b Brooks,R             0  0  0
+    L Withington                                  b S Marsh              0  0  0
+      extras                                      (b0 lb0 w0 nb0)        0
+    TOTAL                                         10 wickets for        84
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    A Iqbal            10    0    35   4   -   -  
+    Meehan,P           4     1    12   0   -   -  
+    Brooks,R           2     1    6    2   -   -  
+    S Marsh            1.3   1    0    3   -   -  
+    C Barrett          6     0    40   1   -   -  
+

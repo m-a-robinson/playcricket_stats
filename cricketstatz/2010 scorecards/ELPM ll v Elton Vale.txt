@@ -1,0 +1,61 @@
+EV 2nd XI Vs ELPM 2nd XI
+1-Innings Match Played At Croft Lane, ELPM, 19-Jun-2010, Division 2
+
+EV 2nd XI Win by 1 runs
+
+Toss won by       EV 2nd XI
+
+
+EV 2nd XI 1st Innings 188/10 All Out (Overs 39.4)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Baker,B              c C Holt                 b M Young             11  0  0
+    K Hothersall         st N Warne               b M Young              7  0  0
+    A Shaffiq            c B Birtwistle           b S Dwyer              4  0  0
+    E Naylor                                      b S Dwyer              1  0  0
+    Keyworth,C           c N Warne                b M Young              0  0  0
+    M Jhagir             c N Warne                b M Young              4  0  0
+    B McEaney            lbw                      b B Birtwistle        36  0  0
+    Duffel,M                                    c&b M Young             59  0  0
+    M Hanif                                       b A Berry             11  0  0
+    D Hawkworth          not out                                         1  0  0
+    M Majid              lbw                      b S Dwyer             52  0  0
+      extras                                      (b2 lb0 w0 nb0)        2
+    TOTAL                                         10 wickets for       188
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    M Young            17    2    71   5   -   -  
+    S Dwyer            9.4   3    35   3   -   -  
+    A Berry            10    2    55   1   -   -  
+    B Birtwistle       3     0    25   1   -   -  
+
+ELPM 2nd XI 1st Innings 187/8 Closed (Overs 45)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    D Dwyer              c ?                      b Keyworth,C          22  2  1
+    A Redford                                   c&b M Jhagir            15  3  0
+    S Dwyer                                       b M Jhagir            12  1  0
+    A Berry                                       b Baker,B             10  1  0
+    D Scott                                       b M Jhagir             6  0  0
+    N Warne*+                                     b M Majid             21  2  1
+    A Greenwood          c ?                      b K Hothersall        39  4  2
+    C Holt                                        b M Jhagir            30  3  1
+    D Hadcroft           not out                                         2  0  0
+    M Young              dnb                                             -
+    B Birtwistle         dnb                                             -
+      extras                                      (b18 lb3 w5 nb4)      30
+    TOTAL                                         8 wickets for        187
+
+    FOW
+    1-35(D Dwyer) 2-61(A Redford) 3-70(S Dwyer) 4-86(A Berry) 5-88(D Scott)
+    6-123(N Warne) 7-167(C Holt) 8-187(A Greenwood)
+
+    Bowler             O     M    R    W   wd  nb
+    Keyworth,C         6     0    31   1   -   -  
+    M Majid            10    1    28   1   -   -  
+    Duffel,M           3     0    12   0   -   -  
+    M Jhagir           12    2    17   4   -   -  
+    Baker,B            9     0    44   1   -   -  
+    K Hothersall       5     0    34   1   -   -  
+

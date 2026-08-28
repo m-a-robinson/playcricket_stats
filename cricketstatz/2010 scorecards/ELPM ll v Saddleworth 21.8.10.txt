@@ -1,0 +1,58 @@
+SD 3rd XI Vs ELPM 2nd XI
+1-Innings Match Played At Croft Lane, ELPM, 21-Aug-2010, Division 2
+
+SD 3rd XI Win by 50 runs
+
+Toss won by       SD 3rd XI
+
+
+SD 3rd XI 1st Innings 148/9 Closed (Overs 45)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    J Lawrence                                    b M Young              0  0  0
+    R Smalley            lbw                      b S Dwyer             15  0  0
+    R Mcnamara                                    b M Young             30  0  0
+    P Cullen             lbw                      b M Young              6  0  0
+    S Mellor             st N Warne               b M Young              8  0  0
+    B Corbett            st N Warne               b M Young              0  0  0
+    D Ward               c T Birtwistle           b J Bailey            24  0  0
+    J McNamara           st N Warne               b M Young             29  0  0
+    K Dooley             c A Lomax                b S Dwyer             23  0  0
+    P Bates              not out                                         2  0  0
+      extras                                      (b4 lb1 w4 nb2)       11
+    TOTAL                                         9 wickets for        148
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0
+
+    Bowler             O     M    R    W   wd  nb
+    M Young            22    4    74   6   3   -  
+    S Dwyer            14    5    25   2   1   -  
+    S Keyworth         7     1    32   0   2   -  
+    J Bailey           2     0    12   1   -   -  
+
+ELPM 2nd XI 1st Innings 98/10 All Out (Overs 35)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    D Dwyer              run out                                         0  0  0
+    J Bailey             c ?                      b P Bates             19  2  0
+    A Lomax                                       b J McNamara          12  1  0
+    S Keyworth           st ?                     b D Ward              29  4  1
+    S Dwyer                                       b K Dooley             4  0  0
+    A Wilkinson          c ?                      b D Ward               4  1  0
+    N Warne*+            not out                                         4  0  0
+    T Birtwistle         c ?                      b D Ward              16  3  0
+    D Hadcroft           c ?                      b D Ward               0  0  0
+    M Young                                       b K Dooley             0  0  0
+    L Withington                                  b K Dooley             4  0  0
+      extras                                      (b4 lb1 w1 nb0)        6
+    TOTAL                                         10 wickets for        98
+
+    FOW
+    1-1(D Dwyer) 2-31(J Bailey) 3-35(A Lomax) 4-70(S Keyworth) 5-74(A Wilkinson)
+    6-74(S Dwyer) 7-93(T Birtwistle) 8-93(D Hadcroft) 9-94(M Young) 10-98(L Withington)
+
+    Bowler             O     M    R    W   wd  nb
+    J McNamara         11    4    25   1   -   -  
+    P Bates            10    1    24   1   -   -  
+    D Ward             7     1    22   4   -   -  
+    K Dooley           7     0    22   3   -   -  
+

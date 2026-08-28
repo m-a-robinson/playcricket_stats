@@ -1,0 +1,58 @@
+ELPM 1st XI Vs WLM 1st XI
+1-Innings Match Played At West Leigh Meths, 03-Jul-2010, Division 1
+
+   
+
+Toss won by       ELPM 1st XI
+
+
+ELPM 1st XI 1st Innings 132/10 All Out (Overs 30.2)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    C Holt               c ?                      b Ralph,S              0  0  0
+    A McCheyne           c ?                      b Ralph,S              5  1  0
+    D Willett            c ?                      b P Marsden            0  0  0
+    W Street                                    c&b Ralph,S              4  0  0
+    G Greaves            c ?                      b D Patel             42  8  1
+    I Wade               c ?                      b Ralph,S              5  1  0
+    C Greaves            lbw                      b Taylor,J            16  2  0
+    M Hay+               c ?                      b Ralph,S             15  2  0
+    D Dwyer              c ?                      b D Patel             20  2  0
+    S Keyworth*                                 c&b Taylor,J             2  0  0
+    L Withington         not out                                         9  2  0
+      extras                                      (b11 lb1 w2 nb0)      14
+    TOTAL                                         10 wickets for       132
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    Ralph,S            9.2   3    44   5   -   -  
+    P Marsden          5     0    33   1   -   -  
+    D Patel            9     3    16   2   -   -  
+    Taylor,J           7     1    27   2   -   -  
+
+WLM 1st XI 1st Innings 133/5 Closed (Overs 24.4)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Lloyd,K              c A McCheyne             b G Greaves           64  0  0
+    Turner,A                                      b I Wade               1  0  0
+    Ralph,S              c D Dwyer                b W Street            23  0  0
+    D Patel              c I Wade                 b G Greaves            1  0  0
+    P Marsden            lbw                      b W Street             1  0  0
+    Taylor,J             not out                                        17  0  0
+    S German             not out                                        20  0  0
+      extras                                      (b2 lb3 w1 nb0)        6
+    TOTAL                                         5 wickets for        133
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0
+
+    Bowler             O     M    R    W   wd  nb
+    I Wade             5     2    22   1   -   -  
+    D Willett          3     0    23   0   -   -  
+    W Street           8     1    30   2   -   -  
+    S Keyworth         2     0    17   0   -   -  
+    C Greaves          1     0    10   0   -   -  
+    G Greaves          4     1    11   2   -   -  
+    D Dwyer            1     0    5    0   -   -  
+    C Holt             .4    0    8    0   -   -  
+

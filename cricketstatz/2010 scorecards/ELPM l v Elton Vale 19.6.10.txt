@@ -1,0 +1,57 @@
+ELPM 1st XI Vs EV 1st XI
+1-Innings Match Played At Elton Vale, 19-Jun-2010, Division 1
+
+EV 1st XI Win by 9 wkts
+
+Toss won by       ELPM 1st XI
+
+
+ELPM 1st XI 1st Innings 87/10 All Out (Overs 32)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    J Bailey                                      b Aslam,A             31  4  0
+    I Wade                                        b Ali,A                0  0  0
+    J Shiels             lbw                      b Ikram,M              0  0  0
+    G Greaves                                     b Ikram,M              4  0  0
+    W Street                                      b Ali,A                0  0  0
+    A McCheyne           c ?                      b Aslam,A              7  1  0
+    M Hay+               c ?                      b A Ashraf             4  1  0
+    G Wade                                        b A Ashraf            21  3  0
+    D Willett            c ?                      b M Zakir              9  0  1
+    S Keyworth*                                   b M Zakir              2  0  0
+    D Pearson            not out                                         1  0  0
+      extras                                      (b8 lb0 w0 nb0)        8
+    TOTAL                                         10 wickets for        87
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    Ikram,M            7     2    10   2   -   -  
+    Ali,A              2     1    2    2   -   -  
+    M Aslam            9     2    21   2   -   -  
+    A Ashraf           4     0    19   2   -   -  
+    Iqbal,A            4     1    11   0   -   -  
+    A Khan             4     0    14   0   -   -  
+    M Zakir            2     1    2    2   -   -  
+
+EV 1st XI 1st Innings 91/1 Closed (Overs 18.2)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Hussein,A            c G Greaves              b I Wade              16  0  0
+    M Masood             not out                                        53  0  0
+    A Khan               not out                                        19  0  0
+      extras                                      (b0 lb1 w2 nb0)        3
+    TOTAL                                         1 wickets for         91
+
+    FOW
+    1-0
+
+    Bowler             O     M    R    W   wd  nb
+    I Wade             6     1    22   1   -   -  
+    D Willett          3     0    12   0   -   -  
+    W Street           3     0    16   0   -   -  
+    G Greaves          1     0    1    0   -   -  
+    J Shiels           2     0    8    0   -   -  
+    D Pearson          2     0    17   0   2   -  
+    G Wade             1     0    10   0   -   -  
+    J Bailey           .2    0    4    0   -   -  
+

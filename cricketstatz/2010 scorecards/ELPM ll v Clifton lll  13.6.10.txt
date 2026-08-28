@@ -1,0 +1,63 @@
+ELPM 1st XI Vs TSJ 1st XI
+1-Innings Match Played At Croft Lane, ELPM, 23-Apr-2005, Division 1
+
+TSJ 1st XI Win by 65 runs
+
+Toss won by       TSJ 1st XI
+
+
+TSJ 1st XI 1st Innings 164/10 All Out (Overs 44.2)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Meehan,P                                      b Dalton,S            34  3  1
+    Deegan,M                                      b S Carr               6  1  0
+    Brooks,R                                      b S Keyworth          41  3  4
+    Butterworth,N        c I Wade                 b S Keyworth          23  4  0
+    Skundric,P           lbw                      b Dalton,S             3  0  0
+    Brooks,C+                                     b S Keyworth          20  2  0
+    Peacock,R            run out M Hodson                               15  3  0
+    Parkinson,C          c G Greaves              b S Keyworth           0  0  0
+    Smith,S              st Robinson,M            b S Keyworth          13  1  1
+    Duckworth,P          lbw                      b M Hodson             0  0  0
+    Cotton,M             not out                                         0  0  0
+      extras                                      (b0 lb5 w2 nb2)        9
+    TOTAL                                         10 wickets for       164
+
+    FOW
+    1-14(Deegan,M) 2-72(Brooks,R) 3-88(Meehan,P) 4-92(Skundric,P) 5-119(Butterworth,N)
+    6-138(Brooks,C) 7-138(Parkinson,C) 8-159(Peacock,R) 9-160(Duckworth,P)
+    10-164(Smith,S)
+
+    Bowler             O     M    R    W   wd  nb
+    S Carr             7     3    20   1   -   -  
+    M Hodson           9     0    36   1   2   -  
+    P Hewart           4     0    20   0   -   1  
+    S Keyworth         15.2  3    44   5   -   -  
+    Dalton,S           9     2    39   2   -   1  
+
+ELPM 1st XI 1st Innings 99/10 All Out (Overs 31)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    F Daly                                        b Meehan,P            10  1  1
+    J Shiels*                                     b Meehan,P             9  2  0
+    P Partington                                  b Meehan,P             0  0  0
+    I Wade               c Smith,S                b Brooks,R            11  1  0
+    S Keyworth           lbw                      b Meehan,P            27  0  3
+    M Hodson                                      b Meehan,P             4  0  0
+    G Greaves                                     b Butterworth,N       11  0  1
+    Dalton,S                                      b Meehan,P             0  0  0
+    S Carr                                        b Meehan,P            10  2  0
+    P Hewart             c Duckworth,P            b Butterworth,N        2  0  0
+    Robinson,M+          not out                                         8  2  0
+      extras                                      (b0 lb4 w3 nb0)        7
+    TOTAL                                         10 wickets for        99
+
+    FOW
+    1-11(F Daly) 2-11(P Partington) 3-22(J Shiels) 4-54(I Wade) 5-63(M Hodson)
+    6-67(S Keyworth) 7-68(Dalton,S) 8-87(S Carr) 9-90(P Hewart) 10-99(G Greaves)
+
+    Bowler             O     M    R    W   wd  nb
+    Cotton,M           2     0    19   0   -   -  
+    Meehan,P           14    4    19   7   -   -  
+    Brooks,R           11    1    47   1   2   -  
+    Butterworth,N      3     1    2    2   1   -  
+    Skundric,P         1     0    8    0   -   -  
+

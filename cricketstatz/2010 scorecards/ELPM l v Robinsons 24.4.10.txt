@@ -1,0 +1,59 @@
+ELPM 1st XI Vs Rob 1st XI
+1-Innings Match Played At Croft Lane, ELPM, 24-Apr-2010, Division 1
+
+ELPM 1st XI Win by 6 wkts
+
+Toss won by       Rob 1st XI
+Player / Match    ELPM:Street, Willy
+Points Awarded    Rob 1st XI 0, ELPM 1st XI 4
+
+
+Rob 1st XI 1st Innings 158/6 Closed (Overs 45)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Massey,M             c T Birtwistle           b S Keyworth           8  0  0
+    Lamb,K               c T Birtwistle           b D Willett            5  0  0
+    Glover,J             c C Holt                 b D Willett            2  0  0
+    D Holmes             c D Dwyer                b W Street            32  0  0
+    H Munir              not out                                        61  0  0
+    P Stott                                       b W Street             0  0  0
+    M O'Shea                                      b G Greaves            2  0  0
+    B Metcalfe           not out                                        21  0  0
+      extras                                      (b14 lb4 w9 nb0)      27
+    TOTAL                                         6 wickets for        158
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0
+
+    Bowler             O     M    R    W   wd  nb
+    S Keyworth         6     3    15   1   -   -  
+    D Willett          6     1    18   2   -   -  
+    G Greaves          17    2    57   1   -   -  
+    W Street           16    2    50   2   -   -  
+
+ELPM 1st XI 1st Innings 164/4 Closed (Overs 27.5)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    C Holt                                        b Glover,J            11  2  0
+    J Bailey             c ?                      b P Stott              0  0  0
+    A McCheyne           c ?                      b Massey,M            29  4  0
+    G Greaves            c ?                      b Glover,J            35  6  0
+    W Street             not out                                        60  8  3
+    S Keyworth*          not out                                         9  1  0
+    D Willett            dnb                                             -
+    D Dwyer              dnb                                             -
+    A Birtwistle         dnb                                             -
+    D Pearson            dnb                                             -
+    T Birtwistle+        dnb                                             -
+      extras                                      (b4 lb2 w5 nb9)       20
+    TOTAL                                         4 wickets for        164
+
+    FOW
+    1-0(J Bailey) 2-11(C Holt) 3-29(A McCheyne) 4-35(G Greaves)
+
+    Bowler             O     M    R    W   wd  nb
+    P Stott            7     1    30   1   -   -  
+    Glover,J           8     0    57   2   -   -  
+    H Munir            5     0    25   0   -   -  
+    Massey,M           6     0    31   1   -   -  
+    R Holmes           1     0    2    0   -   -  
+    M O'Shea           .5    0    13   0   -   -  
+

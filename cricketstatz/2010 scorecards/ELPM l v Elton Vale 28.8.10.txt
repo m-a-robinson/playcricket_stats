@@ -1,0 +1,60 @@
+EV 1st XI Vs ELPM 1st XI
+1-Innings Match Played At Croft Lane, ELPM, 28-Aug-2010, Division 1
+
+   
+
+Toss won by       EV 1st XI
+
+
+EV 1st XI 1st Innings 295/4 Declared (Overs 34.2)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Ali,A                c G Wade                 b I Wade               0  0  0
+    Z Ali                c D Willett              b J Bailey            59  8  3
+    Ashfaq,M             c G Wade                 b I Wade              81  9  4
+    M Hanif              not out                                       104  8 11
+    M Jhagir                                      b S Keyworth           4  1  0
+    A Asad               not out                                        41  4  2
+      extras                                      (b5 lb0 w1 nb0)        6
+    TOTAL                                         4 wickets for        295
+
+    FOW
+    1-0 2-0 3-0 4-0
+
+    Bowler             O     M    R    W   wd  nb
+    I Wade             5     2    38   2   -   -  
+    D Willett          5     0    58   0   -   -  
+    J Shiels           4     0    29   0   1   -  
+    J Bailey           3     0    28   1   -   -  
+    G Greaves          3     0    27   0   -   -  
+    W Street           6     0    34   0   -   -  
+    A Birtwistle       1     0    13   0   -   -  
+    G Wade             2.2   0    18   0   -   -  
+    S Keyworth         5     0    41   1   -   -  
+
+ELPM 1st XI 1st Innings 33/3 Abandoned (Overs 18.2)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    J Shiels                                      b Ali,A                0  0  0
+    J Bailey                                      b Ali,A                5  1  0
+    A McCheyne           not out                                        15  3  0
+    G Greaves            c ?                      b M Aslam              8  2  0
+    W Street             not out                                         3  0  0
+    I Wade               dnb                                             -
+    G Wade               dnb                                             -
+    S Keyworth           dnb                                             -
+    D Willett            dnb                                             -
+    A Birtwistle         dnb                                             -
+    C Greaves            dnb                                             -
+      extras                                      (b1 lb0 w1 nb0)        2
+    TOTAL                                         3 wickets for         33
+
+    FOW
+    1-4(J Shiels) 2-7(J Bailey) 3-17(G Greaves)
+
+    Bowler             O     M    R    W   wd  nb
+    Ali,A              6     4    3    2   1   -  
+    Ikram,M            3     2    4    0   -   -  
+    A Ashraf           3     2    8    0   -   -  
+    M Aslam            3.2   0    15   1   -   -  
+    M Jhagir           2     1    1    0   -   -  
+    A Asad             1     0    1    0   -   -  
+

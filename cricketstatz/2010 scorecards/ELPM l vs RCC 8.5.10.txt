@@ -1,0 +1,61 @@
+RCC 1st XI Vs ELPM 1st XI
+1-Innings Match Played At Croft Lane, ELPM, 15-May-2010, Division 1
+
+RCC 1st XI Win by 97 runs
+
+Toss won by       RCC 1st XI
+
+
+RCC 1st XI 1st Innings 194/10 All Out (Overs 39.4)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    Dell,J               c M Hay                  b I Simpson            0  0  0
+    Mulkeen Snr,D                                 b S Keyworth          57  0  0
+    Mulkeen Jnr,D        c M Hay                  b I Simpson            6  0  0
+    D Ahmed                                       b D Willett           44  0  0
+    M Shahid                                      b D Willett           29  0  0
+    Z Munir              run out D Willett/M Hay                         3  0  0
+    Shah,S               c M Hay                  b W Street            18  0  0
+    W Khan               lbw                      b I Wade               3  0  0
+    Willmore,M           not out                                         4  0  0
+    Tayab,M              c J Shiels               b G Wade               9  0  0
+    Kahn,Z               run out T Birtwistle/M H.                       0  0  0
+      extras                                      (b6 lb1 w12 nb2)      21
+    TOTAL                                         10 wickets for       194
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    I Simpson          7     2    26   2   4   -  
+    I Wade             9     0    41   1   1   1  
+    S Keyworth         11    3    36   1   1   -  
+    G Greaves          2     0    26   0   -   -  
+    D Willett          7     1    44   2   -   1  
+    W Street           3     0    14   1   -   -  
+    G Wade             .4    0    0    1   -   -  
+
+ELPM 1st XI 1st Innings 97/10 All Out (Overs 30.4)
+    Batsman              Fieldsman                Bowler              Runs 4s 6s
+    J Shiels             lbw                      b Tayab,M             11  1  0
+    C Holt               c ?                      b W Khan               1  0  0
+    I Wade               c ?                      b W Khan              10  1  1
+    W Street             c ?                      b Tayab,M              5  1  0
+    G Greaves            c ?                      b Tayab,M             14  2  0
+    G Wade               c ?                      b Tayab,M              6  1  0
+    S Keyworth*          lbw                      b Tayab,M              0  0  0
+    M Hay+               not out                                        34  3  2
+    D Willett            c ?                      b Tayab,M              0  0  0
+    I Simpson            c ?                      b Shah,S               1  0  0
+    T Birtwistle         c ?                      b Kahn,Z               1  0  0
+      extras                                      (b5 lb3 w2 nb4)       14
+    TOTAL                                         10 wickets for        97
+
+    FOW
+    1-0 2-0 3-0 4-0 5-0 6-0 7-0 8-0 9-0 10-0
+
+    Bowler             O     M    R    W   wd  nb
+    Tayab,M            14    5    32   6   -   -  
+    W Khan             10    3    21   2   -   -  
+    Shah,S             5     3    17   1   -   -  
+    Kahn,Z             1.4   0    12   1   -   -  
+
