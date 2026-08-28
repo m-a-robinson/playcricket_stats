@@ -33,16 +33,7 @@
     align-items: center;
     gap: 6mm;
   }
-  .crest {
-    width: 20mm; height: 22mm;
-    flex: none;
-    background: var(--gold);
-    border: 1.5mm solid var(--cream);
-    clip-path: polygon(50% 0%, 100% 15%, 100% 65%, 50% 100%, 0% 65%, 0% 15%);
-    display: flex; align-items: center; justify-content: center;
-    font-family: Arial, sans-serif; font-weight: 700; font-size: 5.5pt;
-    color: var(--maroon); text-align: center; line-height: 1.1;
-  }
+  .crest { width: 18mm; height: auto; flex: none; display: block; }
   .header-text { flex: 1; }
   .club-name { font-family: Arial, sans-serif; letter-spacing: 0.12em; font-size: 9pt; text-transform: uppercase; color: var(--gold); }
   .match-title { font-size: 20pt; font-weight: 700; margin: 1mm 0; }
@@ -95,7 +86,7 @@
 <body>
   <div class="sheet">
     <div class="header">
-      <div class="crest">ELPMCC<br>1930</div>
+      <img class="crest" src="../assets/elpmcc2025.svg" alt="ELPMCC crest">
       <div class="header-text">
         <div class="club-name">East Lancs Paper Mill CC</div>
         <div class="match-title">{{ match.title }}</div>

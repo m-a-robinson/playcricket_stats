@@ -14,11 +14,8 @@ considered" below.)
 
 - `palette.md` / `palette.json` / `elpmcc.css` — the 7-colour ELPMCC
   brand palette extracted from `ELPM_Website_Colours_2025.pdf`.
-- `assets/` — club crest and other brand assets. **Currently empty** —
-  the crest was shared inline in chat rather than as an attachable
-  file; re-upload it as a PNG or (ideally) SVG and it belongs here as
-  `assets/elpmcc_logo.png` / `.svg`. Every template below draws a
-  CSS placeholder shield in its place until then.
+- `assets/` — the ELPMCC crest (`elpmcc2025.svg`, plus PNG exports at
+  a few sizes). All three templates below reference the SVG directly.
 - `templates/` — the three Jinja2/HTML templates, one per roadmap
   concept:
   - `scorecard_poster.html` — A4 portrait, for printing/framing a
@@ -89,7 +86,6 @@ sized for direct posting.
   output for this preview).
 - Milestone-triggered generation (README roadmap item 6: "triggerable
   on milestone detection").
-- The real crest asset (see `assets/` above).
 - A weekend round-up variant of the social card (currently one-match
   result + top two performances; a multi-fixture round-up would need
   its own layout).

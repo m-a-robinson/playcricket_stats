@@ -24,12 +24,7 @@
 
   .top { background: var(--maroon); padding: 16mm 18mm 12mm; position: relative; flex: none; }
   .crest {
-    width: 24mm; height: 26mm; background: var(--gold);
-    border: 1.5mm solid var(--cream);
-    clip-path: polygon(50% 0%, 100% 15%, 100% 65%, 50% 100%, 0% 65%, 0% 15%);
-    display: flex; align-items: center; justify-content: center;
-    font-family: Arial, sans-serif; font-weight: 700; font-size: 6pt;
-    color: var(--maroon); text-align: center; line-height: 1.1;
+    width: 22mm; height: auto;
     position: absolute; top: 16mm; right: 18mm;
   }
   .eyebrow { font-family: Arial, sans-serif; letter-spacing: 0.15em; text-transform: uppercase; font-size: 9pt; color: var(--gold); }
@@ -70,7 +65,7 @@
 <body>
   <div class="sheet">
     <div class="top">
-      <div class="crest">ELPMCC<br>1930</div>
+      <img class="crest" src="../assets/elpmcc2025.svg" alt="ELPMCC crest">
       <div class="eyebrow">Career record</div>
       <div class="player-name">{{ player.name }}</div>
       <div class="player-sub">{{ player.summary }}</div>
