@@ -1025,15 +1025,17 @@ players:
         name: Greaves,C
     reason: Confirmed by the user as the same person across sources.
   - canonical_name: Mark Dawes
-    decided: '2026-08-27'
+    decided: '2026-08-28'
     refs:
-      - source: play_cricket
-        id: '6596756'
-        name: Max Dawes
       - source: cricketstatz
         id: '84'
         name: Dawes,M
-    reason: Confirmed by the user as the same person across sources.
+    reason: >
+      Rename only, not a merge -- the user confirmed Max Dawes
+      (play_cricket, 2025) and Mark Dawes (this cricketstatz row,
+      2005) are two different real people, despite the similar name
+      and shared surname. An earlier turn wrongly merged them; split
+      back apart here.
   - canonical_name: Dave Thompson
     decided: '2026-08-27'
     refs:
