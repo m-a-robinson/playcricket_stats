@@ -1,0 +1,13 @@
+{
+  "name": "ELPMCC Final 6",
+  "source": "ELPM_Website_Colours_2025.pdf",
+  "colours": {
+    "maroon": { "hex": "#5B0422", "role": "primary / shield border / headings" },
+    "gold": { "hex": "#F4B22F", "role": "accent / shield quarters / highlights" },
+    "grey_light": { "hex": "#D1D1D1", "role": "neutral background / rules" },
+    "grey_mid": { "hex": "#9F9F9F", "role": "secondary text / borders" },
+    "cream": { "hex": "#FBE8C0", "role": "warm background / shield field" },
+    "navy": { "hex": "#084887", "role": "secondary brand / stats accents" },
+    "near_black": { "hex": "#02111B", "role": "body text / dark backgrounds" }
+  }
+}
