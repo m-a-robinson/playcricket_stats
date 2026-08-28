@@ -757,7 +757,19 @@ remains.
   between a not-out top score and one that just wasn't beaten). Blending
   it in without implying false precision, or misleadingly double-counting
   a season that also has real match-level rows, needs its own design
-  pass, not just a UNION.
+  pass, not just a UNION. Verified against a manually-compiled Ian Wade
+  career line (games/runs/wickets cross-checked outside this codebase,
+  with NMCL residuals added by hand): `nmcl_season_stats` itself matches
+  exactly (400 runs in 2003, 403 in 2012, 518 in 2013, 6 wickets in 2010
+  — confirming both that those rows are correctly ingested and that
+  `career()` genuinely doesn't add them in, since the two figures the
+  manual line keeps separate line up with what's in each table). The
+  scorecard-only side of that same comparison is close but not exact —
+  `career()` gives Ian Wade 5,948 runs/264 games at 27.92 (wickets 183
+  and highest score 188 match exactly) against a manually-tallied 5,831
+  runs/265 games at 27.25 — a ~2% gap not yet root-caused; checked and
+  ruled out the obvious suspect (an unmerged crichq_pdf/cricketstatz
+  duplicate around the 2016/2018 transition) but didn't chase it further.
 - Formatted scorecard export (image/PDF) for printing or framing.
 - Social-media formatting for player performances and weekend results.
 - Any CLI/UI entry point — everything today is a library, including the
