@@ -18,6 +18,10 @@ several sources into a single queryable store:
    wicketkeeping figures (scanned pre-2005, native Excel 2011-2013) that
    supplement career stats for seasons with no match-level source, or
    fill in specific matches known to be missing from one.
+6. **Hand-scored scorebook pages** (`scorebooks.py`) — full match-level
+   scorecards that only ever existed on paper, photographed and
+   transcribed by hand (read directly, not OCR'd) when a genuinely
+   missing match turns up this way rather than as any digital record.
 
 Once merged, the goal is to support historical and career stats, records
 queryable by team/season/player, leaderboards, printable/frameable scorecard
@@ -55,14 +59,21 @@ point.
 Since this milestone, investigating a genuine gap the three original
 sources share — **zero match data of any kind for 2010-2013** — led to a
 fourth and fifth source: `cricketstatz_txt.py` (individual CricketStatz
-scorecards, filling 2010 with 37 real matches — **963 matches raw, 934
-once `reconcile.py` applies `duplicate_matches`**) and `nmcl_stats.py`
+scorecards, filling 2010 with 37 real matches) and `nmcl_stats.py`
 (North Manchester Cricket League season averages, supplementing career
 stats — not full scorecards — for 2000-2005 and 2010-2013 where
-match-level data doesn't exist or is confirmed incomplete). 2011-2013
-still have no match-level source at all, only season aggregates; if
-genuine scorecards for those years turn up, the same `cricketstatz_txt.py`
-pipeline would replace the aggregate figures with real per-match data.
+match-level data doesn't exist or is confirmed incomplete). A sixth
+source followed the same way: `scorebooks.py`, transcribing hand-scored
+scorebook pages the user photographed and uploaded, starting with the
+11-Jul-2010 ELPM 1st XI v Failsworth Macedonia CC match (Gavin Greaves
+170, Ian Wade 163, a 339-run 3rd-wicket stand) — a match `nmcl_stats.py`'s
+2010 residual-total rows already knew was missing but couldn't supply
+match-level detail for. That's **964 matches raw, 935 once `reconcile.py`
+applies `duplicate_matches`**. 2011-2013, and the rest of 2010 beyond
+what's now captured, still have no match-level source, only season
+aggregates; if genuine scorecards or scorebook pages for those turn up,
+the same `cricketstatz_txt.py`/`scorebooks.py` pipelines would replace
+the aggregate figures with real per-match data.
 
 Play-Cricket's own history isn't necessarily fully backfilled yet — 2024-2026
 is what's been synced so far; earlier seasons (however far back the club's
@@ -280,6 +291,29 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   real match-level data for those years, if it turns up, would let
   `nmcl_season_stats`' rows for them be replaced with real `matches`/
   `innings` rows instead.
+- **`scorebooks.py`** — A **sixth source**, `source="scorebook"`: full
+  match-level scorecards transcribed by hand from photographs of physical
+  scorebook pages (`scorebooks/*.jpg`) — the club's own paper records,
+  used when a match is confirmed missing from every other source and a
+  scorebook page for it turns up. Unlike `nmcl_stats.py`'s scanned sheets
+  (season aggregates), a scorebook page carries real per-innings batting/
+  bowling/dismissal detail, so it produces the same match-detail dict
+  shape `cricketstatz_txt.py`/`crichq_pdf.py` do and goes through the same
+  `insert_match()` path — no separate table. There is no machine-readable
+  text to parse, so (like `nmcl_stats.py`'s pre-2005 scans) `MATCHES` is a
+  hardcoded, manually-transcribed list rather than something read at
+  runtime; each entry's docstring records which image(s) it came from and
+  the innings-total/bowling-total cross-checks used to catch a misread
+  before trusting it (the same "verify the sums, don't guess" discipline
+  as every other source here) — including one genuine read correction
+  this way: a batsman's dismissal that first looked like "absent" only
+  reconciled against the bowling-wicket arithmetic once read again more
+  carefully. First (and so far only) match: 11-Jul-2010, ELPM 1st XI away
+  to Failsworth Macedonia CC — the scorecard behind Gavin Greaves' 170 and
+  Ian Wade's 163 in a 339-run 3rd-wicket stand, previously missing from
+  every source including `nmcl_stats.py`'s own 2010 residual-total rows
+  (which knew matches were missing but not which innings they contained).
+  Run `python3 scorebooks.py --sqlite-db <path>` after the other sources.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
@@ -674,14 +708,15 @@ remains.
   `career_stats(team_id=...)`/team-level views get real use.
 - The **2010-2013 season blackout** (see "Milestone" above) is now
   partially filled, not fully: 2010 has real match-level data
-  (`cricketstatz_txt.py`, `cricketstatz/2010 scorecards/`), topped up
-  with season-aggregate figures for the confirmed-missing 1st XI matches
-  (`nmcl_stats.py`, derived from the club's official 2010 season
+  (`cricketstatz_txt.py`, `cricketstatz/2010 scorecards/`; plus one
+  further match from a hand-scored scorebook page via `scorebooks.py`),
+  topped up with season-aggregate figures for the still-missing 1st XI
+  matches (`nmcl_stats.py`, derived from the club's official 2010 season
   summaries). 2011-2013 only have NMCL season averages
   (`nmcl_stats.py`, native Excel this time, not scans) — no match-level
   source has turned up for those three years at all. If real scorecards
-  for 2011-2013 are found, `cricketstatz_txt.py`'s pipeline is what
-  would ingest them.
+  or scorebook pages for 2011-2013 are found, `cricketstatz_txt.py`'s or
+  `scorebooks.py`'s pipeline is what would ingest them.
 - `nmcl_season_stats` isn't wired into `career_stats()`/leaderboards at
   all yet — it's pure season-aggregate data with no innings/match
   granularity to blend cleanly against per-match figures (no
@@ -1112,8 +1147,8 @@ PDF/`.MXP`/`.txt`/`.xls`/`.csd` files or `reconcile/decisions.yaml` —
 only the derived `.sqlite` file. So if the database ever ends up in a
 state you don't trust, deleting it and re-running ingestion, in order —
 `sqlite_store.py` (Play-Cricket JSON), `crichq_pdf.py`, `mxp_parser.py`,
-`cricketstatz_txt.py`, `nmcl_stats.py`, then `reconcile.py` last — always
-gets back to the same result. The
+`cricketstatz_txt.py`, `nmcl_stats.py`, `scorebooks.py`, then `reconcile.py`
+last — always gets back to the same result. The
 `.sqlite` file itself doesn't need to be committed to version control —
 treat it as a derived build artifact, the same way `demo.sqlite` is
 throughout the walkthrough above, and keep it out of git.
@@ -1122,7 +1157,7 @@ throughout the walkthrough above, and keep it out of git.
 
 1. **Data foundation** — *Done, and now proven against every original
    source at once* (see the milestone note at the top of this README:
-   963 matches raw / 934 reconciled across five sources, zero
+   964 matches raw / 935 reconciled across six sources, zero
    foreign-key violations, all of them live in the store together, not
    just individually validated). SQLite store built
    (`schema.sql` / `sqlite_store.py`): players, clubs, teams, matches, innings,

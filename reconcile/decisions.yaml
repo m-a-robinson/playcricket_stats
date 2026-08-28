@@ -114,6 +114,9 @@ players:
       - source: cricketstatz_txt
         id: I Wade
         name: I Wade
+      - source: scorebook
+        id: I Wade
+        name: I Wade
     reason: >
       Confirmed the same player across all three sources by season
       overlap and playing career shape (see README roadmap item 4).
@@ -157,6 +160,9 @@ players:
         name: S Keyworth
       - source: nmcl_stats
         id: S KEYWORTH
+        name: S Keyworth
+      - source: scorebook
+        id: S Keyworth
         name: S Keyworth
   - canonical_name: Matty Partington
     refs:
@@ -314,6 +320,9 @@ players:
         id: P HEWART
         name: P Hewart
       - source: cricketstatz_txt
+        id: P Hewart
+        name: P Hewart
+      - source: scorebook
         id: P Hewart
         name: P Hewart
   - canonical_name: Louis Birmingham
@@ -659,6 +668,9 @@ players:
       - source: nmcl_stats
         id: C HOLT
         name: C Holt
+      - source: scorebook
+        id: C Holt
+        name: C Holt
   - canonical_name: Jack Crompton
     refs:
       - source: crichq_pdf
@@ -722,6 +734,9 @@ players:
         name: D Willett
       - source: nmcl_stats
         id: D WILLETT
+        name: D Willett
+      - source: scorebook
+        id: D Willett
         name: D Willett
   - canonical_name: Steve Stubbs
     refs:
@@ -1243,6 +1258,9 @@ players:
       - source: cricketstatz_txt
         id: G Greaves
         name: G Greaves
+      - source: scorebook
+        id: G Greaves
+        name: G Greaves
     reason: Season overlap (2016, 2018) between the two sources -- same 'two systems, same transition era' pattern as other confirmed merges. Confirmed by the user.
   - canonical_name: Andy Hodson
     decided: '2026-08-28'
@@ -1316,6 +1334,9 @@ players:
       - source: cricketstatz
         id: '1214'
         name: L Withington
+      - source: scorebook
+        id: L Withington
+        name: L Withington
     reason: Same name, same season (2016) -- confirmed by the user.
   - canonical_name: Andy Berry
     refs:
@@ -1364,6 +1385,9 @@ players:
         id: '199'
         name: A McCheyne
       - source: cricketstatz_txt
+        id: A McCheyne
+        name: A McCheyne
+      - source: scorebook
         id: A McCheyne
         name: A McCheyne
   - canonical_name: A Redmond
@@ -1547,6 +1571,9 @@ players:
       - source: cricketstatz_txt
         id: J Shiels
         name: J Shiels
+      - source: scorebook
+        id: J Shiels
+        name: J Shiels
   - canonical_name: Adam Jones
     refs:
       - source: cricketstatz
@@ -1598,6 +1625,9 @@ players:
         id: '525'
         name: M Hay
       - source: cricketstatz_txt
+        id: M Hay
+        name: M Hay
+      - source: scorebook
         id: M Hay
         name: M Hay
       - source: nmcl_stats
@@ -1780,6 +1810,9 @@ players:
         name: G Wade
       - source: nmcl_stats
         id: G WADE
+        name: G Wade
+      - source: scorebook
+        id: G Wade
         name: G Wade
     reason: Confirmed by the user.
   - canonical_name: Joe Bailey
@@ -1982,6 +2015,9 @@ clubs:
       - source: cricketstatz_txt
         id: ELPM
         name: ELPM
+      - source: scorebook
+        id: ELPM
+        name: ELPM
     reason: The three existing sources already auto-merged onto one club via the near-exact-name dedup at insert time (no manual entry needed until now). cricketstatz_txt uses the short code "ELPM" instead, which the auto-dedup does not catch -- explicit merge.
   - canonical_name: Ashton Ladysmith CC
     refs:
@@ -2038,6 +2074,21 @@ clubs:
       - source: cricketstatz_txt
         id: RCC
         name: RCC
+  - canonical_name: Failsworth Macedonia CC
+    refs:
+      - source: crichq_pdf
+        id: Failsworth Macedonia CC
+        name: Failsworth Macedonia CC
+      - source: cricketstatz
+        id: '7'
+        name: Failsworth Macedonia CC
+      - source: cricketstatz_txt
+        id: FM
+        name: FM
+      - source: scorebook
+        id: FM
+        name: FM
+    reason: Ground-truth for the 11-Jul-2010 1st XI scorecard (scored by hand, transcribed from scorebooks/) confirms this is the same club as the existing crichq_pdf/cricketstatz "Failsworth Macedonia CC" record.
 teams:
   - canonical_name: Tottington St Johns CC 2nd XI
     refs:
@@ -2093,6 +2144,9 @@ teams:
         id: '1'
         name: ELPM 1st XI
       - source: cricketstatz_txt
+        id: ELPM 1st XI
+        name: ELPM 1st XI
+      - source: scorebook
         id: ELPM 1st XI
         name: ELPM 1st XI
   - canonical_name: Edenfield CC 2nd XI
@@ -2643,6 +2697,18 @@ teams:
       - source: cricketstatz
         id: '35'
         name: RCC 2nd XI
+  - canonical_name: Failsworth Macedonia CC 1st XI
+    refs:
+      - source: cricketstatz
+        id: '8'
+        name: FM 1st XI
+      - source: cricketstatz_txt
+        id: FM 1st XI
+        name: FM 1st XI
+      - source: scorebook
+        id: FM 1st XI
+        name: FM 1st XI
+    reason: Needed for the 11-Jul-2010 hand-scored scorebook match (scorebooks/); merges the cricketstatz_txt short-code team onto the existing cricketstatz team row.
 grounds:
 
   - canonical_name: "ELPMCC, Croft Lane"
@@ -2660,6 +2726,12 @@ grounds:
       at all for any match -- see ground_overrides below for how this
       entry fills that gap for East Lancs Paper Mill CC's own home
       matches specifically.
+
+  - canonical_name: "Failsworth Macedonia"
+    refs:
+      - {source: cricketstatz, id: "5", name: "Failsworth Macedonia"}
+      - {source: scorebook, id: "Failsworth M", name: "Failsworth M"}
+    reason: Same ground -- the scorebook page's own header abbreviates it "Failsworth M".
 
 # ==================================================================
 # CLUB HOME GROUNDS
