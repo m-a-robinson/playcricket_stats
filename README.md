@@ -23,14 +23,24 @@ once, end to end: the **complete Play-Cricket history currently reachable**
 (seasons 2024-2026, live-synced via the API and kept that way — see
 "Maintaining the database"), the **complete CricHQ PDF archive** (2016 and
 2018-2023), and the **complete CricketStatz archive** (2005-2018). That's
-**933 matches across all three sources** (248 Play-Cricket + 304 CricketStatz
-+ 381 CricHQ) built into one normalised SQLite store with **zero
-foreign-key violations**. Roadmap items 1-3 below (data foundation, CricHQ
-ingestion, CricketStatz ingestion) are accordingly all *Done*, together, not
-just individually — this is the point the project moves from "get the data
-in" to "make the data trustworthy": reconciling identity across sources
-(roadmap item 4, in progress — see `reconcile_audit.py`) and, beyond that,
-the actual stats/exports the project exists for (roadmap items 5-8).
+**926 matches across all three sources** (248 Play-Cricket + 304 CricketStatz
++ 374 CricHQ, the latter down from an earlier 381 once seven genuinely
+content-free abandoned-match placeholders were fixed to be skipped rather
+than ingested as empty rows — see `crichq_pdf.py`'s bullet below) built into
+one normalised SQLite store with **zero foreign-key violations**. Roadmap
+items 1-3 below (data foundation, CricHQ ingestion, CricketStatz ingestion)
+are accordingly all *Done*, together, not just individually — this is the
+point the project moves from "get the data in" to "make the data
+trustworthy": reconciling identity across sources (roadmap item 4, in
+progress — see `reconcile_audit.py`) and, beyond that, the actual
+stats/exports the project exists for (roadmap items 5-8).
+
+Reconciliation itself has already caught real cross-source duplication: 29
+of those 926 matches turned out to be the same real fixture entered
+independently into both `crichq_pdf` and `cricketstatz` during the
+2016/2018 transition between the two systems, doubling their stats until
+`reconcile/decisions.yaml`'s `duplicate_matches` deleted the poorer-quality
+copy of each pair. The fully-reconciled store is **897 matches**.
 
 Play-Cricket's own history isn't necessarily fully backfilled yet — 2024-2026
 is what's been synced so far; earlier seasons (however far back the club's
@@ -145,7 +155,7 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   innings vanished rather than erroring, taking real runs/wickets/batting/
   bowling figures with it. Affected 28 real matches in the archive (all
   involving a T20/nickname side long enough to wrap), recovered without
-  any change in the 381/328/53 total/played/abandoned counts. Run
+  any change in the 374/328/46 total/played/abandoned counts. Run
   `python3 crichq_pdf.py <pdf-file>... --sqlite-db <path>` to ingest one or
   more PDFs; add `--json-out <path>` to also write every parsed match-detail
   dict to a JSON file — see `crichq/crichq_pdf.json` under "Sample data"
@@ -205,8 +215,16 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   refs are the same real player/club/team/ground (with a `canonical_name`
   you write, not just accept — see its own header for the full "how to
   edit this" guide), a club's confirmed home ground (`club_home_grounds`),
-  and rules that fix a source's own unusably vague per-match venue text
-  for one club's home fixtures (`ground_overrides`). `pending:` is where
+  rules that fix a source's own unusably vague per-match venue text
+  for one club's home fixtures (`ground_overrides`), and confirmed
+  duplicate fixtures — the same real match entered independently into two
+  sources (found concentrated around the 2016 and 2018 crichq_pdf/
+  cricketstatz transition period, where both an old and a new
+  scorekeeping system were fed the same games) — each recorded as a
+  `keep`/`remove` ref pair (`duplicate_matches`) and applied by deleting
+  the `remove` side's `matches` row outright (cascading to its own
+  innings/batting/bowling/appearances), not a merge — there's no
+  ambiguity to preserve, just one copy too many. `pending:` is where
   `reconcile_audit.py` writes every new candidate it finds (see that
   bullet below) — nothing to hand-copy out of a report; work through it
   (correct `canonical_name`, set `status: confirmed`/`audited`) and run
@@ -406,7 +424,7 @@ remains.
   above.
 - `crichq/ALL_CRICHQ_SCORECARDS.pdf` — the club's **complete** CricHQ
   archive in one file (703 pages), replacing the old single-season
-  `ELPM 1st XI 2019.pdf`. **381 matches** (328 played, 53 abandoned),
+  `ELPM 1st XI 2019.pdf`. **374 matches** (328 played, 46 abandoned),
   spanning **seven seasons, 2016 and 2018–2023** (see below — 2016 was
   invisible until the header-splitting bug was fixed), across every level
   the club runs — 1st/2nd/3rd/4th XI, Sunday sides, league and cup
@@ -414,8 +432,13 @@ remains.
   built yet"). Parses cleanly at the text level (5725 batting rows, 3225
   bowling rows, 6658 team-sheet entries across all matches) and now
   **ingests cleanly end to end**: `python3 crichq_pdf.py
-  crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>` loads all 381
-  matches with zero foreign-key violations. It previously raised
+  crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>` loads all 374
+  matches with zero foreign-key violations. (Seven of an original 381
+  parsed "matches" turned out to be genuinely content-free abandoned-game
+  placeholders — no scorecard, no teams beyond an "Unknown (...)" stand-in
+  — and `_parse_match()` now returns `None` for those, skipped by
+  `parse_pdf()`, rather than loading an empty row with no stats value.) It
+  previously raised
   `ValueError: You are trying to merge on str and float64 columns for key
   'opposition_id'` on the first match, in `Scorecard.get_performances()`'s
   fielding-count merge (`playcricket_scorecard.py`) — that turned out to be
@@ -440,7 +463,7 @@ remains.
   match with batting but zero recorded bowling) found once real matches
   started reaching it.
 - `crichq/crichq_pdf.json` — a **permanent, git-tracked backup of
-  `parse_pdf()`'s output** for the file above: all 381 match-detail dicts
+  `parse_pdf()`'s output** for the file above: all 374 match-detail dicts
   (Play-Cricket shaped), generated with
   `python3 crichq_pdf.py crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>
   --json-out crichq/crichq_pdf.json`. Plays the same role for the CricHQ
@@ -656,8 +679,8 @@ python3 crichq_pdf.py "crichq/ALL_CRICHQ_SCORECARDS.pdf" --sqlite-db demo.sqlite
 
 ```
 Parsing crichq/ALL_CRICHQ_SCORECARDS.pdf ...
-  381 matches found in this file.
-Done. Played: 328, Abandoned: 53
+  374 matches found in this file.
+Done. Played: 328, Abandoned: 46
 ```
 
 This used to crash on the very first match with `ValueError: You are trying
@@ -690,8 +713,7 @@ conn = sqlite3.connect("demo.sqlite")
 stats = SQLPlayerStats(conn, elpmcc_name="East Lancs Paper Mill")
 
 conn.execute("SELECT source, COUNT(*) FROM matches GROUP BY source").fetchall()
-# [('cricketstatz', 304), ('play_cricket', 70)]
-# -- crichq_pdf isn't here: step 4 above currently can't complete
+# [('cricketstatz', 304), ('play_cricket', 70), ('crichq_pdf', 374)]
 
 stats.top_runs(top_n=10)
 stats.top_wickets(top_n=10)

@@ -265,10 +265,19 @@ def _split_dismissal(rest):
     """
     'name-with-markers dismissal-text' -> (name, dismissal_text).
 
-    The first token is always part of the name (initials or a first
-    name), so scanning for the dismissal keyword starts at index 1 --
-    otherwise a single-letter surname like "B Birtwistle" collides
-    with the "b" (bowled) keyword.
+    Matches dismissal keywords case-SENSITIVELY: throughout this PDF
+    export, dismissal keywords ("c", "b", "st", "lbw", "run", "hit",
+    "retired", "not") are always written lowercase, while a name token
+    that happens to share the letters -- a middle initial "B", say --
+    is always uppercase. Case-insensitive matching (tried first) broke
+    on exactly that collision: "C B Bega c A Whittaker b Ajb
+    birtwistle" (a real opposition batsman with two initials) had its
+    own middle initial "B" mistaken for the "b" (bowled) keyword,
+    splitting the name after just "C" and leaving "B Bega ..." to be
+    misparsed as the dismissal. Skipping index 0 (an earlier, weaker
+    fix, still harmless to keep) only guards a keyword-letter *first*
+    initial, e.g. "B Birtwistle" -- it doesn't help once the collision
+    can happen on a later initial too.
     """
 
     tokens = rest.split(" ")
@@ -278,7 +287,7 @@ def _split_dismissal(rest):
         if i == 0:
             continue
 
-        if tok.lower() in _DISMISSAL_KEYWORDS:
+        if tok in _DISMISSAL_KEYWORDS:
 
             name = " ".join(tokens[:i]).strip()
             dismissal = " ".join(tokens[i:]).strip()
@@ -325,15 +334,30 @@ def _parse_dismissal(dismissal_text):
         return "ct", bowler, bowler
 
     if low.startswith("c "):
-        m = re.match(r"^c\s+(?P<fielder>.+?)\s+b\s+(?P<bowler>.+)$", text, re.IGNORECASE)
+        # NOT re.IGNORECASE: the "b" separating fielder from bowler is
+        # always lowercase in this format, while a fielder's own middle
+        # initial ("C B Bega") is always uppercase -- matching "b"
+        # case-insensitively let the non-greedy fielder group stop at
+        # that initial instead of the real separator, e.g. "c C B Bega
+        # b Sam Wright Wright" wrongly split fielder="C",
+        # bowler="Bega b Sam Wright Wright" (a real, found-in-the-wild
+        # case; the actual fielder is "C B Bega"). The fielder group is
+        # also optional: CricHQ sometimes records a catch with the
+        # fielder left blank ("c  b C Saliparri", double space, fielder
+        # genuinely not recorded) -- also real, and without this the
+        # fallback below made "b C Saliparri" (the literal leftover "b
+        # <bowler>" text) look like a fielder's name.
+        m = re.match(r"^c\s+(?:(?P<fielder>.+?)\s+)?b\s+(?P<bowler>.+)$", text)
         if m:
-            return "ct", m.group("bowler").strip(), m.group("fielder").strip()
+            return "ct", m.group("bowler").strip(), (m.group("fielder") or "").strip() or None
         return "ct", None, text[2:].strip()
 
     if low.startswith("st "):
-        m = re.match(r"^st\s+(?P<fielder>.+?)\s+b\s+(?P<bowler>.+)$", text, re.IGNORECASE)
+        # Same case-sensitivity and optional-fielder reasoning as the
+        # "c " branch above.
+        m = re.match(r"^st\s+(?:(?P<fielder>.+?)\s+)?b\s+(?P<bowler>.+)$", text)
         if m:
-            return "st", m.group("bowler").strip(), m.group("fielder").strip()
+            return "st", m.group("bowler").strip(), (m.group("fielder") or "").strip() or None
         return "st", None, text[3:].strip()
 
     if low.startswith("lbw"):
@@ -466,12 +490,21 @@ def _parse_match(header_match, body, match_index):
             home_full, away_full = inferred[0], f"{placeholder} - Opponent"
 
         else:
-            # No batting or bowling at all either (a genuinely abandoned
-            # match) -- there is no team name left anywhere in the text
-            # to recover, so synthesise a stable placeholder from the
-            # header fields so the match still gets an idempotent id
-            # rather than being silently merged into a neighbour.
-            home_full, away_full = f"{placeholder} - Team A", f"{placeholder} - Team B"
+            # No batting or bowling at all either -- neither team's name
+            # survives anywhere in the text, and (see the "Batting:" not
+            # in body check below) there's no innings data either, so
+            # this match carries zero identifiable content: not the
+            # opponent, not a scorecard, nothing but a competition/date
+            # header. Rather than insert a same-shaped-forever "Unknown
+            # (...) - Team A" vs. "- Team B" placeholder pair (confirmed,
+            # for real, to add no value -- every one found this way in
+            # the archive was "Abandoned - No Play Possible" with 0
+            # innings), skip the match entirely. Contrast with the
+            # `elif len(inferred) == 1` case just above: one side's name
+            # surviving means the match has SOME real content (at least
+            # one identifiable team, sometimes partial scorecard data
+            # too), so that case still gets inserted.
+            return None
 
     home_club, home_team = _split_team_name(home_full)
     away_club, away_team = _split_team_name(away_full)
@@ -638,9 +671,30 @@ def _parse_match(header_match, body, match_index):
         extras = {}
         totals = {}
         dnb_names = []
+        dnb_text = None   # accumulated "Did not bat:" text, across a PDF line-wrap, while not None
+
+        def _flush_dnb():
+            nonlocal dnb_names
+            if dnb_text and dnb_text.strip():
+                dnb_names = [n.strip() for n in dnb_text.split(",") if n.strip()]
 
         for line in batting_part.split("\n"):
             line = line.strip()
+
+            if dnb_text is not None:
+                # A long did-not-bat list can wrap onto its own PDF line
+                # mid-name -- e.g. "..., L Warren, S\nF Shah Hussain" is
+                # one name, "S F Shah Hussain", split by the page layout,
+                # not two. Keep absorbing lines as part of the list until
+                # one starts a new section (a name never does).
+                if not line or EXTRAS_LINE.match(line) or TOTALS_LINE.match(line) or \
+                   line.startswith(("Fall of wicket", "Bowling:", "Batting:")):
+                    _flush_dnb()
+                    dnb_text = None
+                else:
+                    dnb_text += " " + line
+                    continue
+
             em = EXTRAS_LINE.match(line)
             if em:
                 extras = _parse_extras(em.group("detail"))
@@ -651,8 +705,10 @@ def _parse_match(header_match, body, match_index):
                 totals = {"runs": int(tm.group("runs"))}
                 continue
             dm = DID_NOT_BAT.match(line)
-            if dm and dm.group("names").strip():
-                dnb_names = [n.strip() for n in dm.group("names").split(",") if n.strip()]
+            if dm:
+                dnb_text = dm.group("names").strip()
+
+        _flush_dnb()
 
         for raw_name in dnb_names:
             _sheet_entry(batting_team_full, raw_name)
@@ -761,7 +817,12 @@ def parse_pdf(pdf_path):
     list of dict
         One match-detail dict per match found (Play-Cricket shaped),
         in document order. Abandoned matches are included with empty
-        innings/players and status="Abandoned".
+        innings/players and status="Abandoned", as long as at least
+        one team's name is identifiable somewhere in the text -- a
+        match with literally no identifiable content at all (neither
+        team named, no innings) is skipped rather than inserted as an
+        "Unknown (...) - Team A" vs. "- Team B" placeholder pair (see
+        _parse_match()'s own comment on that case).
     """
 
     text = _extract_text(pdf_path)
@@ -775,7 +836,10 @@ def parse_pdf(pdf_path):
         end = headers[i + 1].start() if i + 1 < len(headers) else len(text)
         body = text[start:end]
 
-        matches.append(_parse_match(header_match, body, i))
+        parsed = _parse_match(header_match, body, i)
+
+        if parsed is not None:
+            matches.append(parsed)
 
     return matches
 
