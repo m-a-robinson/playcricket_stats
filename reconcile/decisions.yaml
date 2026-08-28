@@ -1179,6 +1179,415 @@ players:
         id: '1214'
         name: L Withington
     reason: Same name, same season (2016) -- confirmed by the user.
+  - canonical_name: A Berry
+    refs:
+      - source: cricketstatz
+        id: '57'
+        name: A Berry
+  - canonical_name: A Cambell
+    refs:
+      - source: crichq_pdf
+        id: A Cambell
+        name: A Cambell
+  - canonical_name: A Glover
+    refs:
+      - source: cricketstatz
+        id: '976'
+        name: A Glover
+  - canonical_name: A Greenwood
+    refs:
+      - source: crichq_pdf
+        id: A Greenwood
+        name: A Greenwood
+  - canonical_name: A Greenwood
+    refs:
+      - source: cricketstatz
+        id: '1516'
+        name: A Greenwood
+  - canonical_name: A Holden
+    refs:
+      - source: cricketstatz
+        id: '1079'
+        name: A Holden
+  - canonical_name: A Jenkins
+    refs:
+      - source: cricketstatz
+        id: '428'
+        name: A Jenkins
+  - canonical_name: A McCheyne
+    refs:
+      - source: cricketstatz
+        id: '199'
+        name: A McCheyne
+  - canonical_name: A Redders
+    refs:
+      - source: crichq_pdf
+        id: A Redders
+        name: A Redders
+  - canonical_name: A Redmond
+    refs:
+      - source: crichq_pdf
+        id: A Redmond
+        name: A Redmond
+  - canonical_name: A Wilkinson
+    refs:
+      - source: cricketstatz
+        id: '400'
+        name: A Wilkinson
+  - canonical_name: AZ Zain
+    refs:
+      - source: crichq_pdf
+        id: AZ Zain
+        name: AZ Zain
+  - canonical_name: B Bitrtwistle
+    refs:
+      - source: crichq_pdf
+        id: B Bitrtwistle
+        name: B Bitrtwistle
+  - canonical_name: B Chapman
+    refs:
+      - source: cricketstatz
+        id: '430'
+        name: B Chapman
+  - canonical_name: B Glover
+    refs:
+      - source: cricketstatz
+        id: '953'
+        name: B Glover
+  - canonical_name: C O'Beirne
+    refs:
+      - source: cricketstatz
+        id: '124'
+        name: C O'Beirne
+  - canonical_name: Carr,N
+    refs:
+      - source: cricketstatz
+        id: '236'
+        name: Carr,N
+  - canonical_name: CM Dempsey
+    refs:
+      - source: crichq_pdf
+        id: CM Dempsey
+        name: CM Dempsey
+  - canonical_name: D Birmingham
+    refs:
+      - source: cricketstatz
+        id: '789'
+        name: D Birmingham
+  - canonical_name: D Brickles
+    refs:
+      - source: crichq_pdf
+        id: D Brickles
+        name: D Brickles
+  - canonical_name: D Chapman
+    refs:
+      - source: cricketstatz
+        id: '447'
+        name: D Chapman
+  - canonical_name: D Hadcroft
+    refs:
+      - source: cricketstatz
+        id: '210'
+        name: D Hadcroft
+  - canonical_name: D Morris
+    refs:
+      - source: cricketstatz
+        id: '1133'
+        name: D Morris
+  - canonical_name: D Salmon
+    refs:
+      - source: cricketstatz
+        id: '418'
+        name: D Salmon
+  - canonical_name: D Turrell
+    refs:
+      - source: cricketstatz
+        id: '737'
+        name: D Turrell
+  - canonical_name: D Worthington
+    refs:
+      - source: cricketstatz
+        id: '1092'
+        name: D Worthington
+  - canonical_name: Dalton,S
+    refs:
+      - source: cricketstatz
+        id: '8'
+        name: Dalton,S
+  - canonical_name: F Daly
+    refs:
+      - source: cricketstatz
+        id: '1'
+        name: F Daly
+  - canonical_name: G Merriman
+    refs:
+      - source: cricketstatz
+        id: '358'
+        name: G Merriman
+  - canonical_name: G Young
+    refs:
+      - source: cricketstatz
+        id: '366'
+        name: G Young
+  - canonical_name: Gaygan,M
+    refs:
+      - source: cricketstatz
+        id: '254'
+        name: Gaygan,M
+  - canonical_name: H Raabi
+    refs:
+      - source: crichq_pdf
+        id: H Raabi
+        name: H Raabi
+  - canonical_name: H Shah
+    refs:
+      - source: crichq_pdf
+        id: H Shah
+        name: H Shah
+  - canonical_name: Halliwell,R
+    refs:
+      - source: cricketstatz
+        id: '195'
+        name: Halliwell,R
+  - canonical_name: Hocking,K
+    refs:
+      - source: cricketstatz
+        id: '135'
+        name: Hocking,K
+  - canonical_name: I Simpson
+    refs:
+      - source: cricketstatz
+        id: '388'
+        name: I Simpson
+  - canonical_name: I Wilkinson
+    refs:
+      - source: cricketstatz
+        id: '497'
+        name: I Wilkinson
+  - canonical_name: J Kenyon
+    refs:
+      - source: crichq_pdf
+        id: J Kenyon
+        name: J Kenyon
+  - canonical_name: J Seagar
+    refs:
+      - source: crichq_pdf
+        id: J Seagar
+        name: J Seagar
+  - canonical_name: J Segar
+    refs:
+      - source: cricketstatz
+        id: '887'
+        name: J Segar
+  - canonical_name: J Shiels
+    refs:
+      - source: cricketstatz
+        id: '2'
+        name: J Shiels
+  - canonical_name: Jones,A
+    refs:
+      - source: cricketstatz
+        id: '190'
+        name: Jones,A
+  - canonical_name: K Dobson
+    refs:
+      - source: crichq_pdf
+        id: K Dobson
+        name: K Dobson
+  - canonical_name: K Green
+    refs:
+      - source: cricketstatz
+        id: '1508'
+        name: K Green
+  - canonical_name: Kilcoyne,M
+    refs:
+      - source: cricketstatz
+        id: '191'
+        name: Kilcoyne,M
+  - canonical_name: L Glover
+    refs:
+      - source: cricketstatz
+        id: '886'
+        name: L Glover
+  - canonical_name: L Lomas
+    refs:
+      - source: crichq_pdf
+        id: L Lomas
+        name: L Lomas
+  - canonical_name: L Lorax
+    refs:
+      - source: crichq_pdf
+        id: L Lorax
+        name: L Lorax
+  - canonical_name: L Santos
+    refs:
+      - source: cricketstatz
+        id: '311'
+        name: L Santos
+  - canonical_name: Lavery,M
+    refs:
+      - source: cricketstatz
+        id: '194'
+        name: Lavery,M
+  - canonical_name: M Coates
+    refs:
+      - source: cricketstatz
+        id: '1400'
+        name: M Coates
+  - canonical_name: M Flaherty
+    refs:
+      - source: cricketstatz
+        id: '908'
+        name: M Flaherty
+  - canonical_name: M Hay
+    refs:
+      - source: cricketstatz
+        id: '525'
+        name: M Hay
+  - canonical_name: M Holt
+    refs:
+      - source: cricketstatz
+        id: '256'
+        name: M Holt
+  - canonical_name: M Kobryn
+    refs:
+      - source: cricketstatz
+        id: '1261'
+        name: M Kobryn
+  - canonical_name: M Parkinson
+    refs:
+      - source: crichq_pdf
+        id: M Parkinson
+        name: M Parkinson
+  - canonical_name: M Smalley
+    refs:
+      - source: cricketstatz
+        id: '1091'
+        name: M Smalley
+  - canonical_name: M Young
+    refs:
+      - source: cricketstatz
+        id: '137'
+        name: M Young
+  - canonical_name: M Z Shah
+    refs:
+      - source: crichq_pdf
+        id: M Z Shah
+        name: M Z Shah
+  - canonical_name: Moore,G
+    refs:
+      - source: cricketstatz
+        id: '211'
+        name: Moore,G
+  - canonical_name: N Hussian
+    refs:
+      - source: crichq_pdf
+        id: N Hussian
+        name: N Hussian
+  - canonical_name: N Warne
+    refs:
+      - source: cricketstatz
+        id: '189'
+        name: N Warne
+  - canonical_name: P Hodgkin
+    refs:
+      - source: crichq_pdf
+        id: P Hodgkin
+        name: P Hodgkin
+  - canonical_name: PH Hoskin
+    refs:
+      - source: crichq_pdf
+        id: PH Hoskin
+        name: PH Hoskin
+  - canonical_name: R Moore
+    refs:
+      - source: cricketstatz
+        id: '238'
+        name: R Moore
+  - canonical_name: Robinson,M
+    refs:
+      - source: cricketstatz
+        id: '11'
+        name: Robinson,M
+  - canonical_name: S Ali Mirza
+    refs:
+      - source: crichq_pdf
+        id: S Ali Mirza
+        name: S Ali Mirza
+  - canonical_name: S Anwar
+    refs:
+      - source: crichq_pdf
+        id: S Anwar
+        name: S Anwar
+  - canonical_name: S Birtwistle
+    refs:
+      - source: crichq_pdf
+        id: S Birtwistle
+        name: S Birtwistle
+  - canonical_name: S F Shah Hussain
+    refs:
+      - source: crichq_pdf
+        id: S F Shah Hussain
+        name: S F Shah Hussain
+  - canonical_name: S Flemming
+    refs:
+      - source: cricketstatz
+        id: '788'
+        name: S Flemming
+  - canonical_name: S Jakarta
+    refs:
+      - source: crichq_pdf
+        id: S Jakarta
+        name: S Jakarta
+  - canonical_name: SD Deshmukh
+    refs:
+      - source: crichq_pdf
+        id: SD Deshmukh
+        name: SD Deshmukh
+  - canonical_name: Smith,P
+    refs:
+      - source: cricketstatz
+        id: '209'
+        name: Smith,P
+  - canonical_name: SPM Moriarty
+    refs:
+      - source: crichq_pdf
+        id: SPM Moriarty
+        name: SPM Moriarty
+  - canonical_name: T Birtwistle
+    refs:
+      - source: cricketstatz
+        id: '213'
+        name: T Birtwistle
+  - canonical_name: T McMahon
+    refs:
+      - source: crichq_pdf
+        id: T McMahon
+        name: T McMahon
+  - canonical_name: W Redford
+    refs:
+      - source: crichq_pdf
+        id: W Redford
+        name: W Redford
+  - canonical_name: Wade,J
+    refs:
+      - source: cricketstatz
+        id: '34'
+        name: Wade,J
+  - canonical_name: Woodward,D
+    refs:
+      - source: cricketstatz
+        id: '186'
+        name: Woodward,D
+  - canonical_name: Zeeshan Ali
+    refs:
+      - source: cricketstatz
+        id: '1320'
+        name: Z Ali
+    reason: >
+      Real name confirmed by the user (see the rejected Zakaria Ali /
+      Z Ali candidate below -- this is the "Z Ali" side of that
+      rejection, now given its own identity rather than left unnamed).
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
@@ -1987,10 +2396,13 @@ rejected:
         - source: play_cricket
           id: '6267738'
           name: Zakaria Ali
-        - source: cricketstatz
-          id: '1320'
-          name: Z Ali
       status: rejected
+      reason: >
+        Confirmed by the user as two different real people: Zakaria
+        Ali (a junior player) is not Zeeshan Ali. NOTE: cricketstatz
+        "1320" ("Z Ali") is NOT repeated here -- it's since been given
+        its own confirmed identity (see players: Zeeshan Ali above), a
+        ref must belong to exactly one place in this file.
   clubs: []
 
   teams:
