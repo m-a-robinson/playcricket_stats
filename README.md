@@ -204,16 +204,15 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   actually links e.g. `"F Daly"` here to the `Fran Daly` CricHQ/
   CricketStatz identity, not this module guessing. Run `python3
   nmcl_stats.py --sqlite-db <path>` after the other sources. Ingested so
-  far: 2000-2005 (33 rows, six seasons), with 12 of the 14 transcribed
-  names linked by `decisions.yaml` to an existing canonical player
-  (checked against real evidence, not name-alone — see the commit
-  messages); the remaining 2, `R Savage` and `G Young`, don't match
-  anything else in the archive closely enough to link with confidence
-  and are left as their own standalone players (`R Savage` in
-  particular has a full 2000-2003 batting-and-bowling record purely
-  within this source, never having appeared in a match-level source at
-  all). 2010-2013 needs the equivalent scans/spreadsheets added before
-  the same pipeline can run against them.
+  far: 2000-2005 (33 rows, six seasons), all 14 transcribed names now
+  linked by `decisions.yaml` to a real identity — 13 of them checked
+  against real evidence before linking (an existing canonical player
+  whose earliest match-level appearance in every other source starts
+  right where the NMCL sheets leave off — see the commit messages), the
+  14th (`R Savage` — no match-level appearance anywhere else in the
+  archive, so no evidence trail to check against) confirmed directly by
+  the club instead. 2010-2013 needs the equivalent scans/spreadsheets
+  added before the same pipeline can run against them.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based

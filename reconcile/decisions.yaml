@@ -1367,6 +1367,9 @@ players:
       - source: cricketstatz
         id: '366'
         name: G Young
+      - source: nmcl_stats
+        id: G YOUNG
+        name: G Young
   - canonical_name: Mark Gaygan
     refs:
       - source: cricketstatz
@@ -1606,6 +1609,20 @@ players:
       Real name confirmed by the user (see the rejected Zakaria Ali /
       Z Ali candidate below -- this is the "Z Ali" side of that
       rejection, now given its own identity rather than left unnamed).
+  - canonical_name: James Richardson
+    refs:
+      - source: play_cricket
+        id: '6191899'
+        name: James Richardson
+      - source: nmcl_stats
+        id: J RICHARDSON
+        name: J Richardson
+    reason: Confirmed by the user.
+  - canonical_name: Richard Savage
+    refs:
+      - source: nmcl_stats
+        id: R SAVAGE
+        name: R Savage
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
