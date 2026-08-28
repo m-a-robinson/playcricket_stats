@@ -726,6 +726,48 @@ def render_data_quality_section(conn):
         lines.append("None found.")
     lines.append("")
 
+    # ---- NMCL centuries ----
+    #
+    # nmcl_season_stats holds season-aggregate highest scores, not
+    # per-innings batting_innings rows, so a century scored in an
+    # NMCL-only season (or an NMCL-only match within a season that
+    # otherwise has real scorecards) never reaches
+    # v_batting_achievements / career_stats()'s "notable_performances"
+    # count -- the only place a century like this is visible at all is
+    # nmcl_season_stats.highest_score itself. Surfaced here explicitly
+    # so a hundred scored in a season with no surviving scorecard isn't
+    # silently invisible to anyone reading this report.
+
+    lines.append("### NMCL centuries")
+    lines.append("")
+    lines.append(
+        "Every `nmcl_season_stats` batting row with `highest_score >= 100` "
+        "-- these are season-aggregate figures, not a specific dated innings "
+        "(see `nmcl_stats.py`), so no further detail than the season and "
+        "score exists anywhere in this archive for these knocks."
+    )
+    lines.append("")
+
+    centuries = conn.execute(
+        """
+        SELECT p.known_as, n.season, n.highest_score, n.highest_score_not_out, n.source_file
+        FROM nmcl_season_stats n
+        JOIN players p ON p.player_id = n.player_id
+        WHERE n.discipline = 'batting' AND n.highest_score >= 100
+        ORDER BY n.season, n.highest_score DESC
+        """
+    ).fetchall()
+
+    if centuries:
+        lines.append("| Season | Player | HS | Source |")
+        lines.append("|---|---|---|---|")
+        for known_as, season, hs, hs_not_out, source_file in centuries:
+            hs_text = f"{hs}*" if hs_not_out else str(hs)
+            lines.append(f"| {season} | {known_as} | {hs_text} | {source_file} |")
+    else:
+        lines.append("None found.")
+    lines.append("")
+
     return lines
 
 
