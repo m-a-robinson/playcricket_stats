@@ -1004,7 +1004,7 @@ players:
       - source: crichq_pdf
         id: SA Shah
         name: SA Shah
-  - canonical_name: S Moore
+  - canonical_name: Steve Moore
     decided: '2026-08-27'
     refs:
       - source: crichq_pdf
@@ -1034,7 +1034,7 @@ players:
         id: '84'
         name: Dawes,M
     reason: Confirmed by the user as the same person across sources.
-  - canonical_name: D Thompson
+  - canonical_name: Dave Thompson
     decided: '2026-08-27'
     refs:
       - source: crichq_pdf
@@ -1044,7 +1044,7 @@ players:
         id: '852'
         name: D Thompson
     reason: Confirmed by the user as the same person across sources.
-  - canonical_name: N Robinson
+  - canonical_name: Neil Robinson
     decided: '2026-08-27'
     refs:
       - source: crichq_pdf
@@ -1054,7 +1054,7 @@ players:
         id: '292'
         name: N Robinson
     reason: Confirmed by the user as the same person across sources.
-  - canonical_name: P Chapman
+  - canonical_name: Phil Chapman
     decided: '2026-08-27'
     refs:
       - source: crichq_pdf
@@ -1071,7 +1071,7 @@ players:
         id: MELW Wilkes
         name: MELW Wilkes
     reason: "Rename: confirmed by the user as the player's real name."
-  - canonical_name: M Hodson
+  - canonical_name: Mike Hodson
     decided: '2026-08-28'
     refs:
       - source: crichq_pdf
@@ -1084,7 +1084,7 @@ players:
         id: '1653'
         name: M Hodson
     reason: Confirmed by the user as the same person across all three source rows.
-  - canonical_name: S Dwyer
+  - canonical_name: Steve Dwyer
     decided: '2026-08-28'
     refs:
       - source: crichq_pdf
@@ -1097,7 +1097,7 @@ players:
         id: '532'
         name: S Dwyer
     reason: Confirmed by the user as the same person across all three source rows.
-  - canonical_name: G Greaves
+  - canonical_name: Gavin Greaves
     decided: '2026-08-28'
     refs:
       - source: crichq_pdf
@@ -1107,7 +1107,7 @@ players:
         id: '7'
         name: G Greaves
     reason: Season overlap (2016, 2018) between the two sources -- same 'two systems, same transition era' pattern as other confirmed merges. Confirmed by the user.
-  - canonical_name: A Hodson
+  - canonical_name: Andy Hodson
     decided: '2026-08-28'
     refs:
       - source: cricketstatz
@@ -1117,7 +1117,7 @@ players:
         id: '73'
         name: Hodson,A
     reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
-  - canonical_name: A Openshaw
+  - canonical_name: Alan Openshaw
     decided: '2026-08-28'
     refs:
       - source: cricketstatz
@@ -1127,7 +1127,7 @@ players:
         id: '208'
         name: Openshaw,A
     reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
-  - canonical_name: J Kobryn
+  - canonical_name: Josh Kobryn
     decided: '2026-08-28'
     refs:
       - source: crichq_pdf
@@ -1147,7 +1147,7 @@ players:
         id: '952'
         name: N Durrans
     reason: Same name, no season conflict -- confirmed by the user.
-  - canonical_name: R Highton
+  - canonical_name: Rob Highton
     decided: '2026-08-28'
     refs:
       - source: crichq_pdf
