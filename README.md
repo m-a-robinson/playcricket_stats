@@ -89,6 +89,19 @@ per-innings runs, two different sources) so this class of bug surfaces on
 every future audit instead of needing another by-eye pass. **964 matches
 raw, 932 once `reconcile.py` applies `duplicate_matches`.**
 
+The same export also showed CricketStatz's bare "Division 1"/"Division 2"/
+etc. reading, out of context, as if they might be the same competition as
+GMCL's own later "Division 1"/"Division 2" naming (2016 on) — they aren't:
+the club's league was North Manchester CL up to 2015, merging into Greater
+Manchester CL from 2016 (the same season boundary `nmcl_stats.py` already
+used for the club's own NMCL season averages, and visible in CricketStatz's
+own competition text, which starts saying "GMCL Division..." right at that
+boundary). `mxp_parser.py` and `cricketstatz_txt.py` now prefix every bare
+"Division N" competition name with "NMCL " for seasons up to and including
+2015, at the point each parses it, so it reads unambiguously; GMCL's own
+already-prefixed 2016+ names are untouched. (`scorebooks.py`'s one 2010
+match got the same fix.)
+
 Play-Cricket's own history isn't necessarily fully backfilled yet — 2024-2026
 is what's been synced so far; earlier seasons (however far back the club's
 Play-Cricket presence goes, likely somewhere in the 2018-2023 range CricHQ

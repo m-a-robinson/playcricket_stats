@@ -159,6 +159,41 @@ def _clean_ref(id_str, name_str):
     return id_str, name_str
 
 
+_BARE_DIVISION = re.compile(r"^Division\s+\d+$", re.IGNORECASE)
+
+
+def _normalise_division_name(grade_name, match_date):
+    """
+    CricketStatz's own competition text is a bare "Division N" for every
+    season up to and including 2015; from 2016 the same field starts
+    reading "GMCL Division N ..." (confirmed in the data itself, not
+    assumed -- the club's league was North Manchester CL before merging
+    into Greater Manchester CL, matching the same season boundary
+    nmcl_stats.py already uses for the club's own NMCL-sourced season
+    averages). Season is read from match_date (dd/mm/yyyy) rather than
+    passed in separately, since that's the only date this parser has at
+    the point competition_name is set.
+
+    Only the bare "Division N" form is touched -- cups and other
+    competition names are left exactly as CricketStatz recorded them, per
+    the user's own request (2026-08-28) to disambiguate the division
+    names specifically, not relabel every competition.
+    """
+
+    if not grade_name or not match_date or not _BARE_DIVISION.match(grade_name):
+        return grade_name
+
+    try:
+        season = int(match_date[-4:])
+    except (TypeError, ValueError):
+        return grade_name
+
+    if season <= 2015:
+        return f"NMCL {grade_name}"
+
+    return grade_name
+
+
 def _to_int(value, default=0):
 
     try:
@@ -345,6 +380,7 @@ def _parse_match(lines):
 
     ground_id, ground_name = _id_name(_split_fields(fields.get("Ground", "")), 0)
     grade_id, grade_name = _id_name(_split_fields(fields.get("Grade", "")), 0)
+    grade_name = _normalise_division_name(grade_name, match_date)
     club1_id, club1_name = _id_name(_split_fields(fields.get("Club1", "")), 0)
     club2_id, club2_name = _id_name(_split_fields(fields.get("Club2", "")), 0)
     team1_id, team1_name = _id_name(_split_fields(fields.get("Team1", "")), 0)

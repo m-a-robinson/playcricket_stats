@@ -65,14 +65,16 @@ left out (balls=None throughout) rather than guessed -- runs, dismissals
 and boundary counts (where legible) are what matter for career stats and
 are the figures that were cross-checked above.
 
-competition_name is "Division 1", not the scorebook's own literal "LEAGUE"
-label (which names the match TYPE, not which division) -- every other 2010
-1st XI fixture in the archive (cricketstatz_txt) is Division 1, and NMCL
-only had one senior division the 1st XI played in that year, so this is
-the same evidence-based inference used throughout this project, not a
-guess. (Originally shipped as the literal "League" -- corrected 2026-08-28
-after the user spotted it reading as a second, phantom competition when
-auditing the season-by-season match export.)
+competition_name is "NMCL Division 1", not the scorebook's own literal
+"LEAGUE" label (which names the match TYPE, not which division) -- every
+other 2010 1st XI fixture in the archive (cricketstatz_txt) is Division 1,
+and NMCL only had one senior division the 1st XI played in that year, so
+this is the same evidence-based inference used throughout this project,
+not a guess. (Originally shipped as the literal "League" -- corrected
+2026-08-28 after the user spotted it reading as a second, phantom
+competition when auditing the season-by-season match export; the "NMCL "
+prefix followed the same day, matching mxp_parser.py/cricketstatz_txt.py's
+own <=2015 "Division N" -> "NMCL Division N" normalisation.)
 """
 
 SOURCE = "scorebook"
@@ -119,7 +121,7 @@ MATCHES = [
         "match_date": "11/07/2010",
         "match_time": None,
         "competition_id": None,
-        "competition_name": "Division 1",
+        "competition_name": "NMCL Division 1",
         "competition_type": None,
         "league_id": None, "league_name": None,
         "ground_id": None, "ground_name": "Failsworth M",
