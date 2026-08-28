@@ -143,6 +143,9 @@ players:
       - source: crichq_pdf
         id: Stephen Keyworth
         name: Stephen Keyworth
+      - source: crichq_pdf
+        id: Stephen Keyeorth
+        name: Stephen Keyeorth
   - canonical_name: Matty Partington
     refs:
       - source: crichq_pdf
@@ -186,6 +189,12 @@ players:
       - source: crichq_pdf
         id: C Dayden
         name: C Dayden
+      - source: crichq_pdf
+        id: C Deardon
+        name: C Deardon
+      - source: crichq_pdf
+        id: C Deerden
+        name: C Deerden
   - canonical_name: Charlie Dearden
     refs:
       - source: crichq_pdf
@@ -257,6 +266,9 @@ players:
       - source: crichq_pdf
         id: L . D . J McCaffery
         name: L . D . J McCaffery
+      - source: crichq_pdf
+        id: D Mccafferey
+        name: D Mccafferey
   - canonical_name: Paul Hewart
     refs:
       - source: crichq_pdf
@@ -302,6 +314,9 @@ players:
       - source: cricketstatz
         id: '207'
         name: A Lomax
+      - source: crichq_pdf
+        id: Andrew Lomas
+        name: Andrew Lomas
   - canonical_name: Luke Lomax
     refs:
       - source: play_cricket
@@ -742,6 +757,10 @@ players:
       - source: crichq_pdf
         id: Aaron albanese
         name: Aaron albanese
+      - source: crichq_pdf
+        id: Aaron Albenese
+        name: Aaron Albenese
+    reason: Same first name, one-letter surname typo, confirmed by the user.
   - canonical_name: Norm Hussain
     refs:
       - source: crichq_pdf
@@ -807,6 +826,9 @@ players:
       - source: crichq_pdf
         id: Josh albanese
         name: Josh albanese
+      - source: crichq_pdf
+        id: Ja Albansss
+        name: Ja Albansss
   - canonical_name: Suleman Ishaq
     refs:
       - source: play_cricket
@@ -882,6 +904,12 @@ players:
       - source: crichq_pdf
         id: Amad Rabbi
         name: Amad Rabbi
+      - source: crichq_pdf
+        id: Hamad Rabi
+        name: Hamad Rabi
+      - source: crichq_pdf
+        id: Hamad Rabii
+        name: Hamad Rabii
   - canonical_name: Sam Oldham
     refs:
       - source: crichq_pdf
@@ -1069,6 +1097,36 @@ players:
         id: '532'
         name: S Dwyer
     reason: Confirmed by the user as the same person across all three source rows.
+  - canonical_name: G Greaves
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: G Greaves
+        name: G Greaves
+      - source: cricketstatz
+        id: '7'
+        name: G Greaves
+    reason: Season overlap (2016, 2018) between the two sources -- same 'two systems, same transition era' pattern as other confirmed merges. Confirmed by the user.
+  - canonical_name: A Hodson
+    decided: '2026-08-28'
+    refs:
+      - source: cricketstatz
+        id: '661'
+        name: A Hodson
+      - source: cricketstatz
+        id: '73'
+        name: Hodson,A
+    reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
+  - canonical_name: A Openshaw
+    decided: '2026-08-28'
+    refs:
+      - source: cricketstatz
+        id: '663'
+        name: A Openshaw
+      - source: cricketstatz
+        id: '208'
+        name: Openshaw,A
+    reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
