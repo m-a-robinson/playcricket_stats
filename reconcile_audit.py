@@ -575,7 +575,7 @@ def _scan_value_counts(conn, table, column, min_count_to_flag=1):
     return [(value, n) for value, n in rows]
 
 
-def render_data_quality_section(conn):
+def render_data_quality_section(conn, elpmcc_name=ELPMCC_NAME):
 
     lines = ["## Part 1 -- Data quality scan", ""]
     lines.append(
@@ -726,7 +726,173 @@ def render_data_quality_section(conn):
         lines.append("None found.")
     lines.append("")
 
+    # ---- NMCL centuries ----
+    #
+    # nmcl_season_stats holds season-aggregate highest scores, not
+    # per-innings batting_innings rows, so a century scored in an
+    # NMCL-only season (or an NMCL-only match within a season that
+    # otherwise has real scorecards) never reaches
+    # v_batting_achievements / career_stats()'s "notable_performances"
+    # count -- the only place a century like this is visible at all is
+    # nmcl_season_stats.highest_score itself. Surfaced here explicitly
+    # so a hundred scored in a season with no surviving scorecard isn't
+    # silently invisible to anyone reading this report.
+
+    lines.append("### NMCL centuries")
+    lines.append("")
+    lines.append(
+        "Every `nmcl_season_stats` batting row with `highest_score >= 100` "
+        "-- these are season-aggregate figures, not a specific dated innings "
+        "(see `nmcl_stats.py`), so no further detail than the season and "
+        "score exists anywhere in this archive for these knocks."
+    )
+    lines.append("")
+
+    centuries = conn.execute(
+        """
+        SELECT p.known_as, n.season, n.highest_score, n.highest_score_not_out, n.source_file
+        FROM nmcl_season_stats n
+        JOIN players p ON p.player_id = n.player_id
+        WHERE n.discipline = 'batting' AND n.highest_score >= 100
+        ORDER BY n.season, n.highest_score DESC
+        """
+    ).fetchall()
+
+    if centuries:
+        lines.append("| Season | Player | HS | Source |")
+        lines.append("|---|---|---|---|")
+        for known_as, season, hs, hs_not_out, source_file in centuries:
+            hs_text = f"{hs}*" if hs_not_out else str(hs)
+            lines.append(f"| {season} | {known_as} | {hs_text} | {source_file} |")
+    else:
+        lines.append("None found.")
+    lines.append("")
+
+    # ---- Candidate duplicate matches ----
+    #
+    # The same real fixture entered independently into two sources (the
+    # 2016/2018 CricHQ/CricketStatz transition is the known repeat
+    # offender, but any pair of sources can do this) is a correctness
+    # bug, not a cosmetic one -- it doubles that match's runs/wickets/
+    # appearances in every career total and leaderboard until
+    # reconcile/decisions.yaml's duplicate_matches removes it. Matching
+    # on (date, ELPM team, per-innings runs) rather than on opposition
+    # club/team identity is deliberate: three real duplicates were found
+    # by hand this way (2026-08-28) that a club/team-id-based match
+    # would have missed entirely, because the opposition's identity
+    # wasn't merged the same way across sources yet (e.g. "Flixton CC"
+    # vs "Flixton C&SC") -- this check finds them independently of
+    # whether that reconciliation has happened. A group already covered
+    # by an existing duplicate_matches entry no longer appears here once
+    # reconcile.py --sqlite-db ... has removed the losing side, so an
+    # empty result after that step is the thing to expect, not silence
+    # from the check never having run.
+
+    lines.append("### Candidate duplicate matches")
+    lines.append("")
+    lines.append(
+        "Matches sharing the same date, the same ELPM team, and identical "
+        "per-innings runs across two or more different sources -- almost "
+        "certainly the same real fixture entered twice. Runs-only (not "
+        "runs+wickets) so a last-wicket recorded by one source and not the "
+        "other still matches. See `reconcile/decisions.yaml`'s "
+        "`duplicate_matches:` section for how a confirmed pair gets resolved "
+        "(keep the richer side, remove the other)."
+    )
+    lines.append("")
+
+    dup_groups = _candidate_duplicate_matches(conn, elpmcc_name)
+
+    if dup_groups:
+        lines.append("| Date | ELPM Team | Runs | Matches (id / source / opposition) |")
+        lines.append("|---|---|---|---|")
+        for (match_date, team_name, runs_sig), group in dup_groups:
+            runs_text = " & ".join(str(r) for r in runs_sig)
+            group_text = "; ".join(
+                f"{g['match_id']}/{g['source']}/{g['opposition']}" for g in group
+            )
+            lines.append(f"| {match_date} | {team_name} | {runs_text} | {group_text} |")
+    else:
+        lines.append("None found.")
+    lines.append("")
+
     return lines
+
+
+_ELPM_TEAM_SUFFIX = re.compile(r"(\d+(?:st|nd|rd|th)\s*xi|millers|friendly\s*xi|under\s*\d+)", re.IGNORECASE)
+
+
+def _normalise_elpm_team_label(team_name):
+    """
+    Reduces a source's own ELPM team-name spelling ("1st XI", "ELPM 1st
+    XI", "East Lancs Paper Mill CC 1st XI", ...) to just the team level
+    ("1ST XI"), so _candidate_duplicate_matches() can group same-team
+    matches across sources WITHOUT depending on team_id already being
+    merged -- team_id is only stable post-reconciliation, and this check
+    is most useful run before that (a duplicate hiding behind an
+    unmerged team, the same reason it matches on runs rather than
+    opposition identity too). Falls back to the trimmed, upper-cased
+    full name for anything that doesn't look like "Nth XI"/Millers/etc.
+    """
+
+    m = _ELPM_TEAM_SUFFIX.search(team_name or "")
+    label = m.group(1) if m else (team_name or "")
+    return re.sub(r"\s+", " ", label.strip()).upper()
+
+
+def _candidate_duplicate_matches(conn, elpmcc_name):
+    """
+    Returns [((match_date, elpm_team_label, runs_signature), [match dicts]), ...]
+    for every group of >= 2 matches, from >= 2 different sources, sharing
+    the same date, the same ELPM team, and identical per-innings runs.
+    See render_data_quality_section()'s "Candidate duplicate matches"
+    docstring comment for why this matches on runs rather than opposition
+    identity.
+    """
+
+    rows = conn.execute(
+        """
+        SELECT m.match_id, m.source, m.match_date,
+               ht.team_id, ht.team_name, hc.club_name,
+               at.team_id, at.team_name, ac.club_name
+        FROM matches m
+        JOIN teams ht ON ht.team_id = m.home_team_id
+        JOIN clubs hc ON hc.club_id = ht.club_id
+        JOIN teams at ON at.team_id = m.away_team_id
+        JOIN clubs ac ON ac.club_id = at.club_id
+        WHERE hc.club_name = ? OR ac.club_name = ?
+        """,
+        (elpmcc_name, elpmcc_name)
+    ).fetchall()
+
+    innings_by_match = {}
+    for match_id, runs in conn.execute(
+        "SELECT match_id, runs FROM innings ORDER BY match_id, innings_number"
+    ):
+        innings_by_match.setdefault(match_id, []).append(runs)
+
+    groups = {}
+    for (match_id, source, match_date,
+         home_team_id, home_team_name, home_club,
+         away_team_id, away_team_name, away_club) in rows:
+
+        home_is_elpm = home_club == elpmcc_name
+        elpm_team_label = _normalise_elpm_team_label(home_team_name if home_is_elpm else away_team_name)
+        opposition = away_club if home_is_elpm else home_club
+
+        runs_sig = tuple(innings_by_match.get(match_id, []))
+        if not runs_sig or all(x in (None, 0) for x in runs_sig):
+            continue  # abandoned/no-play matches collide trivially on empty scores
+
+        key = (match_date, elpm_team_label, runs_sig)
+        groups.setdefault(key, []).append({
+            "match_id": match_id, "source": source, "opposition": opposition
+        })
+
+    return sorted(
+        (key, group) for key, group in groups.items()
+        if len(group) > 1 and len(set(g["source"] for g in group)) > 1
+    )
 
 
 # ==================================================================
@@ -1409,7 +1575,7 @@ def generate_report(conn, elpmcc_name=ELPMCC_NAME, decisions_path=DEFAULT_DECISI
     )
     lines.append("")
 
-    lines.extend(render_data_quality_section(conn))
+    lines.extend(render_data_quality_section(conn, elpmcc_name))
 
     lines.append("## Part 2 -- Reconciliation candidates")
     lines.append("")

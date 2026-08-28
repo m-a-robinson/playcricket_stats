@@ -108,6 +108,26 @@ def _parse_date(datetext):
     return f"{day:02d}/{month:02d}/{year}", year
 
 
+_BARE_DIVISION = re.compile(r"^Division\s+\d+$", re.IGNORECASE)
+
+
+def _normalise_division_name(competition, season):
+    """
+    Same fix as mxp_parser.py's _normalise_division_name() -- CricketStatz's
+    own competition text is a bare "Division N" for every season up to and
+    including 2015 (the whole 2010 batch this module ingests included);
+    prefixed "NMCL " to disambiguate from GMCL's own "Division N" naming
+    from 2016 on, per the user's request (2026-08-28). Only the bare
+    "Division N" form is touched -- "Cup" and other competition names are
+    left as CricketStatz recorded them.
+    """
+
+    if season is not None and season <= 2015 and _BARE_DIVISION.match(competition or ""):
+        return f"NMCL {competition}"
+
+    return competition
+
+
 _TEAM_SUFFIX = re.compile(r"^(?P<club>.+?)\s+(?P<team>\d+(?:st|nd|rd|th)\s+XI)$", re.IGNORECASE)
 
 
@@ -299,6 +319,7 @@ def parse_match_text(text, filename=None):
     ground = info_m.group("ground").strip()
     competition = info_m.group("competition").strip()
     match_date, season = _parse_date(info_m.group("date"))
+    competition = _normalise_division_name(competition, season)
 
     # Derived from match content (home|away|date), NOT the filename --
     # these are individually-saved files, and duplicate/mislabelled
