@@ -1127,6 +1127,56 @@ players:
         id: '208'
         name: Openshaw,A
     reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
+  - canonical_name: J Kobryn
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: J Kobryn
+        name: J Kobryn
+      - source: cricketstatz
+        id: '1262'
+        name: J Kobryn
+    reason: Same name, no season conflict -- confirmed by the user.
+  - canonical_name: N Durrans
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: N Durrans
+        name: N Durrans
+      - source: cricketstatz
+        id: '952'
+        name: N Durrans
+    reason: Same name, no season conflict -- confirmed by the user.
+  - canonical_name: R Highton
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: R Highton
+        name: R Highton
+      - source: cricketstatz
+        id: '907'
+        name: R Highton
+    reason: Same name, no season conflict -- confirmed by the user.
+  - canonical_name: S Prendergast
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: S Prendergast
+        name: S Prendergast
+      - source: cricketstatz
+        id: '851'
+        name: S Prendergast
+    reason: Same name, no season conflict -- confirmed by the user.
+  - canonical_name: L Withington
+    decided: '2026-08-28'
+    refs:
+      - source: crichq_pdf
+        id: L Withington
+        name: L Withington
+      - source: cricketstatz
+        id: '1214'
+        name: L Withington
+    reason: Same name, same season (2016) -- confirmed by the user.
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
