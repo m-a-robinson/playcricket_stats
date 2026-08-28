@@ -1167,6 +1167,9 @@ players:
       - source: cricketstatz
         id: '208'
         name: Openshaw,A
+      - source: nmcl_stats
+        id: A OPENSHAW
+        name: A Openshaw
     reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
   - canonical_name: Josh Kobryn
     decided: '2026-08-28'
@@ -1500,6 +1503,9 @@ players:
       - source: cricketstatz
         id: '189'
         name: N Warne
+      - source: nmcl_stats
+        id: N WARNE
+        name: N Warne
   - canonical_name: P Hodgkin
     refs:
       - source: crichq_pdf
@@ -1564,6 +1570,9 @@ players:
     refs:
       - source: cricketstatz
         id: '213'
+        name: T Birtwistle
+      - source: nmcl_stats
+        id: T BIRTWISTLE
         name: T Birtwistle
   - canonical_name: T McMahon
     refs:

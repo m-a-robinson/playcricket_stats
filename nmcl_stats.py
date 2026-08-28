@@ -53,6 +53,57 @@ DIVISION_TEAM_NAMES = {
 
 ELPM_ROWS = [
 
+    # ---- 2000 ----
+    {"season": 2000, "division": 1, "discipline": "batting", "name": "N Warne",
+     "innings_played": 19, "not_outs": 3, "highest_score": 119, "highest_score_not_out": 1,
+     "runs": 553, "average": 34.56, "source_file": "nmcl stats/2000 1.tif"},
+    {"season": 2000, "division": 1, "discipline": "batting", "name": "R Savage",
+     "innings_played": 19, "not_outs": 3, "highest_score": 105, "highest_score_not_out": 0,
+     "runs": 482, "average": 30.13, "source_file": "nmcl stats/2000 1.tif"},
+    {"season": 2000, "division": 1, "discipline": "batting", "name": "F Daly",
+     "innings_played": 18, "not_outs": 2, "highest_score": 136, "highest_score_not_out": 1,
+     "runs": 476, "average": 29.75, "source_file": "nmcl stats/2000 1.tif"},
+
+    {"season": 2000, "division": 1, "discipline": "bowling", "name": "T Birtwistle",
+     "overs": "106.3", "maidens": 15, "runs_conceded": 406, "wickets": 30,
+     "average": 13.53, "source_file": "nmcl stats/2000 2.tif"},
+    {"season": 2000, "division": 1, "discipline": "bowling", "name": "A Openshaw",
+     "overs": "202.1", "maidens": 59, "runs_conceded": 579, "wickets": 33,
+     "average": 17.55, "source_file": "nmcl stats/2000 2.tif"},
+    {"season": 2000, "division": 1, "discipline": "bowling", "name": "R Savage",
+     "overs": "201.3", "maidens": 41, "runs_conceded": 642, "wickets": 32,
+     "average": 20.06, "source_file": "nmcl stats/2000 2.tif"},
+
+    # ---- 2001 ----
+    {"season": 2001, "division": 1, "discipline": "batting", "name": "F Daly",
+     "innings_played": 20, "not_outs": 1, "highest_score": 82, "highest_score_not_out": 0,
+     "runs": 627, "average": 33.00, "source_file": "nmcl stats/2001 1.tif"},
+    {"season": 2001, "division": 1, "discipline": "batting", "name": "R Savage",
+     "innings_played": 20, "not_outs": 4, "highest_score": 76, "highest_score_not_out": 1,
+     "runs": 470, "average": 29.38, "source_file": "nmcl stats/2001 1.tif"},
+    {"season": 2001, "division": 1, "discipline": "batting", "name": "N Warne",
+     "innings_played": 14, "not_outs": 1, "highest_score": 101, "highest_score_not_out": 0,
+     "runs": 333, "average": 25.62, "source_file": "nmcl stats/2001 1.tif"},
+
+    {"season": 2001, "division": 1, "discipline": "bowling", "name": "R Savage",
+     "overs": "190", "maidens": 37, "runs_conceded": 597, "wickets": 34,
+     "average": 17.56, "source_file": "nmcl stats/2001 2.tif"},
+
+    # ---- 2002 ----
+    {"season": 2002, "division": 1, "discipline": "batting", "name": "R Savage",
+     "innings_played": 14, "not_outs": 3, "highest_score": 73, "highest_score_not_out": 1,
+     "runs": 376, "average": 34.18, "source_file": "nmcl stats/2002 1.tif"},
+    {"season": 2002, "division": 1, "discipline": "batting", "name": "F Daly",
+     "innings_played": 19, "not_outs": 2, "highest_score": 69, "highest_score_not_out": 0,
+     "runs": 539, "average": 31.71, "source_file": "nmcl stats/2002 1.tif"},
+    {"season": 2002, "division": 1, "discipline": "batting", "name": "N Warne",
+     "innings_played": 16, "not_outs": 3, "highest_score": 42, "highest_score_not_out": 1,
+     "runs": 270, "average": 20.77, "source_file": "nmcl stats/2002 1.tif"},
+
+    {"season": 2002, "division": 1, "discipline": "bowling", "name": "J Richardson",
+     "overs": "115.4", "maidens": 17, "runs_conceded": 457, "wickets": 30,
+     "average": 15.23, "source_file": "nmcl stats/2002 2.tif"},
+
     # ---- 2003 ----
     {"season": 2003, "division": 1, "discipline": "batting", "name": "J Wade",
      "innings_played": 11, "not_outs": 2, "highest_score": 183, "highest_score_not_out": 1,

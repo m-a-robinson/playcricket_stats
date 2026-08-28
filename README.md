@@ -204,14 +204,16 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   actually links e.g. `"F Daly"` here to the `Fran Daly` CricHQ/
   CricketStatz identity, not this module guessing. Run `python3
   nmcl_stats.py --sqlite-db <path>` after the other sources. Ingested so
-  far: 2003-2005 (19 rows), with 9 of those 11 transcribed names already
-  linked by `decisions.yaml` to an existing canonical player (checked
-  against real evidence, not name-alone — see the commit message); the
-  remaining 2, `R Savage` and `G Young`, don't match anything else in
-  the archive closely enough to link with confidence and are left as
-  their own standalone players. 2010-2013 needs the equivalent
-  scans/spreadsheets added before the same pipeline can run against
-  them.
+  far: 2000-2005 (33 rows, six seasons), with 12 of the 14 transcribed
+  names linked by `decisions.yaml` to an existing canonical player
+  (checked against real evidence, not name-alone — see the commit
+  messages); the remaining 2, `R Savage` and `G Young`, don't match
+  anything else in the archive closely enough to link with confidence
+  and are left as their own standalone players (`R Savage` in
+  particular has a full 2000-2003 batting-and-bowling record purely
+  within this source, never having appeared in a match-level source at
+  all). 2010-2013 needs the equivalent scans/spreadsheets added before
+  the same pipeline can run against them.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
@@ -525,20 +527,20 @@ remains.
   the bundled `sample.csd` demo database ("The Bodyline Test Series") —
   what `mxp_parser.py` was validated against for historical accuracy
   (Larwood 5/96, McCabe's 187\*, all five 1932-33 Test results).
-- `nmcl stats/*.tif` — six scanned A4 pages (2003–2005, two per season):
-  North Manchester Cricket League "Final Averages" sheets, the club's
-  paper-era stats predating even CricketStatz (whose own earliest match
-  is 2005-04-23) — genuinely the only source of any kind for 2003 and
-  2004, and the only lead so far on the 2010-2013 season blackout (see
-  the "Milestone" section above and `nmcl_stats.py` below). Each year:
-  page 1 is Division One batting, page 2 is Division One bowling plus a
-  wicketkeeping block — everyone above a stated qualification threshold
-  (e.g. "QUAL 11 INNS 200 RUNS AVGE 20.00"), not a full scorecard or
-  even a full squad list. No Division Two page exists yet in any of the
-  three years scanned so far, consistent with ELPM fielding no 2nd XI
-  before 2006 (see the match data itself). Now ingested — see
-  `nmcl_stats.py` below — but only for these three years; 2010-2013
-  needs the equivalent scans/spreadsheets added here first.
+- `nmcl stats/*.tif` — twelve scanned A4 pages (2000–2005, two per
+  season): North Manchester Cricket League "Final Averages" sheets, the
+  club's paper-era stats predating even CricketStatz (whose own earliest
+  match is 2005-04-23) — genuinely the only source of any kind for
+  2000-2004, and the only lead so far on the 2010-2013 season blackout
+  (see the "Milestone" section above and `nmcl_stats.py` below). Each
+  year: page 1 is Division One batting, page 2 is Division One bowling
+  plus a wicketkeeping block — everyone above a stated qualification
+  threshold (e.g. "QUAL 11 INNS 200 RUNS AVGE 20.00"), not a full
+  scorecard or even a full squad list. No Division Two page exists yet
+  in any of the six years scanned so far, consistent with ELPM fielding
+  no 2nd XI before 2006 (see the match data itself). Now ingested — see
+  `nmcl_stats.py` below — but only for these six years; 2010-2013 needs
+  the equivalent scans/spreadsheets added here first.
 
 ### Not built yet
 
@@ -577,7 +579,7 @@ remains.
   `career_stats(team_id=...)`/team-level views get real use.
 - The **2010-2013 season blackout** (see "Milestone" above): zero match
   data of any kind, any source, for four straight seasons. `nmcl_stats.py`
-  now ingests the equivalent NMCL sheets for 2003-2005 (the only years
+  now ingests the equivalent NMCL sheets for 2000-2005 (the only years
   scanned so far); the same pipeline should handle 2010-2013 once those
   years' sheets/spreadsheets are found and added to `nmcl stats/`.
 - `nmcl_season_stats` isn't wired into `career_stats()`/leaderboards at
