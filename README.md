@@ -75,6 +75,20 @@ aggregates; if genuine scorecards or scorebook pages for those turn up,
 the same `cricketstatz_txt.py`/`scorebooks.py` pipelines would replace
 the aggregate figures with real per-match data.
 
+Building a season-by-season match export as an early cross-check tool for
+the scorebook-digitisation effort (a workbook with one sheet per season,
+2000-2016) surfaced three more genuine crichq_pdf/cricketstatz transition
+duplicates that the earlier 29-duplicate sweep had missed — one from the
+2005 CricketStatz/CricketStatz-text overlap (see `cricketstatz_txt.py`'s
+mislabeled-file note above) and two from 2016, one of which was hiding
+behind two never-merged spellings of the same opposition club ("Flixton
+CC" vs "Flixton C&SC"). `reconcile/decisions.yaml`'s `duplicate_matches:`
+now has 32 entries, not 29, and `reconcile_audit.py` gained a permanent
+"Candidate duplicate matches" check (same date, same ELPM team, identical
+per-innings runs, two different sources) so this class of bug surfaces on
+every future audit instead of needing another by-eye pass. **964 matches
+raw, 932 once `reconcile.py` applies `duplicate_matches`.**
+
 Play-Cricket's own history isn't necessarily fully backfilled yet — 2024-2026
 is what's been synced so far; earlier seasons (however far back the club's
 Play-Cricket presence goes, likely somewhere in the 2018-2023 range CricHQ
@@ -421,7 +435,14 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
 - **`reconcile_audit.py`** — Generates a Markdown report over an
   already-built SQLite store: a data-quality scan (distinct competitions/
   leagues/grounds/seasons, rarest-first so a likely typo surfaces near the
-  top, plus any crichq_pdf.py "Unknown (...)" placeholder rows) and
+  top, plus any crichq_pdf.py "Unknown (...)" placeholder rows; also a
+  "Candidate duplicate matches" check — same date, same ELPM team,
+  identical per-innings runs, two different sources — that matches on the
+  scores themselves rather than opposition club/team identity, so a
+  duplicate hiding behind two unmerged spellings of the same opposition
+  club still surfaces even before that club's ref merge is written; added
+  after three such duplicates were found by hand, see the "Milestone"
+  section above) and
   reconciliation candidates for clubs, teams, grounds, and players that
   look like the same real thing split across canonical rows but aren't
   safe to merge automatically. Never writes to the SQLite database — but
@@ -1157,7 +1178,7 @@ throughout the walkthrough above, and keep it out of git.
 
 1. **Data foundation** — *Done, and now proven against every original
    source at once* (see the milestone note at the top of this README:
-   964 matches raw / 935 reconciled across six sources, zero
+   964 matches raw / 932 reconciled across six sources, zero
    foreign-key violations, all of them live in the store together, not
    just individually validated). SQLite store built
    (`schema.sql` / `sqlite_store.py`): players, clubs, teams, matches, innings,

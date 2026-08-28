@@ -3143,3 +3143,65 @@ duplicate_matches:
       source: cricketstatz
       id: 30/07/2016|52|1
     reason: 'Same real match (30/07/2016 vs Worsley CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 60 vs 55).'
+  - keep:
+      source: cricketstatz
+      id: 28/05/2016|3|1
+    remove:
+      source: crichq_pdf
+      id: Tottington St Johns CC, Tottington St Johns CC 1st XI|East Lancs Paper Mill CC, 1st XI|28/05/2016
+    reason: >
+      A SECOND, separate duplicate on 28/05/2016 vs Tottington St Johns CC --
+      the existing entry above for this same date covers the 2nd XI fixture
+      (team_id 3); this one is the 1st XI fixture (team_id 1), both played
+      that day and both got double-entered across sources. Found by a
+      systematic sweep for same-date/same-ELPM-team/same-innings-runs
+      collisions across the whole archive (2026-08-28), prompted by the
+      user spotting what looked like the same team appearing in two
+      divisions in the 2000-2016 scorecard-archive workbook -- confirmed
+      identical scores (264/6 & 207 all out) and TSJ 1st XI as the winner
+      on both sides. Kept the richer side: cricketstatz has a real ground/
+      toss/result (crichq_pdf's are the known unreliable "England -
+      Lancashire" ground placeholder and a garbled toss field reading
+      "Match Officials:"), 19 vs 18 batting rows, 23 vs 21 appearances.
+  - keep:
+      source: cricketstatz
+      id: 25/06/2016|57|1
+    remove:
+      source: crichq_pdf
+      id: Flixton C&SC, 2nd XI|East Lancs Paper Mill CC, 1st XI|25/06/2016
+    reason: >
+      Same real match (25/06/2016, ELPM 1st XI away) entered independently
+      into both sources -- hidden behind two never-merged opposition club
+      identities ("Flixton CC" in cricketstatz vs "Flixton C&SC" in
+      crichq_pdf, genuinely different spellings of the same real club),
+      which is why the earlier club/team-pair-based duplicate sweep never
+      caught it. Found the same way as the 28/05/2016 entry above: a
+      same-date/same-ELPM-team/same-innings-runs signature match, which
+      catches this kind independent of whether the opposition's identity
+      has been reconciled yet. Confirmed identical scores (225/9 & 154 all
+      out) and identical batting/bowling row counts (21/13) on both sides.
+      Kept cricketstatz: it has a real result ("FX 1st XI won"), a real
+      ground ("Croft Lane, ELPM") and a resolved toss winner, where
+      crichq_pdf again has the unreliable ground placeholder and an
+      unresolved, garbled toss field.
+  - keep:
+      source: cricketstatz_txt
+      id: ELPM 1st XI|TSJ 1st XI|23-Apr-2005
+    remove:
+      source: cricketstatz
+      id: 23/04/2005|3|1
+    reason: >
+      Same real match (23/04/2005 vs Tottington St Johns CC) entered
+      independently into both sources -- the cricketstatz_txt copy exists
+      only because two of the "2010 scorecards" text files were saved
+      under the wrong filename and actually contain this 2005 fixture's
+      content (see cricketstatz_txt.py's module docstring and the
+      filename-vs-content date-mismatch warnings its CLI prints for
+      those two files); the real 2010 fixtures those filenames imply are
+      still missing, not doubled up. Found by the same same-date/same-
+      ELPM-team/same-runs sweep as the two entries above. Confirmed
+      identical scores (164 all out & 99 all out) and identical
+      batting/bowling row counts (22/10) on both sides. Kept the richer
+      side: cricketstatz_txt records overs bowled per innings (44.2, 31)
+      and the winning margin ("won by 65 runs"), which cricketstatz has
+      neither of.
