@@ -190,6 +190,9 @@ players:
       - source: nmcl_stats
         id: W STREET
         name: W Street
+      - source: nmcl_stats
+        id: M PARTINGTON
+        name: M Partington
   - canonical_name: Carl Dearden
     refs:
       - source: crichq_pdf
@@ -352,6 +355,9 @@ players:
         name: Andrew Lomas
       - source: cricketstatz_txt
         id: A Lomax
+        name: A Lomax
+      - source: nmcl_stats
+        id: A LOMAX
         name: A Lomax
   - canonical_name: Luke Lomax
     refs:
@@ -955,6 +961,9 @@ players:
       - source: cricketstatz
         id: '849'
         name: Kevin Dodson
+      - source: nmcl_stats
+        id: K DODSON
+        name: K Dodson
   - canonical_name: Craig Belston
     refs:
       - source: play_cricket
@@ -1214,6 +1223,9 @@ players:
         name: S Dwyer
       - source: cricketstatz_txt
         id: S Dwyer
+        name: S Dwyer
+      - source: nmcl_stats
+        id: S DWYER
         name: S Dwyer
     reason: Confirmed by the user as the same person across all three source rows.
   - canonical_name: Gavin Greaves
@@ -1616,6 +1628,9 @@ players:
         name: M Young
       - source: cricketstatz_txt
         id: M Young
+        name: M Young
+      - source: nmcl_stats
+        id: M YOUNG
         name: M Young
   - canonical_name: M Z Shah
     refs:

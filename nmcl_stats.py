@@ -7,14 +7,21 @@ table -- see schema.sql for why these are a separate, explicitly
 season-aggregate table rather than match-level data.
 
 Unlike the other three sources (Play-Cricket API, CricHQ PDF,
-CricketStatz .MXP), these sheets are pre-2005 photocopies/scans with no
+CricketStatz .MXP), the 2000-2005 sheets are photocopies/scans with no
 machine-readable text layer and no consistent enough layout for a
 regex/OCR pipeline to be worth the risk of silently mis-reading a
-qualification-threshold table (wrong average, wrong player) -- so
-ELPM_ROWS below is a direct, manually verified transcription of every
-ELPM-relevant row on each sheet, not a parser output. New seasons are
-added the same way: read the sheet, add rows here, matching the schema
-below exactly (see each dict's keys).
+qualification-threshold table (wrong average, wrong player) -- so those
+years' rows in ELPM_ROWS are a direct, manually verified transcription
+of every ELPM-relevant row on each sheet, not a parser output. From
+2011 onwards the club has the same "Final Averages" report as a native
+Excel workbook (`nmcl stats/NMCL <year> FINAL AVERAGES.xls`) instead of
+a scan -- those years ARE machine-parsed (see the DIV1BAT/DIV1BOWL/
+DIV2/DIV3/DIV4 sheet-reading logic in the git history of this file
+around the 2011-2013 rows) and only re-typed into ELPM_ROWS as plain
+dicts here to keep one format for every season regardless of how it
+was sourced. New scanned seasons are added by transcription, matching
+the schema below exactly (see each dict's keys); a new Excel workbook
+would be parsed the same way the 2011-2013 ones were.
 
 Only ELPM (East Lancs Paper Mill) rows are transcribed -- every other
 club appearing on these league-wide sheets is out of scope for this
@@ -247,6 +254,76 @@ ELPM_ROWS = [
      "runs": 63, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
     {"season": 2010, "division": 1, "discipline": "bowling", "name": "W Street",
      "wickets": 3, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+
+    # ---- 2011-2013 (NMCL "Final Averages" Excel workbooks, not scans --
+    # `nmcl stats/NMCL <year> FINAL AVERAGES.xls`) ----
+    # Each workbook has separate DIV1BAT/DIV1BOWL sheets plus a combined
+    # DIV2/DIV3/DIV4 sheet (batting+bowling+wicketkeeping together) per
+    # division. Per the user: the NMCL renumbered which division the
+    # 2nd XI played in as they were relegated across these seasons, so
+    # every division other than One is this club's 2nd XI -- division
+    # here is already normalised to 1 or 2, not the sheet's own division
+    # number (kept in the reason/commit history, not per-row).
+    {"season": 2011, "division": 1, "discipline": "batting", "name": "G Greaves",
+     "innings_played": 15, "not_outs": 3, "highest_score": 64, "highest_score_not_out": 0,
+     "runs": 361, "average": 30.08, "source_file": "nmcl stats/NMCL 2011 FINAL AVERAGES.xls"},
+    {"season": 2011, "division": 1, "discipline": "batting", "name": "S Keyworth",
+     "innings_played": 20, "not_outs": 8, "highest_score": 50, "highest_score_not_out": 0,
+     "runs": 254, "average": 21.17, "source_file": "nmcl stats/NMCL 2011 FINAL AVERAGES.xls"},
+    {"season": 2011, "division": 1, "discipline": "bowling", "name": "P Hewart",
+     "overs": "133", "maidens": 30, "runs_conceded": 396, "wickets": 35,
+     "average": 11.31, "source_file": "nmcl stats/NMCL 2011 FINAL AVERAGES.xls"},
+    {"season": 2011, "division": 1, "discipline": "wicketkeeping", "name": "P Partington",
+     "catches": 11, "stumpings": 7, "source_file": "nmcl stats/NMCL 2011 FINAL AVERAGES.xls"},
+
+    {"season": 2012, "division": 1, "discipline": "batting", "name": "I Wade",
+     "innings_played": 13, "not_outs": 3, "highest_score": 78, "highest_score_not_out": 0,
+     "runs": 403, "average": 40.30, "source_file": "nmcl stats/NMCL 2012 FINAL AVERAGES.xls"},
+    {"season": 2012, "division": 1, "discipline": "batting", "name": "G Greaves",
+     "innings_played": 13, "not_outs": 3, "highest_score": 194, "highest_score_not_out": 0,
+     "runs": 372, "average": 37.20, "source_file": "nmcl stats/NMCL 2012 FINAL AVERAGES.xls"},
+    {"season": 2012, "division": 1, "discipline": "bowling", "name": "P Hewart",
+     "overs": "140.3", "maidens": 31, "runs_conceded": 542, "wickets": 37,
+     "average": 14.65, "source_file": "nmcl stats/NMCL 2012 FINAL AVERAGES.xls"},
+    {"season": 2012, "division": 1, "discipline": "wicketkeeping", "name": "J Bond",
+     "catches": 6, "stumpings": 3, "source_file": "nmcl stats/NMCL 2012 FINAL AVERAGES.xls"},
+    {"season": 2012, "division": 2, "discipline": "bowling", "name": "M Young",
+     "overs": "99", "maidens": 12, "runs_conceded": 514, "wickets": 24,
+     "average": 21.42, "source_file": "nmcl stats/NMCL 2012 FINAL AVERAGES.xls"},
+    {"season": 2012, "division": 2, "discipline": "wicketkeeping", "name": "N Warne",
+     "catches": 5, "stumpings": 8, "source_file": "nmcl stats/NMCL 2012 FINAL AVERAGES.xls"},
+
+    {"season": 2013, "division": 1, "discipline": "batting", "name": "I Wade",
+     "innings_played": 18, "not_outs": 5, "highest_score": 83, "highest_score_not_out": 1,
+     "runs": 518, "average": 39.85, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 1, "discipline": "batting", "name": "G Greaves",
+     "innings_played": 13, "not_outs": 2, "highest_score": 91, "highest_score_not_out": 1,
+     "runs": 370, "average": 33.64, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 1, "discipline": "batting", "name": "M Partington",
+     "innings_played": 16, "not_outs": 2, "highest_score": 95, "highest_score_not_out": 1,
+     "runs": 395, "average": 28.21, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 1, "discipline": "batting", "name": "K Dodson",
+     "innings_played": 15, "not_outs": 1, "highest_score": 88, "highest_score_not_out": 1,
+     "runs": 281, "average": 20.07, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 1, "discipline": "bowling", "name": "S Dalton",
+     "overs": "111", "maidens": 20, "runs_conceded": 397, "wickets": 40,
+     "average": 9.93, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 1, "discipline": "wicketkeeping", "name": "G Young",
+     "catches": 27, "stumpings": 4, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 2, "discipline": "batting", "name": "S Dwyer",
+     "innings_played": 10, "not_outs": 3, "highest_score": 33, "highest_score_not_out": 0,
+     "runs": 213, "average": 30.43, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 2, "discipline": "batting", "name": "D Rushton",
+     "innings_played": 11, "not_outs": 0, "highest_score": 67, "highest_score_not_out": 0,
+     "runs": 276, "average": 25.09, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 2, "discipline": "batting", "name": "A Lomax",
+     "innings_played": 13, "not_outs": 2, "highest_score": 70, "highest_score_not_out": 1,
+     "runs": 267, "average": 24.27, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 2, "discipline": "bowling", "name": "D Rushton",
+     "overs": "160", "maidens": 29, "runs_conceded": 536, "wickets": 37,
+     "average": 14.49, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
+    {"season": 2013, "division": 2, "discipline": "wicketkeeping", "name": "P Partington",
+     "catches": 9, "stumpings": 6, "source_file": "nmcl stats/NMCL 2013 FINAL AVERAGES.xls"},
 ]
 
 
