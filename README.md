@@ -188,6 +188,30 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   record end to end through the existing `sqlite_queries.py` layer. Run
   `python3 mxp_parser.py <mxp-file>... --sqlite-db <path>` to ingest one
   or more `.MXP` exports.
+- **`nmcl_stats.py`** — Ingests the NMCL "Final Averages" scans
+  (`nmcl stats/*.tif`, see "Sample data" below) into `nmcl_season_stats`
+  — a separate table from `innings`/`batting_innings`/`bowling_innings`/
+  `match_appearances`, since these sheets only ever give a season-end
+  aggregate for players clearing a qualification threshold, never a
+  match, an innings, or a full squad. Unlike the other three sources
+  this is **not** a regex/OCR parser: `ELPM_ROWS` is a direct, manually
+  transcribed copy of every ELPM row on each sheet read so far (see the
+  module docstring for why OCR wasn't worth the misread risk on a
+  qualification-threshold table). Player identity works the same way as
+  every other source — `source="nmcl_stats"`, a new canonical player
+  row per (until reconciled) printed name via the same `_upsert_player()`
+  every other source uses, so a `reconcile/decisions.yaml` merge is what
+  actually links e.g. `"F Daly"` here to the `Fran Daly` CricHQ/
+  CricketStatz identity, not this module guessing. Run `python3
+  nmcl_stats.py --sqlite-db <path>` after the other sources. Ingested so
+  far: 2003-2005 (19 rows), with 9 of those 11 transcribed names already
+  linked by `decisions.yaml` to an existing canonical player (checked
+  against real evidence, not name-alone — see the commit message); the
+  remaining 2, `R Savage` and `G Young`, don't match anything else in
+  the archive closely enough to link with confidence and are left as
+  their own standalone players. 2010-2013 needs the equivalent
+  scans/spreadsheets added before the same pipeline can run against
+  them.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
@@ -501,10 +525,20 @@ remains.
   the bundled `sample.csd` demo database ("The Bodyline Test Series") —
   what `mxp_parser.py` was validated against for historical accuracy
   (Larwood 5/96, McCabe's 187\*, all five 1932-33 Test results).
-- `nmcl stats/*.tif` — six scanned A4 pages (2003–2005, two per season),
-  presumably paper club/league stats predating even CricketStatz. Newly
-  added; not yet part of any ingestion pipeline — scanned images, so
-  reading them would mean OCR, not just a new parser. See "Not built yet".
+- `nmcl stats/*.tif` — six scanned A4 pages (2003–2005, two per season):
+  North Manchester Cricket League "Final Averages" sheets, the club's
+  paper-era stats predating even CricketStatz (whose own earliest match
+  is 2005-04-23) — genuinely the only source of any kind for 2003 and
+  2004, and the only lead so far on the 2010-2013 season blackout (see
+  the "Milestone" section above and `nmcl_stats.py` below). Each year:
+  page 1 is Division One batting, page 2 is Division One bowling plus a
+  wicketkeeping block — everyone above a stated qualification threshold
+  (e.g. "QUAL 11 INNS 200 RUNS AVGE 20.00"), not a full scorecard or
+  even a full squad list. No Division Two page exists yet in any of the
+  three years scanned so far, consistent with ELPM fielding no 2nd XI
+  before 2006 (see the match data itself). Now ingested — see
+  `nmcl_stats.py` below — but only for these three years; 2010-2013
+  needs the equivalent scans/spreadsheets added here first.
 
 ### Not built yet
 
@@ -541,11 +575,19 @@ remains.
   sure it's actually surfaced on a par with the longer-running XIs rather
   than just quietly present in the data. Worth an explicit check once
   `career_stats(team_id=...)`/team-level views get real use.
-- OCR/ingestion for `nmcl stats/*.tif` — six scanned pages of (presumably)
-  paper club stats, 2003–2005, newly added and not yet part of any
-  pipeline. A potential fourth source, further back than any of the other
-  three, but scanned images need OCR before there's text to parse at all —
-  a different kind of work to the other three parsers.
+- The **2010-2013 season blackout** (see "Milestone" above): zero match
+  data of any kind, any source, for four straight seasons. `nmcl_stats.py`
+  now ingests the equivalent NMCL sheets for 2003-2005 (the only years
+  scanned so far); the same pipeline should handle 2010-2013 once those
+  years' sheets/spreadsheets are found and added to `nmcl stats/`.
+- `nmcl_season_stats` isn't wired into `career_stats()`/leaderboards at
+  all yet — it's pure season-aggregate data with no innings/match
+  granularity to blend cleanly against per-match figures (no
+  balls-faced/strike-rate, no fielding beyond keeping, no distinction
+  between a not-out top score and one that just wasn't beaten). Blending
+  it in without implying false precision, or misleadingly double-counting
+  a season that also has real match-level rows, needs its own design
+  pass, not just a UNION.
 - Formatted scorecard export (image/PDF) for printing or framing.
 - Social-media formatting for player performances and weekend results.
 - Any CLI/UI entry point — everything today is a library, including the

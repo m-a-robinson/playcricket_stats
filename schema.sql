@@ -118,6 +118,67 @@ CREATE INDEX IF NOT EXISTS idx_player_source_ids_player
     ON player_source_ids (player_id);
 
 -- ================================================================
+-- NMCL AGGREGATE SEASON STATS (scanned/archived league averages)
+-- ================================================================
+--
+-- North Manchester Cricket League "Final Averages" sheets (see
+-- nmcl_stats.py, `nmcl stats/*.tif`) publish season-end BATTING/
+-- BOWLING/WICKETKEEPING averages for players who cleared a stated
+-- qualification threshold (e.g. "QUAL 11 INNS 200 RUNS AVGE 20.00")
+-- -- not full scorecards. They exist to fill seasons with no
+-- match-level source at all (2003-2004, and part of the 2010-2013
+-- blackout -- see README's "Milestone" section), at the cost of
+-- granularity: no match_id, no innings-by-innings detail, no
+-- full-squad list (only qualifying players appear on a given sheet),
+-- and a player only has a row here for a discipline they cleared the
+-- threshold in, even if they did more than one in reality. "Division
+-- One"/"Division Two" on the sheet is club-relative (this club's 1st
+-- XI / 2nd XI), not a league position -- the same division number is
+-- shared by every club in the league.
+--
+-- player_id starts out as this source's own new player row (via the
+-- same player_source_ids mechanism every other source uses, source
+-- ='nmcl_stats') and gets repointed at merge time exactly like any
+-- other source. These rows are NOT wired into career_stats()/
+-- leaderboards automatically -- they can't produce batting_innings/
+-- bowling_innings/match_appearances rows (no innings/match
+-- granularity to hang them on) -- they're a separate, explicitly
+-- season-aggregate supplement a query can choose to blend in.
+
+CREATE TABLE IF NOT EXISTS nmcl_season_stats (
+    stat_id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    player_id               INTEGER NOT NULL REFERENCES players (player_id),
+    team_id                 INTEGER REFERENCES teams (team_id),   -- this club's team the division maps to, where known
+    season                  INTEGER NOT NULL,
+    division                INTEGER NOT NULL,   -- 1, 2, 3... as printed ("Division One" etc)
+    discipline               TEXT NOT NULL,      -- 'batting' | 'bowling' | 'wicketkeeping'
+
+    innings_played              INTEGER,   -- batting
+    not_outs                      INTEGER,   -- batting
+    highest_score                   INTEGER,   -- batting
+    highest_score_not_out             INTEGER,   -- batting, 0/1
+    runs                                INTEGER,   -- batting
+
+    overs                                  TEXT,      -- bowling
+    maidens                                 INTEGER,   -- bowling
+    runs_conceded                             INTEGER,   -- bowling
+    wickets                                     INTEGER,   -- bowling
+
+    catches                                       INTEGER,   -- wicketkeeping
+    stumpings                                       INTEGER,   -- wicketkeeping
+
+    average                                           REAL,
+
+    source_club_code                                    TEXT NOT NULL,   -- as printed, e.g. 'ELPM'
+    source_file                                           TEXT NOT NULL,
+
+    UNIQUE (player_id, season, division, discipline)
+);
+
+CREATE INDEX IF NOT EXISTS idx_nmcl_season_stats_player ON nmcl_season_stats (player_id);
+
+-- ================================================================
 -- MATCHES
 -- ================================================================
 

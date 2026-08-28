@@ -108,6 +108,9 @@ players:
       - source: crichq_pdf
         id: Ian Wade
         name: Ian Wade
+      - source: nmcl_stats
+        id: I WADE
+        name: I Wade
     reason: >
       Confirmed the same player across all three sources by season
       overlap and playing career shape (see README roadmap item 4).
@@ -283,6 +286,9 @@ players:
       - source: cricketstatz
         id: '10'
         name: P Hewart
+      - source: nmcl_stats
+        id: P HEWART
+        name: P Hewart
   - canonical_name: Louis Birmingham
     refs:
       - source: play_cricket
@@ -377,6 +383,9 @@ players:
       - source: cricketstatz
         id: '11'
         name: Robinson,M
+      - source: nmcl_stats
+        id: M ROBINSON
+        name: M Robinson
   - canonical_name: Shasvat Kakkar
     refs:
       - source: play_cricket
@@ -418,6 +427,9 @@ players:
         name: Simon Carr
       - source: cricketstatz
         id: '9'
+        name: S Carr
+      - source: nmcl_stats
+        id: S CARR
         name: S Carr
   - canonical_name: Carter Charlesworth
     refs:
@@ -1132,6 +1144,9 @@ players:
       - source: cricketstatz
         id: '7'
         name: G Greaves
+      - source: nmcl_stats
+        id: G GREAVES
+        name: G Greaves
     reason: Season overlap (2016, 2018) between the two sources -- same 'two systems, same transition era' pattern as other confirmed merges. Confirmed by the user.
   - canonical_name: Andy Hodson
     decided: '2026-08-28'
@@ -1328,10 +1343,16 @@ players:
       - source: cricketstatz
         id: '8'
         name: Dalton,S
+      - source: nmcl_stats
+        id: S DALTON
+        name: S Dalton
   - canonical_name: Fran Daly
     refs:
       - source: cricketstatz
         id: '1'
+        name: F Daly
+      - source: nmcl_stats
+        id: F DALY
         name: F Daly
   - canonical_name: G Merriman
     refs:
@@ -1390,6 +1411,9 @@ players:
     refs:
       - source: cricketstatz
         id: '2'
+        name: J Shiels
+      - source: nmcl_stats
+        id: J SHIELS
         name: J Shiels
   - canonical_name: Adam Jones
     refs:
@@ -1556,6 +1580,9 @@ players:
       - source: cricketstatz
         id: '34'
         name: Wade,J
+      - source: nmcl_stats
+        id: J WADE
+        name: J Wade
   - canonical_name: Dave Woodward
     refs:
       - source: cricketstatz
