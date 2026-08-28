@@ -27,6 +27,31 @@ far; "Division Two" would be the 2nd XI. Mapped to team_id via
 DIVISION_TEAM_NAMES below, resolved against whatever team rows already
 exist in the target store (so it works after the standard "1st XI"/
 "2nd XI" club/team dedup key, not by a hardcoded id).
+
+A second, different kind of row also lives in ELPM_ROWS from 2010
+onwards: RESIDUAL figures, not a sheet transcription. The 2010 season
+has real match-level data (cricketstatz_txt.py, `cricketstatz/2010
+scorecards/`), but that folder is confirmed incomplete -- some
+fixtures were saved under the wrong filename with another match's
+content, and at least two 1st XI matches aren't present under any
+filename at all (found by comparing ingested per-player totals against
+the club's own official end-of-season summary sheets, which cover
+every match played). For each player the DIFFERENCE between the
+official summary's season total and this project's own ingested total
+is the missing matches' combined contribution -- exactly the same
+"season aggregate, no match/innings granularity" shape as a real NMCL
+sheet, just derived by subtraction instead of read directly off a
+sheet. Only added where the difference is non-zero on a real stat
+(runs or wickets) -- a player who simply has 1-2 more Mts on the
+official sheet with zero runs/wickets attached isn't given a batting
+row for a blank innings. innings_played/highest_score/average are left
+None throughout: the official summary's own total, and this project's
+ingested total, are both real per-innings-detailed figures, but their
+DIFFERENCE isn't a real innings-level record of anything -- it's a sum
+across however many missing matches, mixed with whatever innings
+detail did make it into the sheet-level average, so reporting an
+"average" or "innings" for it would imply a precision the number
+doesn't have.
 """
 
 import re
@@ -169,6 +194,59 @@ ELPM_ROWS = [
 
     {"season": 2005, "division": 1, "discipline": "wicketkeeping", "name": "M Robinson",
      "catches": 19, "stumpings": 6, "average": None, "source_file": "nmcl stats/2005 2.tif"},
+
+    # ---- 2010 (RESIDUAL rows -- see module docstring) ----
+    # Official season total (2010_1st_XI_Complete_Summary.txt) minus
+    # this project's own cricketstatz_txt-ingested total, 1st XI only
+    # (the 2nd XI's own gap turned out to be zero runs/wickets across
+    # every player -- see the module docstring). Only players with a
+    # non-zero runs and/or wickets difference are listed.
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "C Greaves",
+     "runs": 137, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "C Holt",
+     "runs": 24, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "D Pearson",
+     "runs": 8, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "D Willett",
+     "runs": 9, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "D Willett",
+     "wickets": 2, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "G Greaves",
+     "runs": 203, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "G Greaves",
+     "wickets": 2, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "G Wade",
+     "runs": 27, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "G Wade",
+     "wickets": 1, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "I Wade",
+     "runs": 168, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "I Wade",
+     "wickets": 6, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "J Bailey",
+     "runs": 91, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "J Bailey",
+     "wickets": 3, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "J Shiels",
+     "runs": 100, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "J Shiels",
+     "wickets": 8, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "L Withington",
+     "runs": 1, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "M Hay",
+     "runs": 20, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "P Hewart",
+     "runs": 10, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "P Partington",
+     "runs": 24, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "S Keyworth",
+     "runs": 1, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "S Keyworth",
+     "wickets": 5, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "batting", "name": "W Street",
+     "runs": 63, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
+    {"season": 2010, "division": 1, "discipline": "bowling", "name": "W Street",
+     "wickets": 3, "source_file": "cricketstatz/2010_1st_XI_Complete_Summary.txt"},
 ]
 
 
