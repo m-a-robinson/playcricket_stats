@@ -2470,3 +2470,207 @@ pending:
   teams: []
   grounds: []
   players: []
+duplicate_matches:
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Shaw CC, 1st XI|02/06/2018
+    remove:
+      source: cricketstatz
+      id: 02/06/2018|1|77
+    reason: 'Same real match (02/06/2018 vs Shaw CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 57 vs 53).'
+  - keep:
+      source: cricketstatz
+      id: 02/07/2016|49|1
+    remove:
+      source: crichq_pdf
+      id: Walshaw CC, 2nd XI|East Lancs Paper Mill CC, 1st XI|02/07/2016
+    reason: 'Same real match (02/07/2016 vs Walshaw CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 76 vs 75).'
+  - keep:
+      source: cricketstatz
+      id: 04/06/2016|55|1
+    remove:
+      source: crichq_pdf
+      id: Roe Green CC, Roe Green CC 2nd XI|East Lancs Paper Mill CC, 1st XI|04/06/2016
+    reason: 'Same real match (04/06/2016 vs Roe Green CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 70 vs 69).'
+  - keep:
+      source: crichq_pdf
+      id: Clifton CC, 2nd XI|East Lancs Paper Mill CC, 1st XI|05/05/2018
+    remove:
+      source: cricketstatz
+      id: 05/05/2018|76|1
+    reason: 'Same real match (05/05/2018 vs Clifton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 67 vs 66).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Egerton CC, Egerton CC 2nd XI|07/05/2016
+    remove:
+      source: cricketstatz
+      id: 07/05/2016|1|51
+    reason: 'Same real match (07/05/2016 vs Egerton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 73 vs 68).'
+  - keep:
+      source: crichq_pdf
+      id: Westleigh CC, 1st XI|East Lancs Paper Mill CC, 1st XI|07/07/2018
+    remove:
+      source: cricketstatz
+      id: 07/07/2018|73|1
+    reason: 'Same real match (07/07/2018 vs Westleigh CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 73 vs 73).'
+  - keep:
+      source: crichq_pdf
+      id: Prestwich CC, 2nd XI|East Lancs Paper Mill CC, 1st XI|09/06/2018
+    remove:
+      source: cricketstatz
+      id: 09/06/2018|78|1
+    reason: 'Same real match (09/06/2018 vs Prestwich CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 65 vs 63).'
+  - keep:
+      source: cricketstatz
+      id: 10/06/2018|79|1
+    remove:
+      source: crichq_pdf
+      id: Hollinwood CC, 1st XI|East Lancs Paper Mill CC, 1st XI|10/06/2018
+    reason: 'Same real match (10/06/2018 vs Hollinwood CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 72 vs 71).'
+  - keep:
+      source: crichq_pdf
+      id: Elton Vale CC, 1st XI|East Lancs Paper Mill CC, 1st XI|12/05/2018
+    remove:
+      source: cricketstatz
+      id: 12/05/2018|5|1
+    reason: 'Same real match (12/05/2018 vs Elton Vale CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 74 vs 74).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Worsley CC, 2nd XI|14/05/2016
+    remove:
+      source: cricketstatz
+      id: 14/05/2016|1|52
+    reason: 'Same real match (14/05/2016 vs Worsley CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 58 vs 54).'
+  - keep:
+      source: crichq_pdf
+      id: Elton CC, 1st XI|East Lancs Paper Mill CC, 1st XI|14/07/2018
+    remove:
+      source: cricketstatz
+      id: 14/07/2018|12|1
+    reason: 'Same real match (14/07/2018 vs Elton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 75 vs 75).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Walshaw CC, 2nd XI|16/04/2016
+    remove:
+      source: cricketstatz
+      id: 16/04/2016|1|49
+    reason: 'Same real match (16/04/2016 vs Walshaw CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 45 vs 45).'
+  - keep:
+      source: cricketstatz
+      id: 16/06/2018|1|80
+    remove:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Micklehurst CC, 1st XI|16/06/2018
+    reason: 'Same real match (16/06/2018 vs Micklehurst CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 76 vs 75).'
+  - keep:
+      source: crichq_pdf
+      id: Elton Vale CC, 1st XI|East Lancs Paper Mill CC, 1st XI|16/07/2016
+    remove:
+      source: cricketstatz
+      id: 16/07/2016|18|1
+    reason: 'Same real match (16/07/2016 vs Elton Vale CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 71 vs 71).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Whalley Range CC, 2nd XI|18/06/2016
+    remove:
+      source: cricketstatz
+      id: 18/06/2016|1|56
+    reason: 'Same real match (18/06/2016 vs Whalley Range CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 65 vs 65).'
+  - keep:
+      source: crichq_pdf
+      id: Littleborough Lakeside, 1st XI|East Lancs Paper Mill CC, 1st XI|19/05/2018
+    remove:
+      source: cricketstatz
+      id: 19/05/2018|38|1
+    reason: 'Same real match (19/05/2018 vs Littleborough Lakeside CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 77 vs 76).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Edenfield CC, 1st XI|20/05/2018
+    remove:
+      source: cricketstatz
+      id: 20/05/2018|1|75
+    reason: 'Same real match (20/05/2018 vs Edenfield CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 74 vs 74).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Westleigh CC, 1st XI|21/04/2018
+    remove:
+      source: cricketstatz
+      id: 21/04/2018|1|73
+    reason: 'Same real match (21/04/2018 vs Westleigh CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 62 vs 62).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Bury CC, Bury CC 2nd XI|21/05/2016
+    remove:
+      source: cricketstatz
+      id: 21/05/2016|1|53
+    reason: 'Same real match (21/05/2016 vs Bury CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 55 vs 53).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Clifton CC, 2nd XI|21/07/2018
+    remove:
+      source: cricketstatz
+      id: 21/07/2018|1|76
+    reason: 'Same real match (21/07/2018 vs Clifton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 65 vs 65).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Winton CC, 2nd XI|23/04/2016
+    remove:
+      source: cricketstatz
+      id: 23/04/2016|1|50
+    reason: 'Same real match (23/04/2016 vs Winton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 73 vs 73).'
+  - keep:
+      source: crichq_pdf
+      id: Werneth CC, 1st XI|East Lancs Paper Mill CC, 1st XI|23/06/2018
+    remove:
+      source: cricketstatz
+      id: 23/06/2018|81|1
+    reason: 'Same real match (23/06/2018 vs Werneth CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 66 vs 66).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Egerton CC, Egerton CC 2nd XI|23/07/2016
+    remove:
+      source: cricketstatz
+      id: 23/07/2016|1|51
+    reason: 'Same real match (23/07/2016 vs Egerton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 73 vs 73).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Glossop CC, 2nd XI|26/05/2018
+    remove:
+      source: cricketstatz
+      id: 26/05/2018|1|74
+    reason: 'Same real match (26/05/2018 vs Glossop CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 72 vs 72).'
+  - keep:
+      source: crichq_pdf
+      id: East Lancs Paper Mill CC, 1st XI|Elton CC, 1st XI|28/04/2018
+    remove:
+      source: cricketstatz
+      id: 28/04/2018|1|12
+    reason: 'Same real match (28/04/2018 vs Elton CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 63 vs 63).'
+  - keep:
+      source: cricketstatz
+      id: 28/05/2016|3|1
+    remove:
+      source: crichq_pdf
+      id: Tottington St Johns CC, Tottington St Johns CC 2nd XI|East Lancs Paper Mill CC, 2nd XI|28/05/2016
+    reason: 'Same real match (28/05/2016 vs Tottington St Johns CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 68 vs 62).'
+  - keep:
+      source: cricketstatz
+      id: 29/05/2016|54|1
+    remove:
+      source: crichq_pdf
+      id: Denton West CC, 1st XI|East Lancs Paper Mill CC, 1st XI|29/05/2016
+    reason: 'Same real match (29/05/2016 vs Denton West CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 74 vs 73).'
+  - keep:
+      source: crichq_pdf
+      id: Droylsden CC, 1st XI|East Lancs Paper Mill CC, 1st XI|30/06/2018
+    remove:
+      source: cricketstatz
+      id: 30/06/2018|82|1
+    reason: 'Same real match (30/06/2018 vs Droylsden CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 72 vs 72).'
+  - keep:
+      source: crichq_pdf
+      id: Worsley CC, 2nd XI|East Lancs Paper Mill CC, 1st XI|30/07/2016
+    remove:
+      source: cricketstatz
+      id: 30/07/2016|52|1
+    reason: 'Same real match (30/07/2016 vs Worsley CC) entered independently into both sources during the 2016/2018 transition period -- confirmed identical/near-identical scores and ELPMCC player rosters. Kept the richer side (more batting/bowling/appearance rows: 60 vs 55).'

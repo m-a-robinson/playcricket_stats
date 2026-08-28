@@ -205,8 +205,16 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   refs are the same real player/club/team/ground (with a `canonical_name`
   you write, not just accept — see its own header for the full "how to
   edit this" guide), a club's confirmed home ground (`club_home_grounds`),
-  and rules that fix a source's own unusably vague per-match venue text
-  for one club's home fixtures (`ground_overrides`). `pending:` is where
+  rules that fix a source's own unusably vague per-match venue text
+  for one club's home fixtures (`ground_overrides`), and confirmed
+  duplicate fixtures — the same real match entered independently into two
+  sources (found concentrated around the 2016 and 2018 crichq_pdf/
+  cricketstatz transition period, where both an old and a new
+  scorekeeping system were fed the same games) — each recorded as a
+  `keep`/`remove` ref pair (`duplicate_matches`) and applied by deleting
+  the `remove` side's `matches` row outright (cascading to its own
+  innings/batting/bowling/appearances), not a merge — there's no
+  ambiguity to preserve, just one copy too many. `pending:` is where
   `reconcile_audit.py` writes every new candidate it finds (see that
   bullet below) — nothing to hand-copy out of a report; work through it
   (correct `canonical_name`, set `status: confirmed`/`audited`) and run

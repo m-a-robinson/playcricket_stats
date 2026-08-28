@@ -110,6 +110,7 @@ def load_decisions(path=DEFAULT_DECISIONS_PATH):
         "grounds": _as_ref_tuples(data.get("grounds") or []),
         "club_home_grounds": data.get("club_home_grounds") or [],
         "ground_overrides": data.get("ground_overrides") or [],
+        "duplicate_matches": data.get("duplicate_matches") or [],
     }
 
 
@@ -168,6 +169,24 @@ def find_ref_conflicts(path=DEFAULT_DECISIONS_PATH):
 
         if bad:
             conflicts[entity] = bad
+
+    match_locations = {}
+
+    for i, entry in enumerate(data.get("duplicate_matches") or []):
+
+        keep_key = (entry["keep"]["source"], str(entry["keep"]["id"]))
+        remove_key = (entry["remove"]["source"], str(entry["remove"]["id"]))
+        label = f"duplicate_matches[{i}]"
+
+        if keep_key == remove_key:
+            match_locations.setdefault(remove_key, []).append(f"{label} (keep == remove)")
+        else:
+            match_locations.setdefault(remove_key, []).append(f"{label} (remove)")
+
+    bad = {key: locs for key, locs in match_locations.items() if len(locs) > 1}
+
+    if bad:
+        conflicts["duplicate_matches"] = bad
 
     return conflicts
 
@@ -494,6 +513,71 @@ def apply_ground_overrides(conn, ground_overrides):
 
 
 # ==================================================================
+# DUPLICATE MATCHES
+# ==================================================================
+#
+# The same real fixture occasionally got entered independently into
+# two sources -- found for real in this archive's 2016/2018 seasons,
+# where crichq_pdf and cricketstatz both cover the same transition-
+# period matches. Left alone, every player in a duplicated match has
+# that game's runs/wickets/appearance double-counted. Unlike a
+# players/clubs/teams/grounds merge (repoint everything onto one
+# surviving row), a duplicate match has no "same real thing, different
+# spelling" ambiguity to resolve -- one copy is simply deleted
+# entirely, cascading to its innings/batting_innings/bowling_innings/
+# match_appearances rows (all ON DELETE CASCADE from matches.match_id
+# via innings.match_id or directly).
+
+def remove_duplicate_matches(conn, entries):
+    """
+    Delete the `remove` side of each confirmed duplicate-match pair.
+    `entries` is decisions.yaml's `duplicate_matches:` list, each
+    {keep: {source, id}, remove: {source, id}}. Resolves both refs by
+    (source, source_match_id) -- matches' own natural, source-rebuild-
+    stable identifier, the same pattern as club/team/player/ground
+    source ids. Idempotent: a `remove` ref that no longer resolves (already
+    deleted by an earlier run) is skipped rather than erroring, same as
+    ground_overrides' "already applied" tolerance.
+
+    Returns [(keep_source_match_id, remove_source_match_id, deleted)]
+    -- deleted is 0/1, so a re-run's already-applied entries are
+    visible rather than silently indistinguishable from "nothing to do".
+    """
+
+    results = []
+
+    for entry in entries:
+
+        keep = entry["keep"]
+        remove = entry["remove"]
+
+        keep_row = conn.execute(
+            "SELECT match_id FROM matches WHERE source = ? AND source_match_id = ?",
+            (keep["source"], str(keep["id"]))
+        ).fetchone()
+
+        if keep_row is None:
+            raise ValueError(
+                f"duplicate_matches: 'keep' ref not found -- "
+                f"(source={keep['source']!r}, id={keep['id']!r})"
+            )
+
+        remove_row = conn.execute(
+            "SELECT match_id FROM matches WHERE source = ? AND source_match_id = ?",
+            (remove["source"], str(remove["id"]))
+        ).fetchone()
+
+        if remove_row is None:
+            results.append((keep["id"], remove["id"], 0))
+            continue
+
+        conn.execute("DELETE FROM matches WHERE match_id = ?", (remove_row[0],))
+        results.append((keep["id"], remove["id"], 1))
+
+    return results
+
+
+# ==================================================================
 # APPLY EVERYTHING
 # ==================================================================
 
@@ -531,6 +615,8 @@ def apply_decisions(conn, decisions=None, decisions_path=DEFAULT_DECISIONS_PATH)
         survivor = merge_players(conn, merge["refs"], known_as=merge.get("canonical_name"))
         survivors.append(("player", merge.get("canonical_name"), survivor))
 
+    duplicate_results = remove_duplicate_matches(conn, decisions["duplicate_matches"])
+
     # Club home grounds and ground overrides need clubs/grounds already
     # merged above, so they run last.
     apply_club_home_grounds(conn, decisions["club_home_grounds"])
@@ -538,7 +624,7 @@ def apply_decisions(conn, decisions=None, decisions_path=DEFAULT_DECISIONS_PATH)
 
     conn.commit()
 
-    return survivors, override_results
+    return survivors, override_results, duplicate_results
 
 
 # ==================================================================
@@ -702,12 +788,16 @@ if __name__ == "__main__":
     conn = sqlite3.connect(args.sqlite_db)
     conn.execute("PRAGMA foreign_keys = ON")
 
-    survivors, override_results = apply_decisions(conn, decisions_path=args.decisions)
+    survivors, override_results, duplicate_results = apply_decisions(conn, decisions_path=args.decisions)
 
     for kind, canonical_name, survivor in survivors:
         print(f"Merged: {canonical_name} -> {kind}_id {survivor}")
 
     for source, home_club, ground, rowcount in override_results:
         print(f"Ground override: {source} / {home_club} -> {ground!r} ({rowcount} matches updated)")
+
+    for keep_id, remove_id, deleted in duplicate_results:
+        status = "removed" if deleted else "already removed"
+        print(f"Duplicate match: kept {keep_id!r}, {status} {remove_id!r}")
 
     conn.close()
