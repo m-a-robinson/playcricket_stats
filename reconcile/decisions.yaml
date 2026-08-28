@@ -169,6 +169,9 @@ players:
       - source: crichq_pdf
         id: Mgp Partington
         name: Mgp Partington
+      - source: crichq_pdf
+        id: M Parkinson
+        name: M Parkinson
   - canonical_name: Carl Dearden
     refs:
       - source: crichq_pdf
@@ -1448,11 +1451,6 @@ players:
       - source: cricketstatz
         id: '1261'
         name: M Kobryn
-  - canonical_name: M Parkinson
-    refs:
-      - source: crichq_pdf
-        id: M Parkinson
-        name: M Parkinson
   - canonical_name: Matthew Smalley
     refs:
       - source: cricketstatz
