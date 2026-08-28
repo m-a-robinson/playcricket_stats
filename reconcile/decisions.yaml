@@ -334,6 +334,12 @@ players:
       - source: cricketstatz
         id: '1496'
         name: L Lomax
+      - source: crichq_pdf
+        id: L Lomas
+        name: L Lomas
+      - source: crichq_pdf
+        id: L Lorax
+        name: L Lorax
   - canonical_name: Ben Birtwistle
     refs:
       - source: play_cricket
@@ -348,6 +354,9 @@ players:
       - source: cricketstatz
         id: '672'
         name: B Birtwistle
+      - source: crichq_pdf
+        id: B Bitrtwistle
+        name: B Bitrtwistle
   - canonical_name: Mark Robinson
     refs:
       - source: play_cricket
@@ -362,6 +371,9 @@ players:
       - source: crichq_pdf
         id: M Robinson
         name: M Robinson
+      - source: cricketstatz
+        id: '11'
+        name: Robinson,M
   - canonical_name: Shasvat Kakkar
     refs:
       - source: play_cricket
@@ -460,6 +472,9 @@ players:
       - source: cricketstatz
         id: '212'
         name: A Redford
+      - source: crichq_pdf
+        id: A Redders
+        name: A Redders
   - canonical_name: Adam Sajewicz
     refs:
       - source: play_cricket
@@ -769,6 +784,9 @@ players:
       - source: crichq_pdf
         id: N H Hussain
         name: N H Hussain
+      - source: crichq_pdf
+        id: N Hussian
+        name: N Hussian
   - canonical_name: Mujihad Shah
     refs:
       - source: crichq_pdf
@@ -910,6 +928,9 @@ players:
       - source: crichq_pdf
         id: Hamad Rabii
         name: Hamad Rabii
+      - source: crichq_pdf
+        id: H Raabi
+        name: H Raabi
   - canonical_name: Sam Oldham
     refs:
       - source: crichq_pdf
@@ -1219,11 +1240,6 @@ players:
       - source: cricketstatz
         id: '199'
         name: A McCheyne
-  - canonical_name: A Redders
-    refs:
-      - source: crichq_pdf
-        id: A Redders
-        name: A Redders
   - canonical_name: A Redmond
     refs:
       - source: crichq_pdf
@@ -1239,11 +1255,6 @@ players:
       - source: crichq_pdf
         id: AZ Zain
         name: AZ Zain
-  - canonical_name: B Bitrtwistle
-    refs:
-      - source: crichq_pdf
-        id: B Bitrtwistle
-        name: B Bitrtwistle
   - canonical_name: Ben Chapman
     refs:
       - source: cricketstatz
@@ -1334,11 +1345,6 @@ players:
       - source: cricketstatz
         id: '254'
         name: Gaygan,M
-  - canonical_name: H Raabi
-    refs:
-      - source: crichq_pdf
-        id: H Raabi
-        name: H Raabi
   - canonical_name: H Shah
     refs:
       - source: crichq_pdf
@@ -1407,16 +1413,6 @@ players:
       - source: cricketstatz
         id: '886'
         name: L Glover
-  - canonical_name: L Lomas
-    refs:
-      - source: crichq_pdf
-        id: L Lomas
-        name: L Lomas
-  - canonical_name: L Lorax
-    refs:
-      - source: crichq_pdf
-        id: L Lorax
-        name: L Lorax
   - canonical_name: Leyton Santos
     refs:
       - source: cricketstatz
@@ -1477,11 +1473,6 @@ players:
       - source: cricketstatz
         id: '211'
         name: Moore,G
-  - canonical_name: N Hussian
-    refs:
-      - source: crichq_pdf
-        id: N Hussian
-        name: N Hussian
   - canonical_name: Nigel Warne
     refs:
       - source: cricketstatz
@@ -1502,11 +1493,6 @@ players:
       - source: cricketstatz
         id: '238'
         name: R Moore
-  - canonical_name: Robinson,M
-    refs:
-      - source: cricketstatz
-        id: '11'
-        name: Robinson,M
   - canonical_name: S Ali Mirza
     refs:
       - source: crichq_pdf
