@@ -1782,6 +1782,9 @@ clubs:
     decided: 2026-08-27
     refs:
       - {source: cricketstatz, id: "8", name: "West Leigh Meths"}
+      - source: cricketstatz_txt
+        id: WLM
+        name: WLM
     reason: >
       Single-source club (CricketStatz only, no play_cricket/crichq_pdf
       presence in this archive) -- a pure rename, not a merge, to fix
@@ -1906,6 +1909,9 @@ clubs:
     decided: 2026-08-27
     refs:
       - {source: cricketstatz, id: "14", name: "Springhead"}
+      - source: cricketstatz_txt
+        id: SH
+        name: SH
     reason: Rename for CC-suffix consistency -- see Glodwick CC's reason above.
   - canonical_name: "Broadway CC"
     decided: 2026-08-27
@@ -1962,6 +1968,61 @@ clubs:
         id: ELPM
         name: ELPM
     reason: The three existing sources already auto-merged onto one club via the near-exact-name dedup at insert time (no manual entry needed until now). cricketstatz_txt uses the short code "ELPM" instead, which the auto-dedup does not catch -- explicit merge.
+  - canonical_name: Ashton Ladysmith CC
+    refs:
+      - source: play_cricket
+        id: '9413'
+        name: Ashton Ladysmith CC
+      - source: cricketstatz
+        id: '9'
+        name: Ashton Ladysmith
+      - source: cricketstatz_txt
+        id: AL
+        name: AL
+  - canonical_name: Elton Vale CC
+    refs:
+      - source: crichq_pdf
+        id: Elton Vale CC
+        name: Elton Vale CC
+      - source: cricketstatz
+        id: '4'
+        name: Elton Vale
+      - source: cricketstatz_txt
+        id: EV
+        name: EV
+  - canonical_name: Tottington St Johns CC
+    refs:
+      - source: play_cricket
+        id: '6426'
+        name: Tottington St Johns CC
+      - source: crichq_pdf
+        id: Tottington St Johns CC
+        name: Tottington St Johns CC
+      - source: cricketstatz
+        id: '2'
+        name: Tottington St Johns
+      - source: cricketstatz_txt
+        id: TSJ
+        name: TSJ
+  - canonical_name: Fothergill & Harvey CC
+    refs:
+      - source: crichq_pdf
+        id: Fothergill & Harvey CC
+        name: Fothergill & Harvey CC
+      - source: cricketstatz
+        id: '15'
+        name: Fothergill & Harvey
+      - source: cricketstatz_txt
+        id: F&H
+        name: F&H
+  - canonical_name: Rochdale Catholic Club
+    refs:
+      - source: cricketstatz
+        id: '10'
+        name: Rochdale Catholic Club
+      - source: cricketstatz_txt
+        id: RCC
+        name: RCC
 teams:
   - canonical_name: Tottington St Johns CC 2nd XI
     refs:
@@ -1987,6 +2048,9 @@ teams:
         name: Tottington St Johns CC 1st XI
       - source: cricketstatz
         id: '3'
+        name: TSJ 1st XI
+      - source: cricketstatz_txt
+        id: TSJ 1st XI
         name: TSJ 1st XI
   - canonical_name: East Lancs Paper Mill CC 2nd XI
     refs:
@@ -2201,6 +2265,9 @@ teams:
       - source: cricketstatz
         id: '10'
         name: AL 1st XI
+      - source: cricketstatz_txt
+        id: AL 1st XI
+        name: AL 1st XI
   - canonical_name: South West Manchester CC 1st XI
     refs:
       - source: crichq_pdf
@@ -2284,6 +2351,9 @@ teams:
         name: 1st XI
       - source: cricketstatz
         id: '5'
+        name: EV 1st XI
+      - source: cricketstatz_txt
+        id: EV 1st XI
         name: EV 1st XI
   - canonical_name: Glossop CC 2nd XI
     refs:
@@ -2491,6 +2561,73 @@ teams:
       "Friends United CC, Friends United CC"), so named after the
       full club name rather than invent an XI number the source
       doesn't give.
+  - canonical_name: Elton Vale CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '18'
+        name: EV 2nd XI
+      - source: cricketstatz_txt
+        id: EV 2nd XI
+        name: EV 2nd XI
+  - canonical_name: Westleigh Meths CC 1st XI
+    refs:
+      - source: cricketstatz
+        id: '9'
+        name: WLM 1st XI
+      - source: cricketstatz_txt
+        id: WLM 1st XI
+        name: WLM 1st XI
+  - canonical_name: Westleigh Meths CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '31'
+        name: WLM 2nd XI
+  - canonical_name: Springhead CC 1st XI
+    refs:
+      - source: cricketstatz
+        id: '15'
+        name: SH 1st XI
+      - source: cricketstatz_txt
+        id: SH 1st XI
+        name: SH 1st XI
+  - canonical_name: Springhead CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '42'
+        name: SH 2nd XI
+  - canonical_name: Fothergill & Harvey CC 1st XI
+    refs:
+      - source: crichq_pdf
+        id: Fothergill & Harvey CC, Fothergill & Harvey CC 1st XI
+        name: Fothergill & Harvey CC 1st XI
+      - source: cricketstatz
+        id: '16'
+        name: F&H 1st XI
+      - source: cricketstatz_txt
+        id: F&H 1st XI
+        name: F&H 1st XI
+    reason: crichq_pdf and cricketstatz had already split this into two unmerged team rows pre-dating this batch; merged all three sources into one while adding cricketstatz_txt.
+  - canonical_name: Fothergill & Harvey CC 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '25'
+        name: F&H 2nd XI
+      - source: cricketstatz_txt
+        id: F&H 2nd XI
+        name: F&H 2nd XI
+  - canonical_name: Rochdale Catholic Club 1st XI
+    refs:
+      - source: cricketstatz
+        id: '11'
+        name: RCC 1st XI
+      - source: cricketstatz_txt
+        id: RCC 1st XI
+        name: RCC 1st XI
+  - canonical_name: Rochdale Catholic Club 2nd XI
+    refs:
+      - source: cricketstatz
+        id: '35'
+        name: RCC 2nd XI
 grounds:
 
   - canonical_name: "ELPMCC, Croft Lane"
