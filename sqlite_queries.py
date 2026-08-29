@@ -136,6 +136,52 @@ fielding_agg AS (
       AND (:team_id IS NULL OR fielding_team_id = :team_id)
       AND (:include_juniors = 1 OR :team_id IS NOT NULL OR fielding_team_id NOT IN (SELECT team_id FROM teams WHERE is_juniors = 1))
     GROUP BY player_id
+),
+-- NMCL "Final Averages" rows are season-end aggregates, not per-match
+-- data, and only cover players who cleared that season's qualification
+-- threshold -- see nmcl_stats.py. Only the genuinely additive figures
+-- (a season total plus another season total is still a valid total) are
+-- summed here: runs, batting dismissals (innings_played - not_outs, the
+-- only way this source expresses "times out"), wickets, runs conceded,
+-- catches. Deliberately NOT summed: balls_bowled (NMCL gives "overs" as
+-- printed text, not a reliable ball count, so economy/bowling strike
+-- rate are never recomputed from it) and games_played/fours/sixes/
+-- fifties/hundreds (this source doesn't report them at all). See
+-- career_stats()'s include_nmcl parameter for how this gets folded in
+-- (opt-in, and only into the figures listed above) versus nmcl_season_stats()
+-- for the raw rows on their own.
+nmcl_agg AS (
+    SELECT
+        player_id,
+        SUM(CASE WHEN discipline = 'batting' THEN runs ELSE 0 END) AS nmcl_runs,
+        SUM(CASE WHEN discipline = 'batting'
+                 THEN COALESCE(innings_played, 0) - COALESCE(not_outs, 0)
+                 ELSE 0 END) AS nmcl_dismissals,
+        MAX(CASE WHEN discipline = 'batting' THEN highest_score END) AS nmcl_highest_score,
+        SUM(CASE WHEN discipline = 'bowling' THEN wickets ELSE 0 END) AS nmcl_wickets,
+        SUM(CASE WHEN discipline = 'bowling' THEN runs_conceded ELSE 0 END) AS nmcl_runs_conceded,
+        SUM(CASE WHEN discipline = 'wicketkeeping' THEN catches ELSE 0 END) AS nmcl_catches
+    FROM nmcl_season_stats
+    WHERE (:season IS NULL OR season = :season)
+      AND (:team_id IS NULL OR team_id = :team_id)
+    GROUP BY player_id
+),
+-- Manually-curated individual honours (see club_awards.py) -- season
+-- batting/bowling/wicketkeeping average winners, players' player of
+-- the year, club captaincy. Team honours (league/cup wins) are looked
+-- up separately via team_awards() below rather than folded into a
+-- player row: a squad-wide trophy doesn't belong to any one player's
+-- career line the way an individual award does. Ordered by season
+-- before GROUP_CONCAT so a player's awards list reads chronologically.
+awards_agg AS (
+    SELECT player_id, GROUP_CONCAT(award_text, '; ') AS awards
+    FROM (
+        SELECT player_id, season || ' ' || competition || ' ' || award_name AS award_text
+        FROM player_awards
+        WHERE (:season IS NULL OR season = :season)
+        ORDER BY season, competition, award_name
+    )
+    GROUP BY player_id
 )
 SELECT
     p.player_id,
@@ -143,11 +189,26 @@ SELECT
     COALESCE(app.games_played, 0) AS games_played,
 
     COALESCE(bat.batting_innings, 0) AS batting_innings,
-    COALESCE(bat.runs, 0) AS runs,
-    COALESCE(bat.times_dismissed, 0) AS times_dismissed,
-    bat.highest_score AS highest_score,
-    CASE WHEN COALESCE(bat.times_dismissed, 0) > 0
-         THEN CAST(bat.runs AS REAL) / bat.times_dismissed
+    COALESCE(bat.runs, 0)
+        + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_runs, 0) ELSE 0 END AS runs,
+    COALESCE(bat.times_dismissed, 0)
+        + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_dismissals, 0) ELSE 0 END AS times_dismissed,
+    CASE WHEN :include_nmcl = 1 AND nmcl.nmcl_highest_score IS NOT NULL
+              AND (bat.highest_score IS NULL OR nmcl.nmcl_highest_score > bat.highest_score)
+         THEN nmcl.nmcl_highest_score
+         ELSE bat.highest_score
+    END AS highest_score,
+    CASE WHEN (
+             COALESCE(bat.times_dismissed, 0)
+             + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_dismissals, 0) ELSE 0 END
+         ) > 0
+         THEN CAST((
+             COALESCE(bat.runs, 0)
+             + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_runs, 0) ELSE 0 END
+         ) AS REAL) / (
+             COALESCE(bat.times_dismissed, 0)
+             + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_dismissals, 0) ELSE 0 END
+         )
     END AS batting_average,
     COALESCE(bat.balls_faced, 0) AS balls_faced,
     CASE WHEN COALESCE(bat.balls_faced, 0) > 0
@@ -161,12 +222,26 @@ SELECT
 
     COALESCE(bowl.bowling_innings, 0) AS bowling_innings,
     COALESCE(bowl.balls_bowled, 0) AS balls_bowled,
-    COALESCE(bowl.runs_conceded, 0) AS runs_conceded,
-    COALESCE(bowl.wickets, 0) AS wickets,
+    COALESCE(bowl.runs_conceded, 0)
+        + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_runs_conceded, 0) ELSE 0 END AS runs_conceded,
+    COALESCE(bowl.wickets, 0)
+        + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_wickets, 0) ELSE 0 END AS wickets,
     COALESCE(bowl.maidens, 0) AS maidens,
-    CASE WHEN COALESCE(bowl.wickets, 0) > 0
-         THEN CAST(bowl.runs_conceded AS REAL) / bowl.wickets
+    CASE WHEN (
+             COALESCE(bowl.wickets, 0)
+             + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_wickets, 0) ELSE 0 END
+         ) > 0
+         THEN CAST((
+             COALESCE(bowl.runs_conceded, 0)
+             + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_runs_conceded, 0) ELSE 0 END
+         ) AS REAL) / (
+             COALESCE(bowl.wickets, 0)
+             + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_wickets, 0) ELSE 0 END
+         )
     END AS bowling_average,
+    -- economy/bowling_strike_rate are never adjusted for NMCL: it gives
+    -- overs as printed text, not a reliable ball count, and guessing one
+    -- from it risks being wrong in a way runs/wickets addition isn't.
     CASE WHEN COALESCE(bowl.balls_bowled, 0) > 0
          THEN CAST(bowl.runs_conceded AS REAL) * 6.0 / bowl.balls_bowled
     END AS economy,
@@ -177,27 +252,41 @@ SELECT
     COALESCE(bowl.no_balls, 0) AS no_balls,
     COALESCE(bowl.five_wicket_hauls, 0) AS five_wicket_hauls,
 
-    COALESCE(field.catches, 0) AS catches,
+    COALESCE(field.catches, 0)
+        + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_catches, 0) ELSE 0 END AS catches,
     COALESCE(field.stumpings, 0) AS stumpings,
     COALESCE(field.run_outs, 0) AS run_outs,
     COALESCE(field.catches, 0) + COALESCE(field.stumpings, 0)
-        + COALESCE(field.run_outs, 0) AS fielding_dismissals,
+        + COALESCE(field.run_outs, 0)
+        + CASE WHEN :include_nmcl = 1 THEN COALESCE(nmcl.nmcl_catches, 0) ELSE 0 END AS fielding_dismissals,
 
     COALESCE(bat.fifties, 0) + COALESCE(bat.hundreds, 0)
         + COALESCE(bat.double_hundreds, 0)
-        + COALESCE(bowl.five_wicket_hauls, 0) AS notable_performances
+        + COALESCE(bowl.five_wicket_hauls, 0) AS notable_performances,
+
+    -- True when this row's totals above include an NMCL season-aggregate
+    -- contribution (only possible when include_nmcl=True was passed AND
+    -- this player actually has an nmcl_season_stats row in scope) -- so a
+    -- reader can tell a blended total from a pure match-level one without
+    -- re-deriving it themselves.
+    CASE WHEN :include_nmcl = 1 AND nmcl.player_id IS NOT NULL THEN 1 ELSE 0 END AS includes_nmcl,
+
+    aw.awards AS awards
 
 FROM players p
 LEFT JOIN appearances app ON app.player_id = p.player_id
 LEFT JOIN batting_agg bat ON bat.player_id = p.player_id
 LEFT JOIN bowling_agg bowl ON bowl.player_id = p.player_id
 LEFT JOIN fielding_agg field ON field.player_id = p.player_id
+LEFT JOIN nmcl_agg nmcl ON nmcl.player_id = p.player_id
+LEFT JOIN awards_agg aw ON aw.player_id = p.player_id
 WHERE (
     COALESCE(app.games_played, 0) > 0
     OR COALESCE(bat.batting_innings, 0) > 0
     OR COALESCE(bowl.bowling_innings, 0) > 0
     OR COALESCE(field.catches, 0) + COALESCE(field.stumpings, 0)
         + COALESCE(field.run_outs, 0) > 0
+    OR (:include_nmcl = 1 AND nmcl.player_id IS NOT NULL)
 )
 AND (
     :elpmcc_only = 0
@@ -209,6 +298,11 @@ AND (
         WHERE elpmcc_ma.player_id = p.player_id
           AND elpmcc_c.club_name = :elpmcc_name
     )
+    -- nmcl_season_stats has no match_appearances row to check (it's a
+    -- season aggregate, not a match), but every row in it is already
+    -- this club's own league averages by construction (see nmcl_stats.py)
+    -- -- only relevant when its contribution is actually being folded in.
+    OR (:include_nmcl = 1 AND nmcl.player_id IS NOT NULL)
 )
 """
 
@@ -224,7 +318,7 @@ ELPMCC_NAME = "East Lancs Paper Mill CC"
 
 def career_stats(
     conn, season=None, team_id=None, elpmcc_only=True,
-    elpmcc_name=ELPMCC_NAME, include_juniors=False
+    elpmcc_name=ELPMCC_NAME, include_juniors=False, include_nmcl=False
 ):
     """
     Return one row per player with career (or, if team_id is given,
@@ -248,6 +342,28 @@ def career_stats(
     player's main career figures or any leaderboard. Pass
     include_juniors=True to include them, or filter to one junior team
     specifically with team_id instead (which already overrides this).
+
+    By default (include_nmcl=False) `nmcl_season_stats` rows (see
+    nmcl_stats.py) are left out entirely -- they're season-end
+    qualification-threshold aggregates, not per-match data, so they
+    can't honestly contribute to games_played/fours/sixes/fifties/
+    hundreds/economy/bowling_strike_rate the way real scorecard rows
+    can. Pass include_nmcl=True to fold in the figures that ARE safely
+    additive across a season aggregate and real match data (runs,
+    times_dismissed, highest_score, wickets, runs_conceded, catches,
+    and the averages recomputed from those combined totals) -- a row
+    that actually received a contribution this way has `includes_nmcl`
+    set to 1, so a blended total is never mistaken for a pure
+    match-level one. Use nmcl_season_stats() instead to see the raw
+    rows on their own, un-blended.
+
+    Every row also carries `awards` -- a semicolon-separated summary of
+    that player's individual honours from `player_awards` (see
+    club_awards.py: season batting/bowling/wicketkeeping average
+    winners, players' player of the year, club captaincy), `None` if
+    they have none. Filtered by `season` the same way every other
+    total here is. Team honours (league/cup wins) aren't folded into a
+    player row -- look them up separately with team_awards() below.
     """
 
     params = {
@@ -255,10 +371,114 @@ def career_stats(
         "team_id": int(team_id) if team_id is not None else None,
         "elpmcc_only": 1 if elpmcc_only else 0,
         "elpmcc_name": elpmcc_name,
-        "include_juniors": 1 if include_juniors else 0
+        "include_juniors": 1 if include_juniors else 0,
+        "include_nmcl": 1 if include_nmcl else 0
     }
 
     return pd.read_sql_query(_CAREER_SQL, conn, params=params)
+
+
+# ==================================================================
+# NMCL SEASON STATS (raw, un-blended)
+# ==================================================================
+
+def nmcl_season_stats(conn, player_id=None, season=None):
+    """
+    Return nmcl_season_stats rows as-is -- one row per (player, season,
+    division, discipline) -- with the player's canonical name joined in.
+    This is the season-aggregate data career_stats()'s include_nmcl
+    folds in on request; use this instead to see it on its own, e.g. to
+    check what a blended total in career_stats() is actually made of, or
+    to look at a season this club has no match-level data for at all
+    (2000-2005, 2011-2013 -- see the README milestone notes) purely on
+    its own terms.
+    """
+
+    query = """
+        SELECT
+            s.stat_id, s.player_id, p.known_as AS player_name, s.team_id,
+            s.season, s.division, s.discipline,
+            s.innings_played, s.not_outs, s.highest_score, s.highest_score_not_out,
+            s.runs, s.overs, s.maidens, s.runs_conceded, s.wickets, s.catches
+        FROM nmcl_season_stats s
+        JOIN players p ON p.player_id = s.player_id
+        WHERE (:player_id IS NULL OR s.player_id = :player_id)
+          AND (:season IS NULL OR s.season = :season)
+        ORDER BY s.season, s.division, s.discipline, p.known_as
+    """
+
+    params = {
+        "player_id": int(player_id) if player_id is not None else None,
+        "season": int(season) if season is not None else None
+    }
+
+    return pd.read_sql_query(query, conn, params=params)
+
+
+# ==================================================================
+# CLUB AWARDS (raw, one row per honour)
+# ==================================================================
+#
+# See club_awards.py for how these are ingested (manually curated, not
+# parsed from any source file) and schema.sql for why team/player
+# honours are two separate tables rather than one with nullable
+# team_id/player_id columns.
+
+def player_awards(conn, player_id=None, season=None):
+    """
+    Return player_awards rows as-is -- one row per individual honour
+    (season batting/bowling/wicketkeeping average winner, players'
+    player of the year, a single season of club captaincy) -- with the
+    player's canonical name joined in. career_stats()'s `awards` column
+    summarises the same data per player; use this instead to see it as
+    its own table, e.g. to list every captain across the club's history.
+    """
+
+    query = """
+        SELECT
+            a.award_id, a.player_id, p.known_as AS player_name,
+            a.season, a.competition, a.award_name, a.notes
+        FROM player_awards a
+        JOIN players p ON p.player_id = a.player_id
+        WHERE (:player_id IS NULL OR a.player_id = :player_id)
+          AND (:season IS NULL OR a.season = :season)
+        ORDER BY a.season, p.known_as
+    """
+
+    params = {
+        "player_id": int(player_id) if player_id is not None else None,
+        "season": int(season) if season is not None else None
+    }
+
+    return pd.read_sql_query(query, conn, params=params)
+
+
+def team_awards(conn, team_id=None, season=None):
+    """
+    Return team_awards rows as-is -- one row per team honour (a
+    league/cup win) -- with the team and club's names joined in. Not
+    folded into career_stats(): a squad-wide trophy doesn't belong to
+    any one player's career line the way an individual award does.
+    """
+
+    query = """
+        SELECT
+            a.award_id, a.team_id, t.team_name, c.club_name,
+            a.season, a.competition, a.award_name, a.notes
+        FROM team_awards a
+        JOIN teams t ON t.team_id = a.team_id
+        JOIN clubs c ON c.club_id = t.club_id
+        WHERE (:team_id IS NULL OR a.team_id = :team_id)
+          AND (:season IS NULL OR a.season = :season)
+        ORDER BY a.season, c.club_name, t.team_name
+    """
+
+    params = {
+        "team_id": int(team_id) if team_id is not None else None,
+        "season": int(season) if season is not None else None
+    }
+
+    return pd.read_sql_query(query, conn, params=params)
 
 
 # ==================================================================
@@ -276,20 +496,25 @@ class SQLPlayerStats:
     PlayerPerformances.summary()).
     """
 
-    def __init__(self, conn, elpmcc_only=True, elpmcc_name=ELPMCC_NAME, include_juniors=False):
+    def __init__(
+        self, conn, elpmcc_only=True, elpmcc_name=ELPMCC_NAME,
+        include_juniors=False, include_nmcl=False
+    ):
         self.conn = conn
         self.elpmcc_only = elpmcc_only
         self.elpmcc_name = elpmcc_name
         self.include_juniors = include_juniors
+        self.include_nmcl = include_nmcl
 
     # ----------------------------------------------------------
 
-    def career(self, season=None, team_id=None, elpmcc_only=None, include_juniors=None):
+    def career(self, season=None, team_id=None, elpmcc_only=None, include_juniors=None, include_nmcl=None):
         return career_stats(
             self.conn, season=season, team_id=team_id,
             elpmcc_only=self.elpmcc_only if elpmcc_only is None else elpmcc_only,
             elpmcc_name=self.elpmcc_name,
-            include_juniors=self.include_juniors if include_juniors is None else include_juniors
+            include_juniors=self.include_juniors if include_juniors is None else include_juniors,
+            include_nmcl=self.include_nmcl if include_nmcl is None else include_nmcl
         )
 
     # ----------------------------------------------------------

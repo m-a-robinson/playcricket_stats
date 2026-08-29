@@ -179,6 +179,47 @@ CREATE TABLE IF NOT EXISTS nmcl_season_stats (
 CREATE INDEX IF NOT EXISTS idx_nmcl_season_stats_player ON nmcl_season_stats (player_id);
 
 -- ================================================================
+-- CLUB AWARDS / HONOURS (manually curated)
+-- ================================================================
+--
+-- Team and individual honours the club keeps its own record of --
+-- league/cup wins, season batting/bowling/wicketkeeping averages,
+-- players' player of the year, club captaincy -- none of which is
+-- derivable from any source's own match/season data, so hand-curated
+-- here the same way reconcile/decisions.yaml curates identity
+-- decisions (see club_awards.py). Split into two tables, not one with
+-- nullable team_id/player_id columns, because SQLite's UNIQUE
+-- constraint treats NULL as distinct from NULL -- a shared "either
+-- team or player" table couldn't actually enforce one-row-per-honour
+-- on whichever side was left NULL, so idempotent re-running (adding a
+-- new season's honours to the same script and re-running it) would
+-- silently duplicate every existing row instead of being a safe no-op.
+
+CREATE TABLE IF NOT EXISTS team_awards (
+    award_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    team_id       INTEGER NOT NULL REFERENCES teams (team_id),
+    season        INTEGER NOT NULL,
+    competition   TEXT NOT NULL,   -- e.g. 'NMCL Division 1', 'GMCL Division 4 N&W'
+    award_name    TEXT NOT NULL,   -- e.g. 'Winners'
+    notes         TEXT,
+    UNIQUE (team_id, season, competition, award_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_team_awards_team ON team_awards (team_id);
+
+CREATE TABLE IF NOT EXISTS player_awards (
+    award_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id     INTEGER NOT NULL REFERENCES players (player_id),
+    season        INTEGER NOT NULL,
+    competition   TEXT NOT NULL,   -- e.g. 'NMCL', 'GMCL Division 4', 'Club'
+    award_name    TEXT NOT NULL,   -- e.g. 'Batting Average Winner', 'Captain'
+    notes         TEXT,
+    UNIQUE (player_id, season, competition, award_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_player_awards_player ON player_awards (player_id);
+
+-- ================================================================
 -- MATCHES
 -- ================================================================
 
