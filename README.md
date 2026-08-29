@@ -43,6 +43,7 @@ what's still outstanding.
 - [Using the main database](#using-the-main-database)
   - [Build the full database once](#build-the-full-database-once)
   - [Querying the database in ipython](#querying-the-database-in-ipython)
+    - [What can you filter by?](#what-can-you-filter-by)
     - [Look up one match's scorecard](#look-up-one-matchs-scorecard)
     - [Search for matches by criteria](#search-for-matches-by-criteria)
     - [Team records by season](#team-records-by-season)
@@ -192,21 +193,61 @@ what to re-run afterward, rather than repeating this whole sequence.
 
 ### Querying the database in ipython
 
-Everything below assumes `playcricket_stats.sqlite` already exists (see
-above) and connects to it once at the top of an `ipython` session:
+**Run this once, before any example below.** Everything here is plain
+Python (no CLI, no server) — `sqlite3` is part of the standard library,
+but `pandas` is a separate package, and every example below needs both:
+
+```bash
+pip install ipython pandas
+cd playcricket_stats
+ipython
+```
 
 ```python
 import sqlite3
 import pandas as pd
 
-conn = sqlite3.connect("playcricket_stats.sqlite")
+conn = sqlite3.connect("playcricket_stats.sqlite")   # the file the build step above created
 ```
 
-Keep this `conn` open for the rest of the session — every example below
-reuses it. Reconnect (re-run the line above) after re-building or
-re-ingesting anything, so you're not reading a stale connection.
+Keep this `conn` (and the `pd`/`sqlite3` imports) alive for the rest of the
+session — every example below reuses them, and each one only shows the
+*extra* import it specifically needs on top of these two, not these two
+again. If you get `NameError: name 'pd' is not defined` (or `conn`), it
+means this block hasn't been run yet in your current session — pasting one
+query in isolation into a fresh `ipython`/script without it first is the
+most common way to hit that. Reconnect (re-run the `conn = ...` line) after
+re-building or re-ingesting anything, so you're not reading a stale
+connection.
+
+#### What can you filter by?
+
+Every example below is plain SQL against the tables in `schema.sql`, so
+"what can I filter by" is really "what columns exist" — the ones that come
+up constantly:
+
+| Table | Useful filter columns | Example predicate |
+|---|---|---|
+| `matches` | `season`, `match_date`, `competition_name`, `league_name`, `source`, `status` | `WHERE m.season = 2024` |
+| `matches` (via `teams`/`clubs`) | opponent/home/away club or team name (join, see below) | `WHERE hc.club_name = 'Shaw CC'` |
+| `batting_innings` | `runs`, `balls`, `fours`, `sixes`, `how_out`, `not_out` | `WHERE b.runs >= 100` |
+| `bowling_innings` | `wickets`, `runs`, `overs`, `maidens` | `WHERE bo.wickets >= 5` |
+| `players` | `known_as` (exact name) | `WHERE p.known_as = 'Ian Wade'` |
+| `clubs` / `teams` | `club_name` / `team_name` | `WHERE c.club_name = 'East Lancs Paper Mill CC'` |
+
+`matches` doesn't store club/team names directly — only `home_team_id`/
+`away_team_id` — so filtering by an opponent's name always means joining
+`teams`/`clubs` in, exactly like the Shaw CC example below does. Combine
+any of these with plain SQL `AND`/`OR`, e.g. "Ian Wade's centuries" is just
+the centuries query below with an extra `AND p.known_as = 'Ian Wade'`.
+Player/club/team names must match exactly (`known_as`/`club_name`/
+`team_name` as stored) — if a name doesn't return anything, check the exact
+spelling with e.g. `SELECT DISTINCT club_name FROM clubs WHERE club_name
+LIKE '%shaw%'` first (case-insensitive by default in SQLite's `LIKE`).
 
 #### Look up one match's scorecard
+
+*(needs `conn` and `pd` from the setup above)*
 
 Every match, from every source, carries its original parsed match-detail
 dict verbatim in `matches.source_payload` (JSON text) — so `Scorecard`
@@ -248,6 +289,9 @@ pd.read_sql_query(
 ```
 
 #### Search for matches by criteria
+
+*(needs `conn` and `pd` from the setup above, plus `scorecard_for()`
+defined in the previous section)*
 
 The pattern for any "find matches where..." question is the same: query for
 an **index** of matching matches first (id, date, opposition, result — cheap
@@ -309,6 +353,8 @@ for a 5-wicket haul, `m.season = 2024` for one season, `m.competition_name
 LIKE '%Cup%'` for a specific competition, and so on).
 
 #### Team records by season
+
+*(needs `conn` and `pd` from the setup above)*
 
 There's no dedicated function for this yet (see [ROADMAP.md](ROADMAP.md)
 item 5) — it's a plain query over `matches.result_applied_to`, the one
@@ -378,6 +424,8 @@ record across every season it's ever played, or every team's combined
 record across every season on record.
 
 #### Career stats and leaderboards
+
+*(needs `conn` from the setup above)*
 
 This is the main "what does this player's/team's record actually look
 like" check — everything comes from `sqlite_queries.py`'s two entry points:
