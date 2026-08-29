@@ -165,6 +165,23 @@ nmcl_agg AS (
     WHERE (:season IS NULL OR season = :season)
       AND (:team_id IS NULL OR team_id = :team_id)
     GROUP BY player_id
+),
+-- Manually-curated individual honours (see club_awards.py) -- season
+-- batting/bowling/wicketkeeping average winners, players' player of
+-- the year, club captaincy. Team honours (league/cup wins) are looked
+-- up separately via team_awards() below rather than folded into a
+-- player row: a squad-wide trophy doesn't belong to any one player's
+-- career line the way an individual award does. Ordered by season
+-- before GROUP_CONCAT so a player's awards list reads chronologically.
+awards_agg AS (
+    SELECT player_id, GROUP_CONCAT(award_text, '; ') AS awards
+    FROM (
+        SELECT player_id, season || ' ' || competition || ' ' || award_name AS award_text
+        FROM player_awards
+        WHERE (:season IS NULL OR season = :season)
+        ORDER BY season, competition, award_name
+    )
+    GROUP BY player_id
 )
 SELECT
     p.player_id,
@@ -252,7 +269,9 @@ SELECT
     -- this player actually has an nmcl_season_stats row in scope) -- so a
     -- reader can tell a blended total from a pure match-level one without
     -- re-deriving it themselves.
-    CASE WHEN :include_nmcl = 1 AND nmcl.player_id IS NOT NULL THEN 1 ELSE 0 END AS includes_nmcl
+    CASE WHEN :include_nmcl = 1 AND nmcl.player_id IS NOT NULL THEN 1 ELSE 0 END AS includes_nmcl,
+
+    aw.awards AS awards
 
 FROM players p
 LEFT JOIN appearances app ON app.player_id = p.player_id
@@ -260,6 +279,7 @@ LEFT JOIN batting_agg bat ON bat.player_id = p.player_id
 LEFT JOIN bowling_agg bowl ON bowl.player_id = p.player_id
 LEFT JOIN fielding_agg field ON field.player_id = p.player_id
 LEFT JOIN nmcl_agg nmcl ON nmcl.player_id = p.player_id
+LEFT JOIN awards_agg aw ON aw.player_id = p.player_id
 WHERE (
     COALESCE(app.games_played, 0) > 0
     OR COALESCE(bat.batting_innings, 0) > 0
@@ -336,6 +356,14 @@ def career_stats(
     set to 1, so a blended total is never mistaken for a pure
     match-level one. Use nmcl_season_stats() instead to see the raw
     rows on their own, un-blended.
+
+    Every row also carries `awards` -- a semicolon-separated summary of
+    that player's individual honours from `player_awards` (see
+    club_awards.py: season batting/bowling/wicketkeeping average
+    winners, players' player of the year, club captaincy), `None` if
+    they have none. Filtered by `season` the same way every other
+    total here is. Team honours (league/cup wins) aren't folded into a
+    player row -- look them up separately with team_awards() below.
     """
 
     params = {
@@ -381,6 +409,72 @@ def nmcl_season_stats(conn, player_id=None, season=None):
 
     params = {
         "player_id": int(player_id) if player_id is not None else None,
+        "season": int(season) if season is not None else None
+    }
+
+    return pd.read_sql_query(query, conn, params=params)
+
+
+# ==================================================================
+# CLUB AWARDS (raw, one row per honour)
+# ==================================================================
+#
+# See club_awards.py for how these are ingested (manually curated, not
+# parsed from any source file) and schema.sql for why team/player
+# honours are two separate tables rather than one with nullable
+# team_id/player_id columns.
+
+def player_awards(conn, player_id=None, season=None):
+    """
+    Return player_awards rows as-is -- one row per individual honour
+    (season batting/bowling/wicketkeeping average winner, players'
+    player of the year, a single season of club captaincy) -- with the
+    player's canonical name joined in. career_stats()'s `awards` column
+    summarises the same data per player; use this instead to see it as
+    its own table, e.g. to list every captain across the club's history.
+    """
+
+    query = """
+        SELECT
+            a.award_id, a.player_id, p.known_as AS player_name,
+            a.season, a.competition, a.award_name, a.notes
+        FROM player_awards a
+        JOIN players p ON p.player_id = a.player_id
+        WHERE (:player_id IS NULL OR a.player_id = :player_id)
+          AND (:season IS NULL OR a.season = :season)
+        ORDER BY a.season, p.known_as
+    """
+
+    params = {
+        "player_id": int(player_id) if player_id is not None else None,
+        "season": int(season) if season is not None else None
+    }
+
+    return pd.read_sql_query(query, conn, params=params)
+
+
+def team_awards(conn, team_id=None, season=None):
+    """
+    Return team_awards rows as-is -- one row per team honour (a
+    league/cup win) -- with the team and club's names joined in. Not
+    folded into career_stats(): a squad-wide trophy doesn't belong to
+    any one player's career line the way an individual award does.
+    """
+
+    query = """
+        SELECT
+            a.award_id, a.team_id, t.team_name, c.club_name,
+            a.season, a.competition, a.award_name, a.notes
+        FROM team_awards a
+        JOIN teams t ON t.team_id = a.team_id
+        JOIN clubs c ON c.club_id = t.club_id
+        WHERE (:team_id IS NULL OR a.team_id = :team_id)
+          AND (:season IS NULL OR a.season = :season)
+        ORDER BY a.season, c.club_name, t.team_name
+    """
+
+    params = {
+        "team_id": int(team_id) if team_id is not None else None,
         "season": int(season) if season is not None else None
     }
 
