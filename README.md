@@ -338,12 +338,22 @@ from playcricket_scorecard import Scorecard
 
 def scorecard_for(match_id):
     payload = conn.execute(
-        "SELECT source_payload FROM matches WHERE match_id = ?", (match_id,)
+        "SELECT source_payload FROM matches WHERE match_id = ?", (int(match_id),)
     ).fetchone()[0]
     return Scorecard(json.loads(payload))
 
 scorecard_for(429).print_scorecard()   # any match_id -- Play-Cricket, CricHQ, CricketStatz, etc.
 ```
+
+**The `int(match_id)` above matters, not just style**: a `match_id` pulled
+out of a DataFrame (e.g. `some_df.iloc[0]["match_id"]`) is a numpy `int64`,
+not a plain Python `int` — and `sqlite3` silently treats a numpy `int64`
+parameter as matching nothing, rather than raising an error. That shows up
+as `scorecard_for(...)` crashing with `TypeError: 'NoneType' object is not
+subscriptable` on the `.fetchone()[0]` line — not because the match doesn't
+exist, but because the `WHERE match_id = ?` never matched due to the
+parameter's type. Wrapping every `match_id` in `int(...)` before it reaches
+`sqlite3` avoids this everywhere in this section.
 
 To find a specific match's `match_id` in the first place — by date and
 opposition, since that's usually what you actually remember:
@@ -374,10 +384,10 @@ defined in the previous section)*
 The pattern for any "find matches where..." question is the same: query for
 an **index** of matching matches first (id, date, opposition, result — cheap
 and quick to scan), then call `scorecard_for(match_id)` above on whichever
-one you actually want to look at in full. Two concrete examples:
+one you actually want to look at in full. Three concrete examples:
 
 **Every match against a specific club** (e.g. Shaw CC — matches either home
-or away):
+or away, against ELPMCC or anyone else):
 
 ```python
 vs_shaw = pd.read_sql_query(
@@ -399,6 +409,43 @@ vs_shaw = pd.read_sql_query(
 vs_shaw                              # the index -- scan it, pick a match_id
 scorecard_for(vs_shaw.iloc[0]["match_id"]).print_scorecard()   # then look at one
 ```
+
+**Naming both clubs specifically** — every match *between two named clubs*
+(ELPMCC and a chosen opponent), rather than every match either club has
+played against anyone: swap `OR` for two explicit `(home, away)`
+combinations, since either could have been the home side on the day.
+
+```python
+ELPMCC = "East Lancs Paper Mill CC"
+OPPONENT = "Shaw CC"
+
+vs_opponent = pd.read_sql_query(
+    """
+    SELECT m.match_id, m.season, m.match_date, m.source,
+           hc.club_name AS home_club, ht.team_name AS home_team,
+           ac.club_name AS away_club, at.team_name AS away_team,
+           m.result_description
+    FROM matches m
+    JOIN teams ht ON ht.team_id = m.home_team_id
+    JOIN clubs hc ON hc.club_id = ht.club_id
+    JOIN teams at ON at.team_id = m.away_team_id
+    JOIN clubs ac ON ac.club_id = at.club_id
+    WHERE (hc.club_name = ? AND ac.club_name = ?)
+       OR (hc.club_name = ? AND ac.club_name = ?)
+    ORDER BY m.match_date
+    """,
+    conn, params=(ELPMCC, OPPONENT, OPPONENT, ELPMCC)
+)
+vs_opponent
+scorecard_for(vs_opponent.iloc[0]["match_id"]).print_scorecard()
+```
+
+(Every match in this database already involves ELPMCC — its own archives
+are the source for all six data sources — so `vs_shaw` and `vs_opponent`
+happen to return the same 10 rows here. Naming both clubs explicitly is
+still worth knowing: it's the correct, general form if a future source
+ever adds matches ELPMCC isn't part of, and it's the pattern to reach for
+whenever you want *specifically* "A vs B", not "anyone vs B".)
 
 **Every innings where a player scored a century** (100+), across every
 source and every player, most recent/highest first:
