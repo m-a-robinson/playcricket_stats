@@ -41,14 +41,15 @@ what's still outstanding.
   - [Modules](#modules)
 - [Using the example files](#using-the-example-files) — moved to [EXAMPLES.md](EXAMPLES.md)
 - [Using the main database](#using-the-main-database)
-  - [Build the full database once](#build-the-full-database-once)
+  - [Build the full database once (in Terminal)](#build-the-full-database-once-in-terminal)
   - [Querying the database in ipython](#querying-the-database-in-ipython)
     - [The basic pattern: `pd.read_sql_query()`](#the-basic-pattern-pdread_sql_query)
     - [What can you filter by?](#what-can-you-filter-by)
-    - [Look up one match's scorecard](#look-up-one-matchs-scorecard)
+    - [Look up one match's scorecard (e.g. match 429)](#look-up-one-matchs-scorecard-eg-match-429)
     - [Search for matches by criteria](#search-for-matches-by-criteria)
     - [Team records by season](#team-records-by-season)
     - [Career stats and leaderboards](#career-stats-and-leaderboards)
+    - [Notable performances for one player](#notable-performances-for-one-player)
 - [Documentation](#documentation)
 
 ## Core structure
@@ -646,6 +647,70 @@ player_awards(conn, season=2012)   # every individual honour awarded in 2012
 team_awards(conn)                    # every team honour (league/cup wins), every season
 ```
 
+#### Notable performances for one player
+
+*(needs `conn` and `pd` from the setup above, plus `scorecard_for()` defined
+in [Look up one match's scorecard (e.g. match 429)](#look-up-one-matchs-scorecard-eg-match-429))*
+
+`career_stats()` gives *counts* (`fifties`, `hundreds`, `five_wicket_hauls`,
+and `notable_performances` — all of those summed together); to list the
+actual **individual milestone performances** — which match, which season,
+what the score/figures were — query `schema.sql`'s two milestone views,
+`v_batting_achievements` (half-century/century/double-century) and
+`v_bowling_achievements` (five-wicket hauls), the same declarative views
+`playcricket_scorecard.py`'s old `get_performances()` logic was replaced
+by:
+
+```python
+player_name = "Ian Wade"
+player_id = conn.execute(
+    "SELECT player_id FROM players WHERE known_as = ?", (player_name,)
+).fetchone()[0]
+
+notable_performances = pd.read_sql_query(
+    """
+    SELECT m.match_id, m.match_date, m.season, 'batting' AS type, ba.achievement,
+           b.runs AS value, hc.club_name || ' v ' || ac.club_name AS fixture
+    FROM v_batting_achievements ba
+    JOIN batting_innings b ON b.batting_id = ba.batting_id
+    JOIN matches m ON m.match_id = ba.match_id
+    JOIN teams ht ON ht.team_id = m.home_team_id
+    JOIN clubs hc ON hc.club_id = ht.club_id
+    JOIN teams at ON at.team_id = m.away_team_id
+    JOIN clubs ac ON ac.club_id = at.club_id
+    WHERE ba.player_id = :player_id
+
+    UNION ALL
+
+    SELECT m.match_id, m.match_date, m.season, 'bowling' AS type, bo_ach.achievement,
+           bo.wickets AS value, hc.club_name || ' v ' || ac.club_name AS fixture
+    FROM v_bowling_achievements bo_ach
+    JOIN bowling_innings bo ON bo.bowling_id = bo_ach.bowling_id
+    JOIN matches m ON m.match_id = bo_ach.match_id
+    JOIN teams ht ON ht.team_id = m.home_team_id
+    JOIN clubs hc ON hc.club_id = ht.club_id
+    JOIN teams at ON at.team_id = m.away_team_id
+    JOIN clubs ac ON ac.club_id = at.club_id
+    WHERE bo_ach.player_id = :player_id
+
+    ORDER BY match_date
+    """,
+    conn, params={"player_id": player_id}
+)
+notable_performances                              # every 50/100/200/5-for, in order
+notable_performances["achievement"].value_counts()   # tally -- should match career_stats()'s counts
+scorecard_for(notable_performances.iloc[0]["match_id"]).print_scorecard()   # the earliest one, in full
+```
+
+`UNION ALL` combines the two views' results into one chronological list
+rather than two separate DataFrames — batting and bowling milestones are
+different shapes (a run total vs a wicket count), so each half of the
+query only pulls the columns common to both (`achievement`, a `value`, the
+fixture), aliasing to the same column names either way. Swap in a
+`match_id` from any row above into `scorecard_for(match_id)` (see
+[Look up one match's scorecard (e.g. match 429)](#look-up-one-matchs-scorecard-eg-match-429)) to see the
+full card behind any single performance in the list.
+
 The two source *types* feeding this database need completely different
 maintenance rhythms after this first build, because one is closed and one
 isn't:
@@ -771,7 +836,7 @@ Every step above is idempotent and none of them mutate the source JSON/
 PDF/`.MXP`/`.txt`/`.xls`/`.csd` files or `reconcile/decisions.yaml` — only
 the derived `.sqlite` file. So if the database ever ends up in a state you
 don't trust, just delete it and repeat
-["Build the full database once"](#build-the-full-database-once) above —
+["Build the full database once (in Terminal)"](#build-the-full-database-once-in-terminal) above —
 that same command sequence always gets back to the same result from the
 committed source files alone. This is exactly why the `.sqlite` file is
 never committed to version control (`.gitignore` excludes `*.sqlite`/
