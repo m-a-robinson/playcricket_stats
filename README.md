@@ -41,6 +41,8 @@ what's still outstanding.
   - [Modules](#modules)
 - [Using the example files](#using-the-example-files)
 - [Using the main database](#using-the-main-database)
+  - [Build the full database once](#build-the-full-database-once)
+  - [Query the full database for career stats](#query-the-full-database-for-career-stats)
 - [Documentation](#documentation)
 
 ## Core structure
@@ -510,12 +512,83 @@ nothing in the pipeline is destructive to the source JSON/PDF/`.MXP` files.
 
 ## Using the main database
 
-`demo.sqlite` above is a throwaway name for the walkthrough. In real use
-there's one persistent file — `playcricket_stats.sqlite` (or whatever you
-call it) — that every query in this project reads from, built once and
-then kept up to date rather than rebuilt from scratch each time. The two
-source *types* need completely different maintenance rhythms, because one
-is closed and one isn't:
+`demo.sqlite` above is a throwaway name for the walkthrough, built from one
+small sample file to demonstrate each piece in isolation. **The real
+database is never committed to this repo** — `.gitignore` excludes
+`*.sqlite`/`*.sqlite3` on purpose (see "If in doubt" below for why). What
+*is* committed are the ingredients: every source file under `playcricket/`,
+`crichq/`, `cricketstatz/`, `nmcl stats/`, `scorebooks/`, plus
+`reconcile/decisions.yaml` and `club_awards.py`'s hardcoded honours. You
+build the actual queryable database locally, once, from those — amalgamating
+**all six sources** (see the intro at the top of this README and the
+[Core structure](#core-structure) diagram), not just Play-Cricket.
+
+### Build the full database once
+
+Run every ingestion script in order, against one persistent filename
+(`playcricket_stats.sqlite` below — pick whatever name you like, it's just a
+local file, and it doesn't need to exist beforehand: each script creates it
+on first use via `schema.sql`):
+
+```bash
+python3 sqlite_store.py --json-db playcricket/playcricket_24_25_26.json --sqlite-db playcricket_stats.sqlite
+python3 crichq_pdf.py crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db playcricket_stats.sqlite
+python3 mxp_parser.py cricketstatz/ELPM2018_all_matches.mxp --sqlite-db playcricket_stats.sqlite
+python3 cricketstatz_txt.py cricketstatz/2010\ scorecards/*.txt --sqlite-db playcricket_stats.sqlite
+python3 nmcl_stats.py --sqlite-db playcricket_stats.sqlite
+python3 scorebooks.py --sqlite-db playcricket_stats.sqlite
+python3 reconcile.py --sqlite-db playcricket_stats.sqlite
+python3 club_awards.py --sqlite-db playcricket_stats.sqlite
+```
+
+Order matters for the last two only — `reconcile.py` needs every source
+already loaded so it has something to merge, and `club_awards.py` needs
+`reconcile.py` to have already run (see
+[Using the example files](#using-the-example-files) step 7) — the first six
+can run in any order. This is the same six sources listed at the top of this
+README, all landing in one store: **248 Play-Cricket + 374 CricHQ + 304
+CricketStatz + 37 CricketStatz-text matches, plus 77 NMCL season-aggregate
+rows (no match rows of their own) and 1 scorebook match** — see
+[development_notes.md](development_notes.md) for the exact reconciled
+totals once duplicates are removed. This is a **one-time build**; see
+"Play-Cricket — the one source that actually needs re-syncing" below for
+what to re-run afterward, rather than repeating this whole sequence.
+
+### Query the full database for career stats
+
+Once built, `playcricket_stats.sqlite` is queried exactly like `demo.sqlite`
+is throughout the walkthrough above — same `sqlite_queries.py` functions,
+just pointed at the real data instead of the small sample:
+
+```python
+import sqlite3
+from sqlite_queries import career_stats, SQLPlayerStats
+
+conn = sqlite3.connect("playcricket_stats.sqlite")
+
+career = career_stats(conn, elpmcc_only=False)   # every player, full amalgamated career
+career[career["player_name"] == "Ian Wade"].T      # one player, transposed so it's readable
+
+stats = SQLPlayerStats(conn)
+stats.top_runs(top_n=10)                # club-wide, all-time leaderboard
+stats.top_runs(season=2024, top_n=10)     # restricted to one season
+```
+
+This is a genuine career total across every source that player appears in,
+not a per-source figure: `career_stats()` aggregates by `player_id` alone,
+so once `reconcile.py` has merged a player's Play-Cricket/CricHQ/CricketStatz
+identities into one canonical row (step 6 of the walkthrough above), their
+combined batting/bowling/fielding totals come back as a single row
+automatically — no per-source lookup or manual addition needed. Everything
+in [Using the example files](#using-the-example-files) — the full
+`season`/`team_id`/`elpmcc_only`/`include_juniors`/`include_nmcl` parameter
+reference (step 3), reconciling a player (step 6), and how awards show up in
+`awards`/`team_awards()`/`player_awards()` (step 7) — applies unchanged here;
+just connect to this file instead of `demo.sqlite`.
+
+The two source *types* feeding this database need completely different
+maintenance rhythms after this first build, because one is closed and one
+isn't:
 
 ### Archive sources (CricHQ, CricketStatz) — import once, then leave alone
 
@@ -635,17 +708,16 @@ every future sync of a source already known to the database.
 ### If in doubt: everything here is safely rebuildable from scratch
 
 Every step above is idempotent and none of them mutate the source JSON/
-PDF/`.MXP`/`.txt`/`.xls`/`.csd` files or `reconcile/decisions.yaml` —
-only the derived `.sqlite` file. So if the database ever ends up in a
-state you don't trust, deleting it and re-running ingestion, in order —
-`sqlite_store.py` (Play-Cricket JSON), `crichq_pdf.py`, `mxp_parser.py`,
-`cricketstatz_txt.py`, `nmcl_stats.py`, `scorebooks.py`, then `reconcile.py`
-and finally `club_awards.py` (it depends on reconciliation having already
-run — see [Using the example files](#using-the-example-files) step 7) —
-always gets back to the same result. The
-`.sqlite` file itself doesn't need to be committed to version control —
-treat it as a derived build artifact, the same way `demo.sqlite` is
-throughout the walkthrough above, and keep it out of git.
+PDF/`.MXP`/`.txt`/`.xls`/`.csd` files or `reconcile/decisions.yaml` — only
+the derived `.sqlite` file. So if the database ever ends up in a state you
+don't trust, just delete it and repeat
+["Build the full database once"](#build-the-full-database-once) above —
+that same command sequence always gets back to the same result from the
+committed source files alone. This is exactly why the `.sqlite` file is
+never committed to version control (`.gitignore` excludes `*.sqlite`/
+`*.sqlite3`): it's fully and deterministically reproducible from what *is*
+committed, so keeping it out of git avoids a large binary file that would
+only go stale the moment any source file or `decisions.yaml` changes.
 
 ## Documentation
 
