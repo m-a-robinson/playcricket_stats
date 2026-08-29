@@ -118,6 +118,10 @@ versus what still needs a human.
 - **`reconcile_audit.py`** — Generates `reconcile/data_quality_report.md`
   and writes new reconciliation candidates into `decisions.yaml`'s
   `pending:` section for review.
+- **`club_awards.py`** — Ingests manually-curated club/team/player honours
+  (league/cup wins, season average winners, players' player of the year,
+  club captaincy) into `team_awards`/`player_awards`. Must be run **after**
+  `reconcile.py` — see [Using the main database](#using-the-main-database).
 
 Full development history for each module — bug stories, validation
 numbers, and the reasoning behind each design choice — is in
@@ -409,7 +413,55 @@ after importing further CricHQ PDFs: re-running `reconcile.py` is
 idempotent, and any *new* match for an already-merged ref resolves straight
 to the survivor.
 
-### 7. Audit the database for data-quality issues and reconciliation candidates
+### 7. Attach club/team/player awards
+
+`club_awards.py` holds the club's own manually-curated honours — league/cup
+wins, season batting/bowling/wicketkeeping average winners, players' player
+of the year, club captaincy — as hardcoded `TEAM_AWARDS`/`PLAYER_AWARDS`
+lists, since there's no source file for these to parse from. **Run this
+after `reconcile.py`** (step 6): player/team names are resolved by exact
+match against the store's canonical rows, so an unmerged duplicate raises a
+clear error rather than guessing which row an award belongs to.
+
+```bash
+python3 club_awards.py --sqlite-db demo.sqlite
+```
+
+```
+Inserted 4 new team_awards row(s), 26 new player_awards row(s).
+```
+
+Once attached, individual honours show up directly in `career_stats()`
+(the `awards` column) — this is what the user meant by "when generating
+career stats for Ian Wade these awards should be noted":
+
+```python
+conn = sqlite3.connect("demo.sqlite")   # reconnect to pick up the awards
+career = career_stats(conn, elpmcc_only=False)
+career[career["player_name"] == "Ian Wade"][["player_name", "awards"]]
+# 2009 NMCL Bowling Average Winner; 2011 Club Captain; 2012 Club Captain;
+# 2012 NMCL Batting Average Winner; 2012 NMCL Players' Player of the Year;
+# 2013 Club Captain; 2014 Club Captain; 2015 Club Captain
+```
+
+Team honours (league/cup wins) aren't folded into a player row — a
+squad-wide trophy doesn't belong to any one player's career line the way an
+individual award does — so look those up with `team_awards()`, and see any
+player's raw award rows on their own with `player_awards()`:
+
+```python
+from sqlite_queries import player_awards, team_awards
+
+player_awards(conn, season=2012)   # every individual honour awarded in 2012
+team_awards(conn)                   # every team honour, every season
+```
+
+Adding a new honour means adding a new dict to `club_awards.py`'s
+`TEAM_AWARDS`/`PLAYER_AWARDS` (or a range to `CAPTAINCY_TENURES`) and
+re-running the script — it's idempotent (`INSERT OR IGNORE`), so re-running
+after adding one new entry only inserts that entry.
+
+### 8. Audit the database for data-quality issues and reconciliation candidates
 
 Run after ingesting (all) sources, ideally before trusting any stats off the
 result — a read-only scan, never writes to `demo.sqlite`:
@@ -442,7 +494,7 @@ the **full archive**, so it doubles as a worked example — see
 [development_notes.md](development_notes.md) for the full narrative behind
 what it finds.
 
-### 8. Poke at the raw tables directly
+### 9. Poke at the raw tables directly
 
 For anything the query helpers don't cover yet, plain SQL against `demo.sqlite`
 works — the schema is in `schema.sql`:
@@ -588,7 +640,9 @@ only the derived `.sqlite` file. So if the database ever ends up in a
 state you don't trust, deleting it and re-running ingestion, in order —
 `sqlite_store.py` (Play-Cricket JSON), `crichq_pdf.py`, `mxp_parser.py`,
 `cricketstatz_txt.py`, `nmcl_stats.py`, `scorebooks.py`, then `reconcile.py`
-last — always gets back to the same result. The
+and finally `club_awards.py` (it depends on reconciliation having already
+run — see [Using the example files](#using-the-example-files) step 7) —
+always gets back to the same result. The
 `.sqlite` file itself doesn't need to be committed to version control —
 treat it as a derived build artifact, the same way `demo.sqlite` is
 throughout the walkthrough above, and keep it out of git.

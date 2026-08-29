@@ -39,3 +39,4 @@ Reconciliation and stats
    reconcile
    reconcile_audit
    sqlite_queries
+   club_awards
