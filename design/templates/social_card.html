@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ card.headline }}</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --maroon: #5B0422;
+    --gold: #F4B22F;
+    --grey-light: #D1D1D1;
+    --grey-mid: #9F9F9F;
+    --cream: #FBE8C0;
+    --navy: #084887;
+    --near-black: #02111B;
+  }
+  html, body { margin: 0; padding: 0; width: 1080px; height: 1080px; font-family: Arial, Helvetica, sans-serif; }
+  .card {
+    width: 1080px; height: 1080px; position: relative;
+    background: linear-gradient(155deg, var(--maroon) 0%, var(--maroon) 55%, var(--navy) 100%);
+    color: var(--cream); overflow: hidden;
+  }
+  .card::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 85% 8%, rgba(244,178,47,0.25), transparent 45%);
+  }
+  .top-bar { display: flex; align-items: center; gap: 20px; padding: 48px 56px 0; position: relative; z-index: 1; }
+  .crest {
+    width: 76px; height: auto; flex: none;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+  }
+  .club-line { font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .club-sub { font-size: 15px; color: var(--grey-light); margin-top: 2px; }
+
+  .tag {
+    margin: 40px 56px 0; display: inline-block; background: var(--gold); color: var(--maroon);
+    font-weight: 800; font-size: 20px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 8px 22px; border-radius: 999px; position: relative; z-index: 1;
+  }
+
+  .headline {
+    margin: 26px 56px 0; font-size: 54px; font-weight: 800; line-height: 1.12;
+    max-width: 900px; position: relative; z-index: 1;
+  }
+  .subline { margin: 14px 56px 0; font-size: 24px; color: var(--grey-light); position: relative; z-index: 1; }
+
+  .score-row { display: flex; gap: 28px; margin: 40px 56px 0; position: relative; z-index: 1; }
+  .score-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(251,232,192,0.25); border-radius: 14px; padding: 22px 28px; flex: 1; }
+  .score-box .team { font-size: 17px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); font-weight: 700; }
+  .score-box .score { font-size: 40px; font-weight: 800; margin-top: 6px; }
+
+  .performances { margin: 48px 56px 0; position: relative; z-index: 1; }
+  .perf-heading { font-size: 20px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); font-weight: 700; margin-bottom: 16px; }
+  .perf-row { display: flex; gap: 22px; }
+  .perf-card { flex: 1; background: var(--cream); color: var(--near-black); border-radius: 16px; padding: 24px 26px; }
+  .perf-card .name { font-size: 26px; font-weight: 800; color: var(--maroon); }
+  .perf-card .stat { font-size: 34px; font-weight: 800; margin-top: 6px; color: var(--navy); }
+  .perf-card .detail { font-size: 16px; color: var(--grey-mid); margin-top: 4px; }
+
+  .footer {
+    position: absolute; bottom: 40px; left: 56px; right: 56px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 15px; color: var(--grey-light); z-index: 1;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-bar">
+      <img class="crest" src="../assets/elpmcc2025.svg" alt="ELPMCC crest">
+      <div>
+        <div class="club-line">East Lancs Paper Mill CC</div>
+        <div class="club-sub">{{ card.competition }}</div>
+      </div>
+    </div>
+
+    <div class="tag">{{ card.result_tag }}</div>
+    <div class="headline">{{ card.headline }}</div>
+    <div class="subline">{{ card.date }} · {{ card.venue }}</div>
+
+    <div class="score-row">
+      {% for team in card.scores %}
+      <div class="score-box">
+        <div class="team">{{ team.name }}</div>
+        <div class="score">{{ team.score }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="performances">
+      <div class="perf-heading">Performances of the week</div>
+      <div class="perf-row">
+        {% for p in card.performances %}
+        <div class="perf-card">
+          <div class="name">{{ p.name }}</div>
+          <div class="stat">{{ p.stat }}</div>
+          <div class="detail">{{ p.detail }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>ELPMCC est. 1930</span>
+      <span>#ELPMCC</span>
+    </div>
+  </div>
+</body>
+</html>

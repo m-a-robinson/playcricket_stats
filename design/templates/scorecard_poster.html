@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ match.title }} — scorecard</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  * { box-sizing: border-box; }
+  :root {
+    --maroon: #5B0422;
+    --gold: #F4B22F;
+    --grey-light: #D1D1D1;
+    --grey-mid: #9F9F9F;
+    --cream: #FBE8C0;
+    --navy: #084887;
+    --near-black: #02111B;
+  }
+  html, body {
+    margin: 0; padding: 0;
+    width: 210mm; height: 297mm;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--near-black);
+    background: var(--cream);
+  }
+  .sheet { width: 210mm; height: 297mm; padding: 14mm 16mm; position: relative; }
+
+  .header {
+    background: var(--maroon);
+    color: var(--cream);
+    padding: 8mm 10mm;
+    border-radius: 3mm;
+    display: flex;
+    align-items: center;
+    gap: 6mm;
+  }
+  .crest { width: 18mm; height: auto; flex: none; display: block; }
+  .header-text { flex: 1; }
+  .club-name { font-family: Arial, sans-serif; letter-spacing: 0.12em; font-size: 9pt; text-transform: uppercase; color: var(--gold); }
+  .match-title { font-size: 20pt; font-weight: 700; margin: 1mm 0; }
+  .match-meta { font-family: Arial, sans-serif; font-size: 9.5pt; color: var(--cream); opacity: 0.9; }
+  .result-strip {
+    margin-top: 4mm; background: var(--gold); color: var(--maroon);
+    font-family: Arial, sans-serif; font-weight: 700; font-size: 12pt;
+    text-align: center; padding: 3mm; border-radius: 2mm;
+  }
+
+  .totals { display: flex; gap: 6mm; margin: 6mm 0; }
+  .total-card { flex: 1; background: white; border: 0.4mm solid var(--grey-light); border-radius: 2mm; padding: 4mm 5mm; }
+  .total-card .team { font-family: Arial, sans-serif; font-weight: 700; font-size: 10pt; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+  .total-card .score { font-size: 22pt; font-weight: 700; margin-top: 1mm; }
+  .total-card .overs { font-family: Arial, sans-serif; font-size: 8.5pt; color: var(--grey-mid); }
+
+  .innings-block { margin-bottom: 5mm; }
+  .innings-heading {
+    font-family: Arial, sans-serif; font-weight: 700; font-size: 9.5pt;
+    color: white; background: var(--navy); padding: 1.5mm 3mm; border-radius: 1mm 1mm 0 0;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 8.5pt; }
+  thead th {
+    text-align: left; font-weight: 700; padding: 1.2mm 2mm;
+    border-bottom: 0.3mm solid var(--grey-mid); color: var(--near-black);
+    background: var(--grey-light);
+  }
+  thead th.num, tbody td.num { text-align: right; }
+  tbody td { padding: 1.1mm 2mm; border-bottom: 0.2mm solid var(--grey-light); }
+  tbody tr.featured td { font-weight: 700; color: var(--maroon); background: var(--gold); }
+  tbody td.player { width: 44%; }
+  tbody td.dismissal { color: var(--grey-mid); font-style: italic; }
+  tfoot td { padding: 1.2mm 2mm; font-style: italic; color: var(--grey-mid); }
+
+  .highlight-note {
+    margin-top: 3mm; background: white; border-left: 2mm solid var(--gold);
+    padding: 3mm 4mm; font-family: Arial, sans-serif; font-size: 9pt; color: var(--near-black);
+  }
+  .highlight-note b { color: var(--maroon); }
+
+  .footer {
+    position: absolute; bottom: 10mm; left: 16mm; right: 16mm;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: Arial, sans-serif; font-size: 7.5pt; color: var(--grey-mid);
+    border-top: 0.3mm solid var(--grey-light); padding-top: 2mm;
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="header">
+      <img class="crest" src="../assets/elpmcc2025.svg" alt="ELPMCC crest">
+      <div class="header-text">
+        <div class="club-name">East Lancs Paper Mill CC</div>
+        <div class="match-title">{{ match.title }}</div>
+        <div class="match-meta">{{ match.date }} · {{ match.venue }} · {{ match.competition }}</div>
+      </div>
+    </div>
+    <div class="result-strip">{{ match.result }}</div>
+
+    <div class="totals">
+      {% for team in match.totals %}
+      <div class="total-card">
+        <div class="team">{{ team.name }}</div>
+        <div class="score">{{ team.score }}</div>
+        <div class="overs">{{ team.overs }} overs</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% for inn in match.innings %}
+    <div class="innings-block">
+      <div class="innings-heading">{{ inn.team }} innings — {{ inn.score }}</div>
+      <table>
+        <thead><tr><th class="player">Batter</th><th>How out</th><th class="num">R</th><th class="num">4s</th><th class="num">6s</th></tr></thead>
+        <tbody>
+          {% for b in inn.batting %}
+          <tr class="{{ 'featured' if b.featured else '' }}">
+            <td class="player">{{ b.name }}</td>
+            <td class="dismissal">{{ b.how_out }}</td>
+            <td class="num">{{ b.runs }}</td>
+            <td class="num">{{ b.fours }}</td>
+            <td class="num">{{ b.sixes }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot><tr><td colspan="5">{{ inn.extras }}</td></tr></tfoot>
+      </table>
+    </div>
+    {% endfor %}
+
+    {% if match.highlight %}
+    <div class="highlight-note">{{ match.highlight | safe }}</div>
+    {% endif %}
+
+    <div class="footer">
+      <span>ELPMCC est. 1930</span>
+      <span>playcricket_stats archive</span>
+    </div>
+  </div>
+</body>
+</html>
