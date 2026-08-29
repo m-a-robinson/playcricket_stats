@@ -159,7 +159,7 @@ build the actual queryable database locally, once, from those — amalgamating
 **all six sources** (see the intro at the top of this README and the
 [Core structure](#core-structure) diagram), not just Play-Cricket.
 
-### Build the full database once
+### Build the full database once (in Terminal)
 
 Run every ingestion script in order, against one persistent filename
 (`playcricket_stats.sqlite` below — pick whatever name you like, it's just a
