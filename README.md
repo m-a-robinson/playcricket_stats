@@ -245,7 +245,7 @@ Player/club/team names must match exactly (`known_as`/`club_name`/
 spelling with e.g. `SELECT DISTINCT club_name FROM clubs WHERE club_name
 LIKE '%shaw%'` first (case-insensitive by default in SQLite's `LIKE`).
 
-#### Look up one match's scorecard
+#### Look up one match's scorecard (e.g. match 429)
 
 *(needs `conn` and `pd` from the setup above)*
 
