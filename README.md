@@ -362,6 +362,22 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   brings them back. Nothing else in this project treats junior cricket as
   second-class — it's ingested and stored exactly like senior fixtures —
   this is purely a default view on top, not a data restriction.
+  `nmcl_stats.py`'s season-aggregate rows (`nmcl_season_stats` — a
+  qualification-threshold report, not per-match data, see that module's
+  bullet above) are excluded by the same "opt in" pattern
+  (`include_nmcl=False`) rather than folded in silently: a season
+  aggregate can't honestly contribute `games_played`/fours/sixes/fifties/
+  hundreds/economy/bowling strike rate the way a real scorecard row can,
+  so `include_nmcl=True` only adds the figures that stay valid when
+  summed across a season total and real match data — runs, times
+  dismissed, highest score, wickets, runs conceded, catches, and the
+  averages recomputed from those combined totals — leaving the rest
+  alone. A row that actually received an NMCL contribution this way has
+  `includes_nmcl=1` on it, so a blended total is never mistaken for a
+  pure match-level one; `nmcl_season_stats(conn, player_id=, season=)`
+  returns the raw rows on their own, un-blended, for anyone who wants to
+  see exactly what a blend is made of (or look at a season — 2000-2005,
+  2011-2013 — this club has no match-level data for at all).
 - **`reconcile/decisions.yaml`** — The single, human-curated, human-readable
   record of every reconciliation decision: which `(source, source_*_id)`
   refs are the same real player/club/team/ground (with a `canonical_name`
@@ -841,7 +857,11 @@ Built 70 matches into demo.sqlite
 ### 2. Look at one match's scorecard
 
 Good for eyeballing that a match parsed correctly against what you remember
-of the game:
+of the game. `Scorecard` (`playcricket_scorecard.py`) turns one raw
+match-detail dict — from the JSON cache, or from any source's own parser
+before it reaches SQLite (`crichq_pdf.parse_pdf()`,
+`mxp_parser.parse_mxp()`, etc. all produce the same shape) — into
+DataFrames and a printable card, with no database involved:
 
 ```python
 from playcricket_database import PlayCricketDatabase
@@ -854,17 +874,77 @@ db = PlayCricketDatabase(api=None, filename="playcricket/playcricket_2026_demo.j
 # to get the record Scorecard expects.
 raw = db.match(7239375)
 sc = Scorecard(raw["match_details"][0])
+```
 
-sc.teams()          # {'home': '...', 'away': '...'}
-sc.get_result()      # 'East Lancs Paper Mill CC - 1st XI - Won'
-sc.batting_table(1)   # innings-1 batting card as a DataFrame
-sc.print_scorecard()   # full scorecard, printed
+The most useful calls, roughly in the order you'd reach for them:
+
+```python
+sc.teams()               # {'home': '...', 'away': '...'}
+sc.get_result()           # 'East Lancs Paper Mill CC - 1st XI - Won'
+sc.summary()                # dict: date, competition, ground, teams, result -- one glance
+
+sc.batting_table(1)           # innings-1 batting card as a DataFrame (name, runs, balls, 4s, 6s, how out)
+sc.bowling_table(1)            # innings-1 bowling figures (overs, maidens, runs, wickets, economy)
+sc.fall_of_wickets(1)           # innings-1 partnership breaks, one row per wicket (score, batsman out)
+sc.get_performances()             # milestones this match crossed: fifties, hundreds, 5-wicket hauls
+
+sc.print_scorecard()                # the whole thing, both innings, plain text -- start here
+```
+
+`print_scorecard()` is almost always the right first call — it renders
+both innings' batting, extras, fall of wickets, and bowling in one
+readable block, the same shape a scorer would recognise from a real
+scorecard. The individual methods above (`batting_table`/`bowling_table`/
+etc.) are for when you want one piece of it as a DataFrame to filter,
+sort, or feed into something else, rather than the whole printed card.
+
+**This is a single-match, single-source view** — `Scorecard` reads one raw
+match-detail dict, so it only ever shows one match from wherever that dict
+came from (here, the Play-Cricket JSON cache). Once a match is in the
+unified SQLite store (any of the five match-level sources — everything
+except `nmcl_stats.py`'s season aggregates, see "Modules" above), looking
+it up works the same way regardless of which source it came from, via
+plain SQL against the normalised tables instead:
+
+```python
+import sqlite3
+conn = sqlite3.connect("demo.sqlite")
+
+match_id = conn.execute(
+    "SELECT match_id FROM matches WHERE source='play_cricket' AND source_match_id='7239375'"
+).fetchone()[0]
+
+conn.execute("SELECT * FROM matches WHERE match_id = ?", (match_id,)).fetchone()
+
+# One innings' batting card, any source, straight from the normalised tables:
+import pandas as pd
+pd.read_sql_query(
+    """
+    SELECT p.known_as AS batsman, b.runs, b.balls, b.fours, b.sixes, b.how_out
+    FROM batting_innings b
+    JOIN innings i ON i.innings_id = b.innings_id
+    JOIN players p ON p.player_id = b.player_id
+    WHERE i.match_id = ? AND i.innings_number = 1
+    ORDER BY b.position
+    """,
+    conn, params=(match_id,)
+)
 ```
 
 ### 3. Query career stats and leaderboards
 
 This is the main "did this actually work" check — cross-check a name or
-figure you know against what comes back:
+figure you know against what comes back. Everything here comes from
+`sqlite_queries.py`'s two entry points: `career_stats()` (one row per
+player) and `SQLPlayerStats` (leaderboards built on top of it) — see that
+module's own bullet under "Modules" for the full parameter reference.
+
+**Multi-player stats (leaderboards)** — `SQLPlayerStats` is the "many
+players at once, ranked" view. Every method below returns the top `top_n`
+players by that metric, and most take a `min_*` qualification threshold
+(the same defaults `MultiPlayerStats`, the retired pandas equivalent,
+used) so someone with 2 games and a lucky 80\* doesn't outrank a
+top-order regular:
 
 ```python
 import sqlite3
@@ -873,15 +953,83 @@ from sqlite_queries import SQLPlayerStats
 conn = sqlite3.connect("demo.sqlite")
 stats = SQLPlayerStats(conn)
 
-stats.top_runs(top_n=10)              # leaderboard, ranked
-stats.top_wickets(top_n=10)
-stats.top_batting_average(top_n=10)
-stats.highlights(top_n=10)             # milestone counts (50s/100s/5-fors)
+stats.top_runs(top_n=10)                    # most career runs
+stats.top_batting_average(top_n=10)          # min_batting_innings=5 by default
+stats.top_strike_rate(top_n=10)               # min_batting_innings=5, min_runs=50
+stats.top_scores(top_n=10)                     # single highest innings
+stats.top_fifties(top_n=10)                     # most 50s (counts both 50s and 100s toward "fifties")
+stats.top_hundreds(top_n=10)                     # most 100s (200s count too)
 
-stats.career()                          # every player, full career stats
-stats.career(team_id=1)                  # same, restricted to one team
-stats.career().query("player_name == 'Ian Wade'")   # look up one player
+stats.top_wickets(top_n=10)                       # most career wickets
+stats.top_bowling_average(top_n=10)                # min_bowling_innings=5, min_wickets=5; lowest wins
+stats.top_economy(top_n=10)                         # same thresholds; lowest wins
+stats.top_bowling_strike_rate(top_n=10)              # same thresholds; lowest wins
+
+stats.top_catches(top_n=10)                           # fielding dismissals credited via how_out
+stats.top_fielding(top_n=10)                           # catches + stumpings + run-outs combined
+stats.highlights(top_n=10)                              # most milestones total (50s+100s+200s+5-fors)
 ```
+
+Every leaderboard method also takes `season=`/`team_id=` (see filtering
+below), and its own `min_*`/`top_n` keyword — check the method signature
+in `sqlite_queries.py` for the exact name (they're not all called the
+same thing, e.g. `min_batting_innings` vs `min_games`).
+
+**One player's full career** — `career_stats()` (or `stats.career()`,
+same thing) returns every batting/bowling/fielding total in one row per
+player, not just whatever one leaderboard ranks by:
+
+```python
+from sqlite_queries import career_stats
+
+career = career_stats(conn)                                    # every (in-scope) player, full career stats
+career[career["player_name"] == "Ian Wade"].T                    # one player, transposed so it's readable
+career[career["player_id"] == 5]                                    # by id instead, if the name's ambiguous
+```
+
+**Basic querying and filtering** — every function above takes the same
+filter keywords, so they compose the same way everywhere:
+
+| Keyword | Default | Effect |
+|---|---|---|
+| `season=2024` | `None` (all seasons) | Restricts every total to matches in that season. |
+| `team_id=5` | `None` (every team) | Restricts to one specific team (e.g. just the 1st XI) — see below for finding a `team_id`. Splits a player's stats by team instead of giving a true career total. |
+| `elpmcc_only=True` | `True` | Only players who've appeared for `elpmcc_name`'s teams are included at all — opposition players are excluded as *tracked players*, not deleted (their innings still exist in `batting_innings`/`bowling_innings`, they just don't get a career-stats row of their own). Pass `False` to include everyone, e.g. to check one opposition player's record against this club specifically. |
+| `elpmcc_name="..."` | `"East Lancs Paper Mill CC"` | Which club `elpmcc_only` means — despite the name, this isn't hardcoded to one club: pass any `club_name` in the database to get that club's own combined career stats instead (all its teams together — see "club vs team stats" below). |
+| `include_juniors=False` | `False` | Junior teams (`teams.is_juniors`, e.g. Under 9/Under 11) are excluded from career totals and leaderboards by default. Pass `True` to include them, or filter to a junior `team_id` directly (which already overrides this). |
+| `include_nmcl=False` | `False` | Whether `nmcl_stats.py`'s season-aggregate rows contribute to the totals — see "Modules" above for exactly what does and doesn't get folded in. |
+
+`SQLPlayerStats(conn, elpmcc_only=..., elpmcc_name=..., include_juniors=..., include_nmcl=...)` sets these once for every leaderboard method on that instance; `career_stats(conn, ...)` takes them per call. `season`/`team_id` are always per-call (there's no instance-level default for those) since you're usually comparing across them, not fixing one for a whole session.
+
+**Club stats vs team stats — no separate file needed.** "One club's combined
+stats across every team it runs" and "one specific team's stats" are both
+already just `career_stats()`/`SQLPlayerStats` calls, not a different kind
+of query:
+
+```python
+# The whole club (every team, seniors + juniors if asked), by name --
+# this is just elpmcc_only/elpmcc_name pointed at whichever club you want:
+career_stats(conn, elpmcc_name="Prestwich CC")
+
+# One specific team only (e.g. just the 1st XI) -- find its team_id first:
+team_id = conn.execute(
+    "SELECT t.team_id FROM teams t JOIN clubs c ON c.club_id = t.club_id "
+    "WHERE c.club_name = ? AND t.team_name = ?",
+    ("East Lancs Paper Mill CC", "1st XI")
+).fetchone()[0]
+
+career_stats(conn, team_id=team_id)                     # that team's players, stats split to just this team
+SQLPlayerStats(conn).top_runs(team_id=team_id, top_n=10)   # leaderboard, same team
+```
+
+What genuinely doesn't exist yet, and would need new code rather than a
+different call: **team-level results** (win/loss/draw records, run rates,
+season standings) — everything above is player stats grouped by team/club,
+not match outcomes aggregated by team. That's a `matches.result`/
+`result_applied_to` query nobody has written, not a missing file — it
+belongs as a new function in `sqlite_queries.py` alongside `career_stats()`
+when it's needed, not a separate module: same store, same "SQL query over
+the normalised tables" shape as everything else here.
 
 ### 4. Ingest a CricHQ PDF
 
