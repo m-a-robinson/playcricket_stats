@@ -378,6 +378,21 @@ sqlite_queries.py      (career stats / leaderboards, read via SQL)
   returns the raw rows on their own, un-blended, for anyone who wants to
   see exactly what a blend is made of (or look at a season — 2000-2005,
   2011-2013 — this club has no match-level data for at all).
+  **`team_id` filtering works the same for every team, including
+  once-overlooked ones** — confirmed by actually running it rather than
+  assumed: `East Lancs Millers` (the T20 side, `team_id` varies by build
+  order — look it up by name, `SELECT team_id FROM teams WHERE
+  team_name = 'East Lancs Millers'`) filters cleanly through both
+  `career_stats(team_id=...)` (52 players across its 29 CricHQ matches,
+  e.g. Ian Wade's 254 runs there — correctly a subset of his ~5900-run
+  *overall* career total, not double-counted or missing) and
+  `SQLPlayerStats(...).top_runs(team_id=...)`; team-name *aliases*
+  confirmed via `reconcile/decisions.yaml` (e.g. `Clifton Kingfishers` —
+  a real alternate name for one of Clifton CC's teams, merged from two
+  sources into its own canonical team, not folded into "2nd XI") filter
+  the same way once merged. No code change was needed for any of this —
+  team/club identity resolution never special-cased team names to begin
+  with, so a team just needed to actually be tried once to confirm it.
 - **`reconcile/decisions.yaml`** — The single, human-curated, human-readable
   record of every reconciliation decision: which `(source, source_*_id)`
   refs are the same real player/club/team/ground (with a `canonical_name`
@@ -603,8 +618,10 @@ remains.
   spanning **seven seasons, 2016 and 2018–2023** (see below — 2016 was
   invisible until the header-splitting bug was fixed), across every level
   the club runs — 1st/2nd/3rd/4th XI, Sunday sides, league and cup
-  competitions, and the T20 side (see the "ELPMCC Millers" note under "Not
-  built yet"). Parses cleanly at the text level (5725 batting rows, 3225
+  competitions, and the T20 side (`East Lancs Millers`, GMCL20 cup
+  competitions, 29 matches — filters cleanly through `career_stats(team_id=
+  ...)`/leaderboards on a par with every other team, confirmed under
+  "Modules" above). Parses cleanly at the text level (5725 batting rows, 3225
   bowling rows, 6658 team-sheet entries across all matches) and now
   **ingests cleanly end to end**: `python3 crichq_pdf.py
   crichq/ALL_CRICHQ_SCORECARDS.pdf --sqlite-db <path>` loads all 374
@@ -743,18 +760,6 @@ remains.
   and `reconcile.py`'s `merge_players()`/`PLAYER_MERGES` (registry-driven),
   built independently, doing the same underlying repoint. Pick one as
   canonical and retire the other — a housekeeping item, not yet done.
-- **`ELPMCC Millers` (the T20 side) needs equal status to the 1st/2nd/3rd/
-  4th XIs**, not second-class treatment as an afterthought. It shows up
-  correctly as its own team once a source is ingested (confirmed in
-  `crichq/ALL_CRICHQ_SCORECARDS.pdf` — 29 matches, club name
-  `East Lancs Paper Mill CC`, team name `East Lancs Millers`, competing in
-  the GMCL20 T20 cup competitions — team/club identity resolution doesn't
-  special-case team names at all, so no code change was needed for that
-  much) — but nothing downstream (leaderboards, career stats team
-  filtering, any future team-level reporting) has been checked to make
-  sure it's actually surfaced on a par with the longer-running XIs rather
-  than just quietly present in the data. Worth an explicit check once
-  `career_stats(team_id=...)`/team-level views get real use.
 - The **2010-2013 season blackout** (see "Milestone" above) is now
   partially filled, not fully: 2010 has real match-level data
   (`cricketstatz_txt.py`, `cricketstatz/2010 scorecards/`; plus one
@@ -1595,8 +1600,10 @@ throughout the walkthrough above, and keep it out of git.
        differently. `PLAYER_MERGES` only lists the abbreviated `"I Wade"`
        ref today; the other two (48 and 4 games respectively) aren't merged
        in.
-   Also see "**ELPMCC Millers**" under "Not built yet" — the T20 side, not
-   yet checked for equal treatment once more sources bring it in.
+   The T20 side (`East Lancs Millers`) is confirmed to get equal treatment
+   here too, not second-class status as an afterthought — see
+   `sqlite_queries.py`'s bullet under "Modules" for the `team_id`
+   filtering check.
 5. **Career & historical stats** — Extend `sqlite_queries.py` to operate
    across the merged multi-source database (all-time leaderboards, career
    milestones, team/season filtering already work for the Play-Cricket-only
