@@ -43,6 +43,7 @@ what's still outstanding.
 - [Using the main database](#using-the-main-database)
   - [Build the full database once](#build-the-full-database-once)
   - [Querying the database in ipython](#querying-the-database-in-ipython)
+    - [The basic pattern: `pd.read_sql_query()`](#the-basic-pattern-pdread_sql_query)
     - [What can you filter by?](#what-can-you-filter-by)
     - [Look up one match's scorecard](#look-up-one-matchs-scorecard)
     - [Search for matches by criteria](#search-for-matches-by-criteria)
@@ -219,6 +220,83 @@ query in isolation into a fresh `ipython`/script without it first is the
 most common way to hit that. Reconnect (re-run the `conn = ...` line) after
 re-building or re-ingesting anything, so you're not reading a stale
 connection.
+
+#### The basic pattern: `pd.read_sql_query()`
+
+*(needs `conn` and `pd` from the setup above)*
+
+Every example below boils down to this one call, so it's worth seeing on
+its own first. The **first argument is just the SQL query itself, as a
+Python string** — a single line, or a `"""..."""` triple-quoted string when
+it spans several; the second argument is the open `conn`; an optional
+`params=` safely substitutes values into `?`/`:name` placeholders instead
+of string-formatting them into the query by hand. It returns a pandas
+DataFrame, one column per `SELECT`ed column. Five variations, all using
+the club itself (`East Lancs Paper Mill CC`, "ELPMCC") as the example:
+
+```python
+ELPMCC = "East Lancs Paper Mill CC"
+
+# 1. Whole row, one club -- the simplest possible call
+pd.read_sql_query("SELECT * FROM clubs WHERE club_name = 'East Lancs Paper Mill CC'", conn)
+
+# 2. Specific columns -- ELPMCC's own team list
+pd.read_sql_query(
+    """
+    SELECT team_name FROM teams t
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = 'East Lancs Paper Mill CC'
+    ORDER BY team_name
+    """,
+    conn
+)
+
+# 3. WHERE with positional ? params -- ELPMCC's matches in one season
+#    (matches only stores home_team_id/away_team_id, not a club name --
+#    see "What can you filter by?" below -- hence the join)
+pd.read_sql_query(
+    """
+    SELECT m.match_id, m.match_date, m.season
+    FROM matches m
+    JOIN teams t ON t.team_id IN (m.home_team_id, m.away_team_id)
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = ? AND m.season = ?
+    """,
+    conn, params=(ELPMCC, 2024)
+)
+
+# 4. WHERE with named :params (a dict instead of a tuple) -- same idea
+pd.read_sql_query(
+    """
+    SELECT m.match_id, m.match_date, m.season
+    FROM matches m
+    JOIN teams t ON t.team_id IN (m.home_team_id, m.away_team_id)
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = :club_name AND m.season = :season
+    """,
+    conn, params={"club_name": ELPMCC, "season": 2025}
+)
+
+# 5. Aggregation -- ELPMCC's matches per season
+pd.read_sql_query(
+    """
+    SELECT m.season, COUNT(DISTINCT m.match_id) AS matches
+    FROM matches m
+    JOIN teams t ON t.team_id IN (m.home_team_id, m.away_team_id)
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = ?
+    GROUP BY m.season
+    ORDER BY m.season
+    """,
+    conn, params=(ELPMCC,)
+)
+```
+
+Always pass a value through `params=` rather than splicing it into the SQL
+string yourself (an f-string, `.format()`) — it's escaped safely and avoids
+fiddling with quotes by hand. Every other query in this section, and in
+[EXAMPLES.md](EXAMPLES.md), is the same `pd.read_sql_query(sql, conn)` call
+— just a longer `sql` string.
 
 #### What can you filter by?
 
