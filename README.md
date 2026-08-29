@@ -472,6 +472,46 @@ centuries                            # the index -- e.g. 98 centuries across the
 scorecard_for(centuries.iloc[0]["match_id"]).print_scorecard()   # the highest one, in full
 ```
 
+**Restricting that to ELPMCC's own players** (not opposition centuries
+scored against the club): `batting_innings.team_id` names the team that
+*innings row* was batting for, so join `teams`/`clubs` on that directly and
+filter on the club — a different join target than the `home_team_id`/
+`away_team_id` pair used above (which only say who played whom, not which
+side any one row belongs to):
+
+```python
+elpmcc_centuries = pd.read_sql_query(
+    """
+    SELECT m.match_id, m.match_date, m.season, p.known_as AS batsman,
+           b.runs, b.balls, bt.team_name AS batting_team
+    FROM batting_innings b
+    JOIN teams bt ON bt.team_id = b.team_id
+    JOIN clubs bc ON bc.club_id = bt.club_id
+    JOIN innings i ON i.innings_id = b.innings_id
+    JOIN matches m ON m.match_id = i.match_id
+    JOIN players p ON p.player_id = b.player_id
+    WHERE b.runs >= 100 AND bc.club_name = ?
+    ORDER BY b.runs DESC
+    """,
+    conn, params=(ELPMCC,)
+)
+elpmcc_centuries                     # e.g. 29 of the 98 centuries are ELPMCC's own
+```
+
+This is the general pattern for "ELPMCC players only" on *any* per-innings
+query (bowling figures, catches, whatever) — join `batting_innings.team_id`
+or `bowling_innings.team_id` to `teams`/`clubs` and filter on `club_name`,
+since that column is always "which team this specific performance belongs
+to", unlike `matches.home_team_id`/`away_team_id` which only say who played
+whom, not who a given row's runs/wickets belong to. It's also a narrower
+question than `career_stats()`'s `elpmcc_only` (see
+[Career stats and leaderboards](#career-stats-and-leaderboards) below):
+that flag decides which *players* get a career-stats row at all (anyone
+who's ever appeared for the club), whereas this filters individual
+*innings* by which team that innings was actually played for — the two
+agree almost always, but diverge for a guest appearance or a rare
+opposition player who once turned out for ELPMCC itself.
+
 The same shape answers most other "find the match(es) where..." questions —
 swap the `WHERE` clause for a different table/condition (`bowling_innings`
 for a 5-wicket haul, `m.season = 2024` for one season, `m.competition_name
