@@ -43,6 +43,7 @@ what's still outstanding.
 - [Using the main database](#using-the-main-database)
   - [Build the full database once](#build-the-full-database-once)
   - [Querying the database in ipython](#querying-the-database-in-ipython)
+    - [The basic pattern: `pd.read_sql_query()`](#the-basic-pattern-pdread_sql_query)
     - [What can you filter by?](#what-can-you-filter-by)
     - [Look up one match's scorecard](#look-up-one-matchs-scorecard)
     - [Search for matches by criteria](#search-for-matches-by-criteria)
@@ -220,6 +221,83 @@ most common way to hit that. Reconnect (re-run the `conn = ...` line) after
 re-building or re-ingesting anything, so you're not reading a stale
 connection.
 
+#### The basic pattern: `pd.read_sql_query()`
+
+*(needs `conn` and `pd` from the setup above)*
+
+Every example below boils down to this one call, so it's worth seeing on
+its own first. The **first argument is just the SQL query itself, as a
+Python string** — a single line, or a `"""..."""` triple-quoted string when
+it spans several; the second argument is the open `conn`; an optional
+`params=` safely substitutes values into `?`/`:name` placeholders instead
+of string-formatting them into the query by hand. It returns a pandas
+DataFrame, one column per `SELECT`ed column. Five variations, all using
+the club itself (`East Lancs Paper Mill CC`, "ELPMCC") as the example:
+
+```python
+ELPMCC = "East Lancs Paper Mill CC"
+
+# 1. Whole row, one club -- the simplest possible call
+pd.read_sql_query("SELECT * FROM clubs WHERE club_name = 'East Lancs Paper Mill CC'", conn)
+
+# 2. Specific columns -- ELPMCC's own team list
+pd.read_sql_query(
+    """
+    SELECT team_name FROM teams t
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = 'East Lancs Paper Mill CC'
+    ORDER BY team_name
+    """,
+    conn
+)
+
+# 3. WHERE with positional ? params -- ELPMCC's matches in one season
+#    (matches only stores home_team_id/away_team_id, not a club name --
+#    see "What can you filter by?" below -- hence the join)
+pd.read_sql_query(
+    """
+    SELECT m.match_id, m.match_date, m.season
+    FROM matches m
+    JOIN teams t ON t.team_id IN (m.home_team_id, m.away_team_id)
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = ? AND m.season = ?
+    """,
+    conn, params=(ELPMCC, 2024)
+)
+
+# 4. WHERE with named :params (a dict instead of a tuple) -- same idea
+pd.read_sql_query(
+    """
+    SELECT m.match_id, m.match_date, m.season
+    FROM matches m
+    JOIN teams t ON t.team_id IN (m.home_team_id, m.away_team_id)
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = :club_name AND m.season = :season
+    """,
+    conn, params={"club_name": ELPMCC, "season": 2025}
+)
+
+# 5. Aggregation -- ELPMCC's matches per season
+pd.read_sql_query(
+    """
+    SELECT m.season, COUNT(DISTINCT m.match_id) AS matches
+    FROM matches m
+    JOIN teams t ON t.team_id IN (m.home_team_id, m.away_team_id)
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = ?
+    GROUP BY m.season
+    ORDER BY m.season
+    """,
+    conn, params=(ELPMCC,)
+)
+```
+
+Always pass a value through `params=` rather than splicing it into the SQL
+string yourself (an f-string, `.format()`) — it's escaped safely and avoids
+fiddling with quotes by hand. Every other query in this section, and in
+[EXAMPLES.md](EXAMPLES.md), is the same `pd.read_sql_query(sql, conn)` call
+— just a longer `sql` string.
+
 #### What can you filter by?
 
 Every example below is plain SQL against the tables in `schema.sql`, so
@@ -260,12 +338,22 @@ from playcricket_scorecard import Scorecard
 
 def scorecard_for(match_id):
     payload = conn.execute(
-        "SELECT source_payload FROM matches WHERE match_id = ?", (match_id,)
+        "SELECT source_payload FROM matches WHERE match_id = ?", (int(match_id),)
     ).fetchone()[0]
     return Scorecard(json.loads(payload))
 
 scorecard_for(429).print_scorecard()   # any match_id -- Play-Cricket, CricHQ, CricketStatz, etc.
 ```
+
+**The `int(match_id)` above matters, not just style**: a `match_id` pulled
+out of a DataFrame (e.g. `some_df.iloc[0]["match_id"]`) is a numpy `int64`,
+not a plain Python `int` — and `sqlite3` silently treats a numpy `int64`
+parameter as matching nothing, rather than raising an error. That shows up
+as `scorecard_for(...)` crashing with `TypeError: 'NoneType' object is not
+subscriptable` on the `.fetchone()[0]` line — not because the match doesn't
+exist, but because the `WHERE match_id = ?` never matched due to the
+parameter's type. Wrapping every `match_id` in `int(...)` before it reaches
+`sqlite3` avoids this everywhere in this section.
 
 To find a specific match's `match_id` in the first place — by date and
 opposition, since that's usually what you actually remember:
@@ -296,10 +384,10 @@ defined in the previous section)*
 The pattern for any "find matches where..." question is the same: query for
 an **index** of matching matches first (id, date, opposition, result — cheap
 and quick to scan), then call `scorecard_for(match_id)` above on whichever
-one you actually want to look at in full. Two concrete examples:
+one you actually want to look at in full. Three concrete examples:
 
 **Every match against a specific club** (e.g. Shaw CC — matches either home
-or away):
+or away, against ELPMCC or anyone else):
 
 ```python
 vs_shaw = pd.read_sql_query(
@@ -321,6 +409,43 @@ vs_shaw = pd.read_sql_query(
 vs_shaw                              # the index -- scan it, pick a match_id
 scorecard_for(vs_shaw.iloc[0]["match_id"]).print_scorecard()   # then look at one
 ```
+
+**Naming both clubs specifically** — every match *between two named clubs*
+(ELPMCC and a chosen opponent), rather than every match either club has
+played against anyone: swap `OR` for two explicit `(home, away)`
+combinations, since either could have been the home side on the day.
+
+```python
+ELPMCC = "East Lancs Paper Mill CC"
+OPPONENT = "Shaw CC"
+
+vs_opponent = pd.read_sql_query(
+    """
+    SELECT m.match_id, m.season, m.match_date, m.source,
+           hc.club_name AS home_club, ht.team_name AS home_team,
+           ac.club_name AS away_club, at.team_name AS away_team,
+           m.result_description
+    FROM matches m
+    JOIN teams ht ON ht.team_id = m.home_team_id
+    JOIN clubs hc ON hc.club_id = ht.club_id
+    JOIN teams at ON at.team_id = m.away_team_id
+    JOIN clubs ac ON ac.club_id = at.club_id
+    WHERE (hc.club_name = ? AND ac.club_name = ?)
+       OR (hc.club_name = ? AND ac.club_name = ?)
+    ORDER BY m.match_date
+    """,
+    conn, params=(ELPMCC, OPPONENT, OPPONENT, ELPMCC)
+)
+vs_opponent
+scorecard_for(vs_opponent.iloc[0]["match_id"]).print_scorecard()
+```
+
+(Every match in this database already involves ELPMCC — its own archives
+are the source for all six data sources — so `vs_shaw` and `vs_opponent`
+happen to return the same 10 rows here. Naming both clubs explicitly is
+still worth knowing: it's the correct, general form if a future source
+ever adds matches ELPMCC isn't part of, and it's the pattern to reach for
+whenever you want *specifically* "A vs B", not "anyone vs B".)
 
 **Every innings where a player scored a century** (100+), across every
 source and every player, most recent/highest first:
