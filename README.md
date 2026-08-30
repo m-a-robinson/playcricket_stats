@@ -898,6 +898,24 @@ never committed to version control (`.gitignore` excludes `*.sqlite`/
 committed, so keeping it out of git avoids a large binary file that would
 only go stale the moment any source file or `decisions.yaml` changes.
 
+**A full rebuild is the fallback, not usually the fix, for a schema
+change.** `SQLiteStore.__init__` re-applies `schema.sql` (`CREATE TABLE IF
+NOT EXISTS ...`) every time *any* script opens the database — including an
+existing one you've had for a while — so pulling newer code that added a
+table or column doesn't require starting over. If you pull new code and
+hit `OperationalError: no such table: ...` (or a missing-column error)
+against a database you already built, that means your `.sqlite` file
+predates that change and nothing has re-opened it since: just re-run
+whichever ingestion/reconcile/`club_awards.py` step introduced the change
+against your **existing** file (no need to delete it first) — the missing
+table appears, and everything already in the database is untouched. This
+is exactly what happened when `player_awards`/`team_awards` were added:
+`career_stats()` needs those tables to exist (even empty) purely because
+the query references them, but nothing creates them until some script
+opens the store — re-running `reconcile.py` (or `club_awards.py`, to
+populate them too) against the existing file is enough, a full rebuild is
+overkill.
+
 ## Documentation
 
 - **[EXAMPLES.md](EXAMPLES.md)** — the hands-on walkthrough against the
