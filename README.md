@@ -43,6 +43,7 @@ what's still outstanding.
 - [Using the main database](#using-the-main-database)
   - [Build the full database once (in Terminal)](#build-the-full-database-once-in-terminal)
   - [Querying the database in ipython](#querying-the-database-in-ipython)
+    - [Handy constants and lookups](#handy-constants-and-lookups)
     - [The basic pattern: `pd.read_sql_query()`](#the-basic-pattern-pdread_sql_query)
     - [What can you filter by?](#what-can-you-filter-by)
     - [Look up one match's scorecard (e.g. match 429)](#look-up-one-matchs-scorecard-eg-match-429)
@@ -221,6 +222,59 @@ query in isolation into a fresh `ipython`/script without it first is the
 most common way to hit that. Reconnect (re-run the `conn = ...` line) after
 re-building or re-ingesting anything, so you're not reading a stale
 connection.
+
+#### Handy constants and lookups
+
+*(needs `conn` and `pd` from the setup above)*
+
+Two small things worth setting up once per session, used throughout the
+rest of this section:
+
+- **`ELPMCC = "East Lancs Paper Mill CC"`** — the exact `club_name` string,
+  used everywhere below as a shorthand instead of retyping it.
+- **`team_id`/`club_id` are not stable** — they're autoincrement surrogate
+  keys, assigned in whatever order rows happened to be inserted during the
+  last full build (see [Build the full database once (in Terminal)](#build-the-full-database-once-in-terminal)
+  above). A specific number today is not guaranteed to be the same after a
+  rebuild — **never hardcode one**; look it up by name every session, the
+  same way every other example in this README does:
+
+```python
+ELPMCC = "East Lancs Paper Mill CC"
+
+club_id = conn.execute("SELECT club_id FROM clubs WHERE club_name = ?", (ELPMCC,)).fetchone()[0]
+
+pd.read_sql_query(
+    """
+    SELECT t.team_id, t.team_name, t.is_juniors
+    FROM teams t
+    JOIN clubs c ON c.club_id = t.club_id
+    WHERE c.club_name = ?
+    ORDER BY t.team_name
+    """,
+    conn, params=(ELPMCC,)
+)
+```
+
+Against a fresh full build from the real archive, this currently returns
+(your own rebuild will very likely assign different numbers — that's the
+point of the warning above):
+
+| team_id | team_name | is_juniors |
+|---|---|---|
+| 6 | East Lancs Paper Mill CC 1st XI | 0 |
+| 3 | East Lancs Paper Mill CC 2nd XI | 0 |
+| 13 | 3rd XI | 0 |
+| 89 | Friendly XI | 0 |
+| 150 | East Lancs Millers | 0 |
+| 2 | Under 11 | 1 |
+| 8 | Under 9 | 1 |
+
+(Note the club-prefixed vs bare team names — "East Lancs Paper Mill CC 1st
+XI" vs plain "3rd XI"/"Friendly XI" — an unmerged naming split across
+sources, not a bug; see [ROADMAP.md](ROADMAP.md) item 4. It's exactly why
+[Team records by season](#team-records-by-season) below looks a team up
+with `t.team_name LIKE '%' || ?` rather than an exact match.)
 
 #### The basic pattern: `pd.read_sql_query()`
 
