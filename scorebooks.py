@@ -75,6 +75,96 @@ not a guess. (Originally shipped as the literal "League" -- corrected
 competition when auditing the season-by-season match export; the "NMCL "
 prefix followed the same day, matching mxp_parser.py/cricketstatz_txt.py's
 own <=2015 "Division N" -> "NMCL Division N" normalisation.)
+
+============================================================================
+12-Aug-2007: East Lancs Paper Mill CC 2nd XI vs Bury CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2007/2026-08-30 09.47.36.jpg (both innings,
+full ECB-style scorebook double-page: East Lancs PM batting/bowling on the
+left page, Bury CC's on the right).
+
+The page never states which Bury CC XI this was (no "1st"/"2nd" suffix
+anywhere in the header), and East Lancs' own team is likewise unlabelled --
+filed here as "2nd XI" purely on the strength of the folder the photo was
+uploaded into, not anything printed on the page itself. away_team_name
+"1st XI" is a placeholder for the same reason: Bury's specific team is
+genuinely unrecorded, so this may need correcting once/if Bury CC's own
+teams show up distinctly elsewhere in the archive. competition_name is
+left None -- the scorebook gives no league/division, and unlike the 2010
+Failsworth Macedonia match above there's no same-season sibling fixture in
+the archive to infer one from.
+
+Two batsmen's identities are only partially legible: East Lancs' #9 (out
+lbw b A Maxwell for 1) is a second "Birtwistle" -- distinct from #8, A
+Birtwistle, who batted two places above him and also bowled in Bury's
+innings -- but the initial itself is obscured by the row's own printed
+number in the only surviving photo, at a level of blur that survives
+re-cropping/zooming, so it is left off (batsman_id/name "Birtwistle"
+alone) rather than guessed. East Lancs' #11 (not out 16) is very likely
+"G Moore" -- R Moore, the only other Moore who batted, was out at #3, and
+"G Moore" is the only other Moore in the bowling figures below -- but the
+initial itself has the same illegible-photo problem as #9, so this is
+recorded with the same caveat (moderate confidence from elimination,
+not a direct read).
+
+Both innings' printed totals were cross-checked against their own
+component figures before transcription, the same self-consistency check
+used throughout this project:
+
+  - East Lancs PM: 50 (retired, C Holt) + 18+0+0+30+12+2+7+1+0+16 (the 10
+    completed/not-out innings) = 136 runs off the bat + 9 extras (byes 1,
+    leg byes 4, wides 2, no balls 2) = 145 for 8 wickets off their 40
+    overs (2 not out at the end, so 8 genuine dismissals, matching the
+    fall-of-wicket table's 8 entries -- C Holt's retirement isn't a fall
+    of wicket). Bury's bowling figures (Hilton 5-1-19-1, Forman 5-0-20-1,
+    Jarvis 5-2-6-1, Maxwell 5-0-21-1, Mulvany 5-1-9-1, Belston 5-1-22-0,
+    Allen 5-0-24-1, Ainscoe 5-1-19-1) sum to 40 overs, 140 runs conceded
+    (136 batsmen's runs + the 2 no balls + 2 wides that ARE charged to a
+    bowler, byes/leg byes aren't) and 7 wickets -- R Moore's run-out
+    accounts for the 8th, uncredited to any bowler, so 7+1=8 reconciles.
+  - Bury CC: 1+0+66+2+22+16+11+6+0+5+4 = 133 runs off the bat + 16 extras
+    (byes 2, leg byes 0, wides 13, no balls 1) = 149 for 9 wickets (A
+    Hilton and A Mather both finished not out). East Lancs' bowling
+    figures sum to 8 wickets (Simpson 1, Scott 2, Santos-P 1, Birtwistle
+    2, Partington 3) against the 9 real dismissals shown against each
+    batsman's own name -- one short, because the bowling-summary row
+    printed for A Birtwistle reads "3-0-25-1" but two separate batsmen
+    are recorded "b Birtwistle" (Forman, ct C Holt; T Jarvis, ct M
+    Partington), which only reconciles to the full 9 if Birtwistle in
+    fact took 2, not 1 -- the scorer's own summary row looks to be a
+    simple mis-add, so the two individually-recorded dismissals (the more
+    granular, more reliable figures) are what's used here.
+
+East Lancs' 145 was chased down: Bury reached 149 for 9, meaning Bury CC
+won by 2 wickets (2 of their 11 unused when the winning runs were scored).
+
+============================================================================
+30-Apr-2011: Austerlands CC vs East Lancs Paper Mill CC 2nd XI
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.07.02.jpg (both
+innings; a printed club scorebook -- BATSMAN/HOW OUT/BOWLER/TOTAL columns,
+a PENALTY RUNS/BYES/LEG BYES/WIDES/NO BALLS extras panel, and an
+OVERS/MDNS/RUNS/WKTS/AVG bowling-analysis table per innings -- much more
+directly legible than the 2007 ECB book above, so cross-checks below are
+correspondingly quicker.
+
+  - Austerlands: 14+0+0+8+17+4+4+8+34+2+0 = 91 (matches the printed
+    "TOTALS 91") + 3 extras (byes 1, no balls 2) = 94 all out in 23.4
+    overs. Bowling figures (A Redford 8-1-47-5, A Berry 11-5-28-2, M Young
+    4-1-15-2, A Greenwood 0.4-0-3-1) sum to 23.4 overs and all 10 wickets.
+  - East Lancs PM: 29+0+9+38+5+2 = 83 (K Dodson's 29 itself cross-checked
+    against its own ball-by-ball figures: 11+7+10+1 = 29, matching the
+    scorebook's own running subtotals at 11/18/28) + 12 extras (byes 6,
+    leg byes 5, wides 1) = 95 for 4 wickets, chasing down Austerlands' 94
+    with 6 wickets in hand -- ELPM won by 6 wickets. The printed bowling
+    total (84) is 1 run over the batting total (83); a minor scorer's-own
+    arithmetic slip judging by how cleanly everything else reconciles,
+    not corrected here since it doesn't affect any individual figure.
+
+A Berry's dismissal is recorded as "caught N Green" with bowler also "N
+Green" -- i.e. caught and bowled, not a transcription duplicate.
 """
 
 SOURCE = "scorebook"
@@ -208,6 +298,211 @@ MATCHES = [
                     _bowl("D Willett", "9", 1, 33, 1),
                     _bowl("S Keyworth", "10", 3, 46, 4),
                     _bowl("J Shiels", "5.1", 0, 26, 3),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Bury CC 1st XI|12/08/2007",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Bury CC", "away_club_name": "Bury CC",
+        "away_team_id": "Bury CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "12/08/2007",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": None,
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "East Lancs P.M.",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Bury CC won by 2 wickets",
+        "result_applied_to": "Bury CC 1st XI",
+        "result_description": "Bury CC won by 2 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("C Holt", 1), _player("M Partington", 2), _player("R Moore", 3),
+                _player("P Santos", 4), _player("L Santos", 5), _player("D Scott", 6),
+                _player("I Simpson", 7), _player("A Birtwistle", 8), _player("Birtwistle", 9),
+                _player("D Salmon", 10), _player("G Moore", 11),
+            ]},
+            {"away_team": [
+                _player("J Ainscoe", 1), _player("S Younis", 2), _player("A Hilton", 3),
+                _player("L Jarvis", 4), _player("G Forman", 5), _player("C Belston", 6),
+                _player("A Maxwell", 7), _player("S Mulvaney", 8), _player("J Allen", 9),
+                _player("T Jarvis", 10), _player("A Mather", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 145, "wickets": 8, "overs": "40",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 1, "extra_leg_byes": 4, "extra_wides": 2, "extra_no_balls": 2,
+                "extra_penalty_runs": 0, "total_extras": 9,
+                "bat": [
+                    _bat(1, "C Holt", "retired", None, None, 50),
+                    _bat(2, "M Partington", "ct", "Forman", "A Ghaffar", 18),
+                    _bat(3, "R Moore", "run out", None, None, 0),
+                    _bat(4, "P Santos", "b", "Jarvis", None, 0),
+                    _bat(5, "L Santos", "ct", "Mulvany", "Mather", 30),
+                    _bat(6, "D Scott", "ct", "Ainscoe", "T Jarvis", 12),
+                    _bat(7, "I Simpson", "lbw", "Allen", None, 2),
+                    _bat(8, "A Birtwistle", "ct", "Hilton", "S Mulvany", 7),
+                    _bat(9, "Birtwistle", "lbw", "A Maxwell", None, 1),
+                    _bat(10, "D Salmon", "not out", None, None, 0),
+                    _bat(11, "G Moore", "not out", None, None, 16),
+                ],
+                "bowl": [
+                    _bowl("A Hilton", "5", 1, 19, 1),
+                    _bowl("Forman", "5", 0, 20, 1),
+                    _bowl("L Jarvis", "5", 2, 6, 1),
+                    _bowl("A Maxwell", "5", 0, 21, 1),
+                    _bowl("S Mulvany", "5", 1, 9, 1),
+                    _bowl("G Belston", "5", 1, 22, 0),
+                    _bowl("J Allen", "5", 0, 24, 1),
+                    _bowl("J Ainscoe", "5", 1, 19, 1),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Bury CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 149, "wickets": 9, "overs": "39",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 2, "extra_leg_byes": 0, "extra_wides": 13, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 16,
+                "bat": [
+                    _bat(1, "J Ainscoe", "ct", "D Scott", "M Partington", 1),
+                    _bat(2, "S Younis", "ct", "I Simpson", "M Partington", 0),
+                    _bat(3, "A Hilton", "not out", None, None, 66),
+                    _bat(4, "L Jarvis", "b", "P Santos", None, 2),
+                    _bat(5, "G Forman", "ct", "A Birtwistle", "C Holt", 22),
+                    _bat(6, "C Belston", "b", "M Partington", None, 16),
+                    _bat(7, "A Maxwell", "ct", "M Partington", "I Simpson", 11),
+                    _bat(8, "S Mulvaney", "ct", "M Partington", "I Simpson", 6),
+                    _bat(9, "J Allen", "ct", "D Scott", "I Simpson", 0),
+                    _bat(10, "T Jarvis", "ct", "A Birtwistle", "M Partington", 5),
+                    _bat(11, "A Mather", "not out", None, None, 4),
+                ],
+                "bowl": [
+                    _bowl("I Simpson", "5", 2, 8, 1),
+                    _bowl("D Scott", "5", 1, 12, 2),
+                    _bowl("L Santos", "5", 0, 14, 0),
+                    _bowl("P Santos", "5", 2, 15, 1),
+                    _bowl("R Moore", "3", 0, 21, 0),
+                    _bowl("G Moore", "4", 0, 24, 0),
+                    # Printed bowling-summary row reads 3-0-25-1; corrected to
+                    # 2 wickets here per the two individual "b Birtwistle"
+                    # dismissals -- see the module docstring above.
+                    _bowl("A Birtwistle", "3", 0, 25, 2),
+                    _bowl("M Partington", "6", 2, 14, 3),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "Austerlands CC 1st XI|ELPM 2nd XI|30/04/2011",
+        "home_club_id": "Austerlands", "home_club_name": "Austerlands CC",
+        "home_team_id": "Austerlands CC 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "ELPM", "away_club_name": "East Lancs Paper Mill CC",
+        "away_team_id": "ELPM 2nd XI", "away_team_name": "2nd XI",
+        "match_date": "30/04/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "Austerlands",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Austerlands",
+        "toss_won_by_team_id": "Austerlands CC 1st XI",
+        "result": "East Lancs Paper Mill CC won by 6 wickets",
+        "result_applied_to": "ELPM 2nd XI",
+        "result_description": "East Lancs Paper Mill CC 2nd XI won by 6 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("A Platt", 1), _player("H Ripley", 2), _player("J Molloy", 3),
+                _player("L De Feu", 4), _player("K McDonald", 5), _player("P Mayall", 6),
+                _player("S Forshaw", 7), _player("J Kenworthy", 8), _player("G Monoghan", 9),
+                _player("N Green", 10), _player("P Palfreyman", 11),
+            ]},
+            {"away_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("C Holt", 2), _player("D Dwyer", 3),
+                _player("A Berry", 4), _player("A Greenwood", 5), _player("A Redford", 6),
+                _player("L Birmingham", 7), _player("W Franus", 8), _player("B Birtwistle", 9),
+                _player("M Young", 10), _player("A Birtwistle", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Austerlands CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 94, "wickets": 10, "overs": "23.4",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 1, "extra_leg_byes": 0, "extra_wides": 0, "extra_no_balls": 2,
+                "extra_penalty_runs": 0, "total_extras": 3,
+                "bat": [
+                    _bat(1, "A Platt", "b", "A Berry", None, 14),
+                    _bat(2, "H Ripley", "lbw", "A Redford", None, 0),
+                    _bat(3, "J Molloy", "ct", "A Redford", "A Birtwistle", 0),
+                    _bat(4, "L De Feu", "b", "A Berry", None, 8),
+                    _bat(5, "K McDonald", "b", "A Redford", None, 17),
+                    _bat(6, "P Mayall", "b", "M Young", None, 4),
+                    _bat(7, "S Forshaw", "lbw", "A Redford", None, 4),
+                    _bat(8, "J Kenworthy", "b", "A Redford", None, 8),
+                    _bat(9, "G Monoghan", "not out", None, None, 34),
+                    _bat(10, "N Green", "b", "M Young", None, 2),
+                    _bat(11, "P Palfreyman", "ct", "A Greenwood", "K Dodson", 0),
+                ],
+                "bowl": [
+                    _bowl("A Redford", "8", 1, 47, 5, no_balls=2),
+                    _bowl("A Berry", "11", 5, 28, 2),
+                    _bowl("M Young", "4", 1, 15, 2),
+                    _bowl("A Greenwood", "0.4", 0, 3, 1),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 95, "wickets": 4, "overs": "29.3",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 6, "extra_leg_byes": 5, "extra_wides": 1, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 12,
+                "bat": [
+                    _bat(1, "K Dodson", "b", "K McDonald", None, 29),
+                    _bat(2, "C Holt", "lbw", "P Palfreyman", None, 0),
+                    _bat(3, "D Dwyer", "b", "P Palfreyman", None, 9),
+                    _bat(4, "A Berry", "ct and b", "N Green", None, 38),
+                    _bat(5, "A Greenwood", "not out", None, None, 5),
+                    _bat(6, "A Redford", "not out", None, None, 2),
+                    _bat(7, "L Birmingham", "did not bat"),
+                    _bat(8, "W Franus", "did not bat"),
+                    _bat(9, "B Birtwistle", "did not bat"),
+                    _bat(10, "M Young", "did not bat"),
+                    _bat(11, "A Birtwistle", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("J Kenworthy", "8", 1, 31, 0),
+                    _bowl("P Palfreyman", "9", 3, 17, 2),
+                    _bowl("P Mayall", "3", 0, 15, 0),
+                    _bowl("K McDonald", "4", 3, 2, 1),
+                    _bowl("N Green", "4", 1, 15, 1),
+                    _bowl("G Monoghan", "0.4", 0, 4, 0),
                 ],
                 "fow": [],
             },
