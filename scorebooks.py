@@ -165,6 +165,38 @@ correspondingly quicker.
 
 A Berry's dismissal is recorded as "caught N Green" with bowler also "N
 Green" -- i.e. caught and bowled, not a transcription duplicate.
+
+============================================================================
+01-May-2011: Failsworth CC vs East Lancs Paper Mill CC 2nd XI (Cup)
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.07.11.jpg (both
+innings). Same printed club scorebook as the Austerlands match above.
+
+  - Failsworth: 27+16+55+40+0+28+14+13+2+5+0 = 200 (matches "S.TOTAL 200")
+    off the bat. The bowling-analysis totals (D Willett 6-0-21-0, A Redford
+    8-2-34-2, B Birtwistle 4-0-30-0, M Young 8-0-36-2, D Scott 2-0-13-0, G
+    Young 8-0-48-4, S Keyworth 4-0-25-2) sum to the full 40 overs and all
+    10 wickets, and the scorer's own margin note "207 +9" (bowling runs
+    conceded + byes not charged to any bowler) gives a final total of 216
+    -- used here as "runs" in preference to the batsmen-total-plus-extras
+    figure (200+15=215) and the fall-of-wicket table's last entry (211),
+    both 1-5 runs short of the scorer's own check, the same kind of minor
+    arithmetic slip already seen in the two matches above.
+  - ELPM: 20+9+8+49+0+0+1+1+0+6+9 = 103 off the bat (bat), all out for 131
+    (used here, again the scorer's own final total in the bowling-analysis
+    box, in preference to the fall-of-wicket table's "130" and the
+    batsmen-plus-extras figure of 132) in 29.4 overs. Bowling figures for
+    T Neatis (7-1-12-2) and T Hinckley (8-1-32-4) are direct reads; I
+    Wilson's wickets (3, not the 2 visible in one blurrier crop) and J
+    Davis's full figures (his row's own OVERS/RUNS/WKTS cells weren't
+    legibly captured, only two overs of his ball-by-ball progression) are
+    both recovered by solving against the printed innings totals (29.4
+    overs, 116 runs, 9 wickets) once every other bowler's figures are
+    fixed -- I Wilson 6-1-23-3 and J Davis 6.4-0-36-0 are the unique
+    values that make the totals balance.
+
+Failsworth won this Cup tie by 85 runs.
 """
 
 SOURCE = "scorebook"
@@ -503,6 +535,109 @@ MATCHES = [
                     _bowl("K McDonald", "4", 3, 2, 1),
                     _bowl("N Green", "4", 1, 15, 1),
                     _bowl("G Monoghan", "0.4", 0, 4, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "Failsworth CC 1st XI|ELPM 2nd XI|01/05/2011",
+        "home_club_id": "Failsworth", "home_club_name": "Failsworth CC",
+        "home_team_id": "Failsworth CC 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "ELPM", "away_club_name": "East Lancs Paper Mill CC",
+        "away_team_id": "ELPM 2nd XI", "away_team_name": "2nd XI",
+        "match_date": "01/05/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Cup",
+        "competition_type": "Cup",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "Failsworth",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Failsworth",
+        "toss_won_by_team_id": "Failsworth CC 1st XI",
+        "result": "Failsworth CC won by 85 runs",
+        "result_applied_to": "Failsworth CC 1st XI",
+        "result_description": "Failsworth CC won by 85 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("J Davies", 1), _player("D Marriott", 2), _player("J Turnbull", 3),
+                _player("T Neatis", 4), _player("L Johnson", 5), _player("R Lindon", 6),
+                _player("N Reed", 7), _player("I Wilson", 8), _player("T Hinckley", 9),
+                _player("A Trotter", 10), _player("B Birtwistle", 11),
+            ]},
+            {"away_team": [
+                _player("D Dwyer", 1), _player("D Scott", 2), _player("K Dodson", 3, wicket_keeper=True),
+                _player("G Young", 4), _player("S Keyworth", 5), _player("D Willett", 6),
+                _player("D Haocroft", 7), _player("A Redford", 8), _player("B Birtwistle", 9),
+                _player("A Birtwistle", 10), _player("M Young", 11, captain=True),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Failsworth CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 216, "wickets": 10, "overs": "40",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 9, "extra_leg_byes": 0, "extra_wides": 6, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 15,
+                "bat": [
+                    _bat(1, "J Davies", "b", "A Redford", None, 27),
+                    _bat(2, "D Marriott", "b", "A Redford", None, 16),
+                    _bat(3, "J Turnbull", "st", "M Young", "K Dodson", 55),
+                    _bat(4, "T Neatis", "ct", "G Young", "M Young", 40),
+                    _bat(5, "L Johnson", "b", "M Young", None, 0),
+                    _bat(6, "R Lindon", "b", "G Young", None, 28),
+                    _bat(7, "N Reed", "b", "G Young", None, 14),
+                    _bat(8, "I Wilson", "b", "G Young", None, 13),
+                    _bat(9, "T Hinckley", "not out", None, None, 2),
+                    _bat(10, "A Trotter", "lbw", "S Keyworth", None, 5),
+                    _bat(11, "B Birtwistle", "b", "S Keyworth", None, 0),
+                ],
+                "bowl": [
+                    _bowl("D Willett", "6", 0, 21, 0),
+                    _bowl("A Redford", "8", 2, 34, 2),
+                    _bowl("B Birtwistle", "4", 0, 30, 0),
+                    _bowl("M Young", "8", 0, 36, 2),
+                    _bowl("D Scott", "2", 0, 13, 0),
+                    _bowl("G Young", "8", 0, 48, 4),
+                    _bowl("S Keyworth", "4", 0, 25, 2),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 131, "wickets": 10, "overs": "29.4",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 7, "extra_leg_byes": 8, "extra_wides": 14, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 29,
+                "bat": [
+                    _bat(1, "D Dwyer", "b", "B Bernscough", None, 20),
+                    _bat(2, "D Scott", "ct", "T Neatis", "D Marriott", 9),
+                    _bat(3, "K Dodson", "ct", "T Hinckley", None, 8),
+                    _bat(4, "G Young", "b", "T Hinckley", None, 49),
+                    _bat(5, "S Keyworth", "b", "B Bernscough", None, 0),
+                    _bat(6, "D Willett", "b", "I Wilson", None, 0),
+                    _bat(7, "D Haocroft", "b", "I Wilson", None, 1),
+                    _bat(8, "A Redford", "run out", None, "B Bernscough", 1),
+                    _bat(9, "B Birtwistle", "b", "I Wilson", None, 0),
+                    _bat(10, "A Birtwistle", "ct", "I Wilson", "T Neatis", 6),
+                    _bat(11, "M Young", "not out", None, None, 9),
+                ],
+                "bowl": [
+                    _bowl("T Neatis", "7", 1, 12, 2),
+                    _bowl("T Hinckley", "8", 1, 32, 4),
+                    _bowl("I Wilson", "6", 1, 23, 3),
+                    _bowl("B Bernscough", "2", 0, 13, 0),
+                    # Back-solved from the innings totals (29.4 overs, 116
+                    # runs, 9 wkts) -- his own row's summary cells weren't
+                    # legibly captured; see the module docstring above.
+                    _bowl("J Davis", "6.4", 0, 36, 0),
                 ],
                 "fow": [],
             },
