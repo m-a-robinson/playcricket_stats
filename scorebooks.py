@@ -197,6 +197,37 @@ innings). Same printed club scorebook as the Austerlands match above.
     values that make the totals balance.
 
 Failsworth won this Cup tie by 85 runs.
+
+============================================================================
+07-May-2011: East Lancs Paper Mill CC 2nd XI vs Farnworth Social CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.08.35.jpg (both
+innings). Same printed club scorebook as the two matches above.
+
+  - Farnworth SC: 5+28+59+7+0+9+4+13+9+3+0 = 137 (matches "S.TOTAL 137")
+    + 8 extras (byes 5, leg byes 1, wides 2) = 145 all out... for 9, not
+    10 -- B Honkroft and P Sutton both finished not out, matching the
+    fall-of-wicket table's 9 entries. Bowling figures (A Redford 5-1-29-1,
+    A Berry 20-1-63-4, L Birmingham 7-0-18-1, M Young 8-1-27-3) sum to the
+    full 40 overs, all 9 wickets, and 137 runs -- exactly the batsmen's
+    total, no wides/no-balls added in this particular table (unlike the
+    Austerlands and Failsworth matches above, where they were).
+  - ELPM: 5+0+3+0+0+5+60+6+4+6+10 = 99 (matches "S.TOTAL 99") + 31 extras
+    = 130 all out in 35.2 overs. Bowling figures (A Brookes 18-6-28-6, N
+    Felton 6-0-22-3, J Chaana 4-0-32-0, T Sherlock 4-0-16-0, D Robinson
+    3.2-0-9-1) sum to 35.2 overs, 107 runs and all 10 wickets; the
+    bowler credited with M Young's wicket is illegible as printed ("C
+    Lane", a name that matches none of the 5 bowlers who have their own
+    analysis row) and is recorded here as D Robinson -- the only bowler
+    with a wicket still unassigned to a specific dismissal once the other
+    four bowlers' figures are matched to their own dismissals. The extras
+    breakdown (byes 22, leg byes 1, wides 5, no balls 1 = 29) is 2 short
+    of the printed "TOTAL EXTRAS 31"; not corrected, since which of the
+    four tallies is the one under-read isn't recoverable from the photo.
+
+Farnworth SC batted first and made 137; ELPM, batting second, fell short
+on 130 -- Farnworth SC won by 7 runs.
 """
 
 SOURCE = "scorebook"
@@ -638,6 +669,107 @@ MATCHES = [
                     # runs, 9 wkts) -- his own row's summary cells weren't
                     # legibly captured; see the module docstring above.
                     _bowl("J Davis", "6.4", 0, 36, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Farnworth Social CC 1st XI|07/05/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Farnworth Social", "away_club_name": "Farnworth Social CC",
+        "away_team_id": "Farnworth Social CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "07/05/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "ELPM",
+        "toss_won_by_team_id": "ELPM 2nd XI",
+        "result": "Farnworth Social CC won by 7 runs",
+        "result_applied_to": "Farnworth Social CC 1st XI",
+        "result_description": "Farnworth Social CC won by 7 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"away_team": [
+                _player("T Sherlock", 1), _player("D Robinson", 2), _player("G Hipwood", 3),
+                _player("S Bradley", 4), _player("A Brookes", 5), _player("N Felton", 6),
+                _player("T Kilgour", 7), _player("M Crowders", 8), _player("J Chaana", 9),
+                _player("B Honkroft", 10, wicket_keeper=True), _player("P Sutton", 11),
+            ]},
+            {"home_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("C Holt", 2), _player("G Young", 3),
+                _player("A Berry", 4), _player("A Greenwood", 5), _player("D Dwyer", 6),
+                _player("M Young", 7, captain=True), _player("W Francis", 8), _player("D Haocroft", 9),
+                _player("L Birmingham", 10), _player("A Redford", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Farnworth Social CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 145, "wickets": 9, "overs": "40",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 5, "extra_leg_byes": 1, "extra_wides": 2, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 8,
+                "bat": [
+                    _bat(1, "T Sherlock", "b", "A Redford", None, 5),
+                    _bat(2, "D Robinson", "ct", "M Young", "L Birmingham", 28),
+                    _bat(3, "G Hipwood", "ct", "L Birmingham", "K Dodson", 59),
+                    _bat(4, "S Bradley", "ct", "A Berry", "L Birmingham", 7),
+                    _bat(5, "A Brookes", "st", "M Young", "K Dodson", 0),
+                    _bat(6, "N Felton", "ct", "A Berry", "K Dodson", 9),
+                    _bat(7, "T Kilgour", "ct", "M Young", "M Young", 4),
+                    _bat(8, "M Crowders", "b", "A Berry", None, 13),
+                    _bat(9, "J Chaana", "ct", "A Berry", None, 9),
+                    _bat(10, "B Honkroft", "not out", None, None, 3),
+                    _bat(11, "P Sutton", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("A Redford", "5", 1, 29, 1),
+                    _bowl("A Berry", "20", 1, 63, 4),
+                    _bowl("L Birmingham", "7", 0, 18, 1),
+                    _bowl("M Young", "8", 1, 27, 3),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 130, "wickets": 10, "overs": "35.2",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 22, "extra_leg_byes": 1, "extra_wides": 5, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 31,
+                "bat": [
+                    _bat(1, "K Dodson", "ct and b", "A Brookes", None, 5),
+                    _bat(2, "C Holt", "ct", "A Brookes", None, 0),
+                    _bat(3, "G Young", "ct", "N Felton", "D Robinson", 3),
+                    _bat(4, "A Berry", "ct", "N Felton", "S Bradley", 0),
+                    _bat(5, "A Greenwood", "b", "A Brookes", None, 0),
+                    _bat(6, "D Dwyer", "b", "N Felton", None, 5),
+                    # Bowler credited in the scorebook is illegible as
+                    # printed -- reassigned to D Robinson, the only
+                    # bowler with a wicket left unmatched; see the module
+                    # docstring above.
+                    _bat(7, "M Young", "b", "D Robinson", None, 60),
+                    _bat(8, "W Francis", "b", "A Brookes", None, 6),
+                    _bat(9, "D Haocroft", "ct", "A Brookes", "B Honkroft", 4),
+                    _bat(10, "L Birmingham", "ct", "A Brookes", "B Honkroft", 6),
+                    _bat(11, "A Redford", "not out", None, None, 10),
+                ],
+                "bowl": [
+                    _bowl("A Brookes", "18", 6, 28, 6),
+                    _bowl("N Felton", "6", 0, 22, 3),
+                    _bowl("J Chaana", "4", 0, 32, 0),
+                    _bowl("T Sherlock", "4", 0, 16, 0),
+                    _bowl("D Robinson", "3.2", 0, 9, 1),
                 ],
                 "fow": [],
             },
