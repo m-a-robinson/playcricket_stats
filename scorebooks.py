@@ -228,6 +228,31 @@ innings). Same printed club scorebook as the two matches above.
 
 Farnworth SC batted first and made 137; ELPM, batting second, fell short
 on 130 -- Farnworth SC won by 7 runs.
+
+============================================================================
+22-May-2011: Swinton Moorside CC vs East Lancs Paper Mill CC 2nd XI
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.08.55.jpg (both
+innings). Same printed club scorebook as the matches above.
+
+  - Swinton: 34+27+0+27+9+10+3+0+5+8+12 = 135 (matches "S.TOTAL 135") + 9
+    extras (byes 1, leg byes 1, wides 6, no balls 1) = 144 all out in 35
+    overs. Bowling figures (A Berry 7-1-30-0, L Birmingham 7-1-23-0, J
+    Bailey 11-3-46-8, D Willett 10-1-43-2) sum to the full 35 overs, all
+    10 wickets, and 142 runs (135 + the 6 wides + 1 no ball charged to a
+    bowler = 142).
+  - ELPM: 4+22+12+16+0+0+8+16+0+0+1 = 79 (matches "S.TOTAL 79") + 21
+    extras (byes 5, leg byes 4, wides 11, no balls 1) = 100 all out. The
+    innings' own "OVERS IN" box was left blank by the scorer, so overs
+    are only known per-bowler (C Winstanley 10-5-37-0, D Atkinson
+    7-2-19-5, J Brownvil 7.5-2-17-2, G Higham 5-1-18-3, summing to 29.5)
+    -- runs (91 = 79 + the 11 wides + 1 no ball charged to a bowler) and
+    all 10 wickets (5+2+3 bowler-credited, matching Atkinson/Brownvil/
+    Higham's dismissals exactly) both reconcile cleanly even without a
+    printed innings-overs total to check against.
+
+Swinton Moorside won by 44 runs.
 """
 
 SOURCE = "scorebook"
@@ -770,6 +795,102 @@ MATCHES = [
                     _bowl("J Chaana", "4", 0, 32, 0),
                     _bowl("T Sherlock", "4", 0, 16, 0),
                     _bowl("D Robinson", "3.2", 0, 9, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "Swinton Moorside CC 1st XI|ELPM 2nd XI|22/05/2011",
+        "home_club_id": "Swinton Moorside", "home_club_name": "Swinton Moorside CC",
+        "home_team_id": "Swinton Moorside CC 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "ELPM", "away_club_name": "East Lancs Paper Mill CC",
+        "away_team_id": "ELPM 2nd XI", "away_team_name": "2nd XI",
+        "match_date": "22/05/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "Swinton",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Swinton",
+        "toss_won_by_team_id": "Swinton Moorside CC 1st XI",
+        "result": "Swinton Moorside CC won by 44 runs",
+        "result_applied_to": "Swinton Moorside CC 1st XI",
+        "result_description": "Swinton Moorside CC won by 44 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("L Harding", 1), _player("G Higham", 2), _player("P Flatley", 3),
+                _player("C Jerrard", 4), _player("T Staniford", 5), _player("J Brownvil", 6),
+                _player("D Davies", 7), _player("A Walker", 8), _player("J Saunders", 9),
+                _player("D Atkinson", 10), _player("C Winstanley", 11),
+            ]},
+            {"away_team": [
+                _player("J Bailey", 1), _player("A Berry", 2), _player("A Greenwood", 3),
+                _player("D Willett", 4), _player("D Haidcroft", 5), _player("A Wilkinson", 6),
+                _player("L Birmingham", 7), _player("A Redford", 8), _player("D Pearson", 9),
+                _player("B Birtwistle", 10), _player("A Birtwistle", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Swinton Moorside CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 144, "wickets": 10, "overs": "35",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 1, "extra_leg_byes": 1, "extra_wides": 6, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 9,
+                "bat": [
+                    _bat(1, "L Harding", "b", "J Bailey", None, 34),
+                    _bat(2, "G Higham", "ct and b", "J Bailey", None, 27),
+                    _bat(3, "P Flatley", "b", "J Bailey", None, 0),
+                    _bat(4, "C Jerrard", "b", "J Bailey", None, 27),
+                    _bat(5, "T Staniford", "lbw", "J Bailey", None, 9),
+                    _bat(6, "J Brownvil", "ct", "D Willett", "A Berry", 10),
+                    _bat(7, "D Davies", "b", "J Bailey", None, 3),
+                    _bat(8, "A Walker", "ct", "J Bailey", "A Pilkington", 0),
+                    _bat(9, "J Saunders", "b", "D Willett", None, 5),
+                    _bat(10, "D Atkinson", "lbw", "J Bailey", None, 8),
+                    _bat(11, "C Winstanley", "not out", None, None, 12),
+                ],
+                "bowl": [
+                    _bowl("A Berry", "7", 1, 30, 0),
+                    _bowl("L Birmingham", "7", 1, 23, 0),
+                    _bowl("J Bailey", "11", 3, 46, 8),
+                    _bowl("D Willett", "10", 1, 43, 2),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 100, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 5, "extra_leg_byes": 4, "extra_wides": 11, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 21,
+                "bat": [
+                    _bat(1, "J Bailey", "b", "D Atkinson", None, 4),
+                    _bat(2, "A Berry", "b", "D Atkinson", None, 22),
+                    _bat(3, "A Greenwood", "ct", "D Atkinson", "L Harding", 12),
+                    _bat(4, "D Willett", "lbw", "G Higham", None, 16),
+                    _bat(5, "D Haidcroft", "b", "D Atkinson", None, 0),
+                    _bat(6, "A Wilkinson", "b", "D Atkinson", None, 0),
+                    _bat(7, "L Birmingham", "ct", "J Brownvil", "D Atkinson", 8),
+                    _bat(8, "A Redford", "not out", None, None, 16),
+                    _bat(9, "D Pearson", "b", "G Higham", None, 0),
+                    _bat(10, "B Birtwistle", "lbw", "G Higham", None, 0),
+                    _bat(11, "A Birtwistle", "b", "J Brownvil", None, 1),
+                ],
+                "bowl": [
+                    _bowl("C Winstanley", "10", 5, 37, 0),
+                    _bowl("D Atkinson", "7", 2, 19, 5),
+                    _bowl("J Brownvil", "7.5", 2, 17, 2),
+                    _bowl("G Higham", "5", 1, 18, 3),
                 ],
                 "fow": [],
             },
