@@ -253,6 +253,36 @@ innings). Same printed club scorebook as the matches above.
     printed innings-overs total to check against.
 
 Swinton Moorside won by 44 runs.
+
+============================================================================
+28-May-2011: East Lancs Paper Mill CC 2nd XI vs Failsworth CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.09.05.jpg (both
+innings). Same printed club scorebook as the matches above. A very
+low-scoring match on both sides.
+
+  - Failsworth: 6+13+2+6+1+4+1+1+0+0+0 = 34 (matches "S.TOTAL 34") + 11
+    extras (leg byes 2, wides 9) = 45 all out. Bowling figures (L
+    Birmingham 7-3-11-0, A Berry 10-0-10-4, D Willett 8-1-22-6) sum to
+    all 10 wickets and 43 runs, which equals batsmen (34) + extras not
+    credited to a bowler by this book's own convention seen in the
+    earlier matches (34+9=43) -- consistent. A Berry's maiden-over count
+    is the one figure in this line not legibly separable from his
+    wides/no-balls total in the photo and is left at 0 rather than
+    guessed.
+  - ELPM: 11+18+1+0+6+0+1+6+0 = 43 (matches "S.TOTAL 43") + 5 extras
+    (byes 1, wides 4) = 48 for 7 wickets in 12.1 overs, chasing down
+    Failsworth's 45 -- ELPM won by 3 wickets. A Greenwood's bowler is a
+    correction in the original (the first name written is struck
+    through) and is transcribed here as the corrected name, B Thinkley,
+    which also makes his 2 credited wickets (Greenwood, A Berry) match
+    his own bowling-analysis row (6-1-14-2) exactly; B Beasconi (Dwyer)
+    and D Rigny (G Young, M Thomson, N Warne, B Birtwhistle) account for
+    the other 5. The three bowlers' analysis-row runs (14+30+24=68) do
+    not reconcile against the batting total plus extras (48) -- a real
+    discrepancy in the source that isn't resolvable from this photo, so
+    it's left as read rather than adjusted to fit.
 """
 
 SOURCE = "scorebook"
@@ -891,6 +921,105 @@ MATCHES = [
                     _bowl("D Atkinson", "7", 2, 19, 5),
                     _bowl("J Brownvil", "7.5", 2, 17, 2),
                     _bowl("G Higham", "5", 1, 18, 3),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Failsworth CC 1st XI|28/05/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Failsworth", "away_club_name": "Failsworth CC",
+        "away_team_id": "Failsworth CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "28/05/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Failsworth",
+        "toss_won_by_team_id": "Failsworth CC 1st XI",
+        "result": "ELPM 2nd XI won by 3 wickets",
+        "result_applied_to": "ELPM 2nd XI",
+        "result_description": "East Lancs Paper Mill CC won by 3 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"away_team": [
+                _player("J Davies", 1), _player("D Rigny", 2), _player("T Neatis", 3),
+                _player("T Hinkley", 4), _player("N Read", 5), _player("R Stacey", 6),
+                _player("A Trotter", 7), _player("E McQue", 8), _player("B Beasconi", 9),
+                _player("T Shepeshen", 10), _player("K Shenton", 11),
+            ]},
+            {"home_team": [
+                _player("D Dwyer", 1), _player("G Young", 2), _player("A Greenwood", 3),
+                _player("A Berry", 4), _player("M Thomson", 5), _player("N Warne", 6),
+                _player("B Birtwhistle", 7), _player("D Willett", 8), _player("W Francis", 9),
+                _player("L Birmingham", 10), _player("A Redford", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Failsworth CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 45, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 2, "extra_wides": 9, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 11,
+                "bat": [
+                    _bat(1, "J Davies", "ct", "A Berry", "A Redford", 6),
+                    _bat(2, "D Rigny", "b", "A Berry", None, 13),
+                    _bat(3, "T Neatis", "ct", "D Willett", "B Birtwhistle", 2),
+                    _bat(4, "T Hinkley", "b", "D Willett", None, 6),
+                    _bat(5, "N Read", "ct", "D Willett", "W Francis", 1),
+                    _bat(6, "R Stacey", "b", "D Willett", None, 4),
+                    _bat(7, "A Trotter", "ct", "D Willett", "D Dwyer", 1),
+                    _bat(8, "E McQue", "ct", "D Willett", "N Warne", 1),
+                    _bat(9, "B Beasconi", "ct", "A Berry", "M Thomson", 0),
+                    _bat(10, "T Shepeshen", "b", "A Berry", None, 0),
+                    _bat(11, "K Shenton", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("L Birmingham", "7", 3, 11, 0),
+                    # Maidens not legibly separable from his wides/no-balls
+                    # total in the photo; see the module docstring above.
+                    _bowl("A Berry", "10", 0, 10, 4),
+                    _bowl("D Willett", "8", 1, 22, 6),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 48, "wickets": 7, "overs": "12.1",
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 1, "extra_leg_byes": 0, "extra_wides": 4, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 5,
+                "bat": [
+                    _bat(1, "D Dwyer", "b", "B Beasconi", None, 11),
+                    _bat(2, "G Young", "ct", "D Rigny", "J Davies", 18),
+                    # Bowler is a correction in the original (the first
+                    # name written is struck through); see the module
+                    # docstring above.
+                    _bat(3, "A Greenwood", "b", "B Thinkley", None, 1),
+                    _bat(4, "A Berry", "b", "B Thinkley", None, 0),
+                    _bat(5, "M Thomson", "st", "D Rigny", "J Davies", 6),
+                    _bat(6, "N Warne", "ct", "D Rigny", "J Davies", 0),
+                    _bat(7, "B Birtwhistle", "ct", "D Rigny", "J Davies", 1),
+                    _bat(8, "D Willett", "not out", None, None, 6),
+                    _bat(9, "W Francis", "not out", None, None, 0),
+                    _bat(10, "L Birmingham", "did not bat"),
+                    _bat(11, "A Redford", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("B Thinkley", "6", 1, 14, 2),
+                    _bowl("B Beasconi", "3", 0, 30, 1),
+                    _bowl("D Rigny", "3", 0, 24, 4),
                 ],
                 "fow": [],
             },
