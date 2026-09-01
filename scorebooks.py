@@ -313,6 +313,32 @@ the same photo -- the reading decisions below are theirs, not inferred.
     wides charged to a bowler) are 1 short of the innings' 130 total, the
     same small reconciliation gap seen elsewhere in this scorebook and
     left as read.
+
+============================================================================
+18-Jun-2011: East Lancs Paper Mill CC 2nd XI vs Swinton Moorside CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.09.29.jpg (both
+innings). Same printed club scorebook as the matches above, also from a
+single full-page read reviewed and corrected by the user.
+
+  - Swinton Moorside: 15+11+6+0+1+26+0+22+9+1+0 = 91 (matches "S.TOTAL
+    91") + 18 extras (byes 4, leg byes 1, wides 13) = 109 all out.
+    Bowling figures (L Birmingham 6.2-?-25-0, A Berry 11-3-31-3, M Young
+    9-0-38-5, S Dwyer 4-2-10-2) sum to all 10 wickets; Birmingham's
+    maiden-overs digit wasn't confidently read and is left blank rather
+    than guessed.
+  - ELPM: 19+9+4+37+0+3+1+0+0+13+1 = 87 (matches "S.TOTAL 87") + 9 extras
+    = 96 all out, chasing Swinton's 109 -- Swinton Moorside won by 13
+    runs. The fall-of-wicket line's 10 entries (24, 34, 34, 36, 41, 46,
+    53, 60, 79, 96) look, at first glance, one wicket short of the
+    bowling-analysis total (R Curran 5-1-14-0, M Billingham 13-4-35-4, C
+    Winstanley 10-1-39-5 = 9 bowler-credited wickets): the 10th dismissal
+    is N Warne's run out, which carries no bowler credit, so 9+1=10
+    reconciles cleanly. L Birmingham (batting), the 11th man, finished
+    not out on 1. ELPM's own extras total (9) is recorded without a
+    byes/leg-byes/wides/no-balls breakdown -- not attempted from the
+    single read and not asked for.
 """
 
 SOURCE = "scorebook"
@@ -1150,6 +1176,106 @@ MATCHES = [
                     _bowl("A Redford", "2", 0, 23, 0),
                     _bowl("M Thomson", "1", 0, 7, 0),
                     _bowl("A Greenwood", "1", 0, 9, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Swinton Moorside CC 1st XI|18/06/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Swinton Moorside", "away_club_name": "Swinton Moorside CC",
+        "away_team_id": "Swinton Moorside CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "18/06/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "ELPM",
+        "toss_won_by_team_id": "ELPM 2nd XI",
+        "result": "Swinton Moorside CC won by 13 runs",
+        "result_applied_to": "Swinton Moorside CC 1st XI",
+        "result_description": "Swinton Moorside CC won by 13 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"away_team": [
+                _player("T Walker", 1), _player("D Davies", 2), _player("F Blakley", 3),
+                _player("T Staniford", 4), _player("A Eckersley", 5), _player("M Howard", 6),
+                _player("S Davies", 7), _player("M Billingham", 8), _player("C Carter", 9),
+                _player("R Curran", 10), _player("M Winstanley", 11),
+            ]},
+            {"home_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("C Holt", 2), _player("D Dwyer", 3),
+                _player("A Berry", 4), _player("C Graves", 5), _player("A Redford", 6),
+                _player("N Warne", 7), _player("S Dwyer", 8), _player("D Hadcroft", 9),
+                _player("M Young", 10, captain=True), _player("L Birmingham", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Swinton Moorside CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 109, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 4, "extra_leg_byes": 1, "extra_wides": 13, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 18,
+                "bat": [
+                    _bat(1, "T Walker", "b", "M Young", None, 15),
+                    _bat(2, "D Davies", "lbw", "A Berry", None, 11),
+                    _bat(3, "F Blakley", "b", "M Young", None, 6),
+                    _bat(4, "T Staniford", "ct", "M Young", "C Graves", 0),
+                    _bat(5, "A Eckersley", "ct", "A Berry", "C Holt", 1),
+                    _bat(6, "M Howard", "b", "M Young", None, 26),
+                    _bat(7, "S Davies", "ct", "A Berry", "S Dwyer", 0),
+                    _bat(8, "M Billingham", "ct", "M Young", "A Redford", 22),
+                    _bat(9, "C Carter", "b", "S Dwyer", None, 9),
+                    _bat(10, "R Curran", "not out", None, None, 1),
+                    _bat(11, "M Winstanley", "b", "S Dwyer", None, 0),
+                ],
+                "bowl": [
+                    # Maidens not confidently read; see the module
+                    # docstring above.
+                    _bowl("L Birmingham", "6.2", 0, 25, 0),
+                    _bowl("A Berry", "11", 3, 31, 3),
+                    _bowl("M Young", "9", 0, 38, 5),
+                    _bowl("S Dwyer", "4", 2, 10, 2),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 96, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                # Total extras (9) confirmed; the byes/leg-byes/wides/
+                # no-balls split wasn't attempted -- see the module
+                # docstring above.
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 9, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 9,
+                "bat": [
+                    _bat(1, "K Dodson", "ct", "M Billingham", "D Davies", 19),
+                    _bat(2, "C Holt", "b", "C Winstanley", None, 9),
+                    _bat(3, "D Dwyer", "ct", "M Billingham", "S Carter", 4),
+                    _bat(4, "A Berry", "ct", "C Winstanley", "S Davies", 37),
+                    _bat(5, "C Graves", "b", "M Billingham", None, 0),
+                    _bat(6, "A Redford", "ct", "C Winstanley", "M Billingham", 3),
+                    _bat(7, "N Warne", "run out", None, "S Davies", 1),
+                    _bat(8, "S Dwyer", "b", "C Winstanley", None, 0),
+                    _bat(9, "D Hadcroft", "b", "M Billingham", None, 0),
+                    _bat(10, "M Young", "b", "C Winstanley", None, 13),
+                    _bat(11, "L Birmingham", "not out", None, None, 1),
+                ],
+                "bowl": [
+                    _bowl("R Curran", "5", 1, 14, 0),
+                    _bowl("M Billingham", "13", 4, 35, 4),
+                    _bowl("C Winstanley", "10", 1, 39, 5),
                 ],
                 "fow": [],
             },
