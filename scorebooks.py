@@ -283,6 +283,36 @@ low-scoring match on both sides.
     not reconcile against the batting total plus extras (48) -- a real
     discrepancy in the source that isn't resolvable from this photo, so
     it's left as read rather than adjusted to fit.
+
+============================================================================
+04-Jun-2011: East Lancs Paper Mill CC 2nd XI vs Littleborough Lake Sides CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.09.16.jpg (both
+innings). Same printed club scorebook as the matches above. Unlike the
+earlier 2011 entries, this one was transcribed from a single full-page
+read (no detail crops), then reviewed and corrected by the user against
+the same photo -- the reading decisions below are theirs, not inferred.
+
+  - ELPM: 9+7+53+27+0+14+0+0+3+2+1 = 116 (matches "S.TOTAL 116") + 10
+    extras (byes 2, wides 7, no balls 1) = 126 all out. Bowling figures
+    (B Hussain 13-2-57-3, S Hussain 6-0-31-1, M Amin 8.2-0-32-6, a 4th
+    bowler whose name is illegible in the photo 2-1-4-0) sum to all 10
+    wickets. M Amin's maiden-overs figure (recorded as 0) is the one cell
+    not legibly separable from his wides/no-balls total.
+  - Littleborough Lake Sides: 7+100+3+2+4 = 116 + 14 extras (byes 7, leg
+    byes 4, wides 3) = 130, chasing down ELPM's 126 for the loss of 3
+    wickets (fall of wicket 13, 43, 47) -- Littleborough Lake Sides won by
+    7 wickets. A Malik's unbeaten 100 and B Hussain's unbeaten 4 are the
+    two not-out batsmen at the end; the other two scores (N Unknown 7, I
+    Iqbal 2 lbw) plus J Wild's 3 (stumped K Dodson b M Young) account for
+    the 3 dismissals. ELPM's bowling figures (L Birmingham 4-0-21-1, A
+    Berry 9-4-35-0, M Young 9-3-34-2, A Redford 2-0-23-0, M Thomson
+    1-0-7-0, A Greenwood 1-0-9-0) sum to the correct 3 wickets; their runs
+    (129, close to but not exactly matching the batsmen's 116 plus the 3
+    wides charged to a bowler) are 1 short of the innings' 130 total, the
+    same small reconciliation gap seen elsewhere in this scorebook and
+    left as read.
 """
 
 SOURCE = "scorebook"
@@ -1020,6 +1050,106 @@ MATCHES = [
                     _bowl("B Thinkley", "6", 1, 14, 2),
                     _bowl("B Beasconi", "3", 0, 30, 1),
                     _bowl("D Rigny", "3", 0, 24, 4),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Littleborough Lake Sides CC 1st XI|04/06/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Littleborough Lake Sides", "away_club_name": "Littleborough Lake Sides CC",
+        "away_team_id": "Littleborough Lake Sides CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "04/06/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "Littleborough Lake Sides",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Littleborough",
+        "toss_won_by_team_id": "Littleborough Lake Sides CC 1st XI",
+        "result": "Littleborough Lake Sides CC won by 7 wickets",
+        "result_applied_to": "Littleborough Lake Sides CC 1st XI",
+        "result_description": "Littleborough Lake Sides CC won by 7 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("A Redford", 2), _player("D Dwyer", 3),
+                _player("A Berry", 4), _player("A Greenwood", 5), _player("D Hadcoft", 6),
+                _player("M Young", 7, captain=True), _player("W Francis", 8), _player("A Birtwistle", 9),
+                _player("L Birmingham", 10), _player("M Thomson", 11),
+            ]},
+            {"away_team": [
+                _player("N Unknown", 1), _player("A Malik", 2), _player("J Wild", 3),
+                _player("I Iqbal", 4), _player("B Hussain", 5), _player("Z Javaid", 6),
+                _player("M Hafeez", 7), _player("U Haq", 8), _player("T Jeffs", 9),
+                _player("A Hussain", 10), _player("S Hussain", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 126, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 2, "extra_leg_byes": 0, "extra_wides": 7, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 10,
+                "bat": [
+                    _bat(1, "K Dodson", "b", "S Hussain", None, 9),
+                    _bat(2, "A Redford", "b", "B Hussain", None, 7),
+                    _bat(3, "D Dwyer", "ct", "M Amin", "Z Javaid", 53),
+                    _bat(4, "A Berry", "ct", "M Amin", "I Iqbal", 27),
+                    _bat(5, "A Greenwood", "b", "B Hussain", None, 0),
+                    _bat(6, "D Hadcoft", "b", "M Amin", None, 14),
+                    _bat(7, "M Young", "b", "B Hussain", None, 0),
+                    _bat(8, "W Francis", "b", "M Amin", None, 0),
+                    _bat(9, "A Birtwistle", "b", "M Amin", None, 3),
+                    _bat(10, "L Birmingham", "b", "M Amin", None, 2),
+                    _bat(11, "M Thomson", "not out", None, None, 1),
+                ],
+                "bowl": [
+                    _bowl("B Hussain", "13", 2, 57, 3),
+                    _bowl("S Hussain", "6", 0, 31, 1),
+                    _bowl("M Amin", "8.2", 0, 32, 6),
+                    # Bowler's name illegible in the photo; see the
+                    # module docstring above.
+                    _bowl("Unknown", "2", 1, 4, 0),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Littleborough Lake Sides CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 130, "wickets": 3, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 7, "extra_leg_byes": 4, "extra_wides": 3, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 14,
+                "bat": [
+                    _bat(1, "N Unknown", "b", None, None, 7),
+                    _bat(2, "A Malik", "not out", None, None, 100),
+                    _bat(3, "J Wild", "st", "M Young", "K Dodson", 3),
+                    _bat(4, "I Iqbal", "lbw", None, None, 2),
+                    _bat(5, "B Hussain", "not out", None, None, 4),
+                    _bat(6, "Z Javaid", "did not bat"),
+                    _bat(7, "M Hafeez", "did not bat"),
+                    _bat(8, "U Haq", "did not bat"),
+                    _bat(9, "T Jeffs", "did not bat"),
+                    _bat(10, "A Hussain", "did not bat"),
+                    _bat(11, "S Hussain", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("L Birmingham", "4", 0, 21, 1),
+                    _bowl("A Berry", "9", 4, 35, 0),
+                    _bowl("M Young", "9", 3, 34, 2),
+                    _bowl("A Redford", "2", 0, 23, 0),
+                    _bowl("M Thomson", "1", 0, 7, 0),
+                    _bowl("A Greenwood", "1", 0, 9, 0),
                 ],
                 "fow": [],
             },
