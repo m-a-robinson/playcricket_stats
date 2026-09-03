@@ -339,6 +339,36 @@ single full-page read reviewed and corrected by the user.
     not out on 1. ELPM's own extras total (9) is recorded without a
     byes/leg-byes/wides/no-balls breakdown -- not attempted from the
     single read and not asked for.
+
+============================================================================
+25-Jun-2011: East Lancs Paper Mill CC 2nd XI vs Westhoughton CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.09.44.jpg (both
+innings). Same printed club scorebook as the matches above, also from a
+single full-page read reviewed and corrected by the user. A tie.
+
+  - ELPM: 89+12+31+18+0+36+8 = 194 (matches "S.TOTAL 194") + 10 extras
+    (byes 3, leg byes 1, wides 3, no balls 3) = 204 for 5 -- K Dodson (89)
+    and M Young (8) finished not out, with the last 4 in the order (L
+    Birmingham, D Hadcroft, M Thomson, W Francis) not needed. Bowling
+    figures (J Blair 13-0-65-1, M Fanning 10-2-26-0, K Hodgkiss 6-0-34-1,
+    O Turner 6-2-16-0, C Honour 6-1-26-2, D Higham 2-0-21-0, J Berry
+    2-0-13-0) sum to 4 bowler-credited wickets; A Greenwood's run out is
+    the 5th dismissal, uncredited to any bowler.
+  - Westhoughton: 38+15+0+20+0+3+47+30+31 = 184 + 19 extras (byes 7, leg
+    byes 1, wides 8, no balls 3) = 203 for 9 -- 1 short of the printed
+    204, the same small reconciliation gap seen elsewhere in this
+    scorebook and left as read; D Higham and D Fletcher, last in the
+    order, weren't needed. C Honour's name is spelled "Hounour" on this
+    innings' own batting page but "Honour" on ELPM's bowling-analysis
+    page opposite (a spelling clash within the same physical scorebook,
+    not two different people) -- standardised to "Honour" throughout.
+    Bowling figures (A Berry 18-3-44-4, L Birmingham 14-1-71-1, M Thomson
+    1-0-21-0, M Young 10-0-42-2, C Greaves 2-0-8-1) sum to 8
+    bowler-credited wickets; S Miller's run out is the 9th.
+
+ELPM 204 for 5, Westhoughton 204 for 9 -- match tied.
 """
 
 SOURCE = "scorebook"
@@ -1276,6 +1306,106 @@ MATCHES = [
                     _bowl("R Curran", "5", 1, 14, 0),
                     _bowl("M Billingham", "13", 4, 35, 4),
                     _bowl("C Winstanley", "10", 1, 39, 5),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Westhoughton CC 1st XI|25/06/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Westhoughton", "away_club_name": "Westhoughton CC",
+        "away_team_id": "Westhoughton CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "25/06/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Westhoughton",
+        "toss_won_by_team_id": "Westhoughton CC 1st XI",
+        "result": "Match tied",
+        "result_applied_to": None,
+        "result_description": "Match tied: ELPM 204 for 5, Westhoughton CC 204 for 9",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("A Greenwood", 2), _player("D Dwyer", 3),
+                _player("A Berry", 4), _player("D Scott", 5), _player("C Greaves", 6),
+                _player("M Young", 7, captain=True), _player("L Birmingham", 8), _player("D Hadcroft", 9),
+                _player("M Thomson", 10), _player("W Francis", 11),
+            ]},
+            {"away_team": [
+                _player("J Yearn", 1), _player("C Honour", 2), _player("M Horrocks", 3),
+                _player("J Blair", 4), _player("J Berry", 5), _player("K Hodgkiss", 6),
+                _player("M Fanning", 7), _player("O Turner", 8), _player("S Miller", 9),
+                _player("D Higham", 10), _player("D Fletcher", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 204, "wickets": 5, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 3, "extra_leg_byes": 1, "extra_wides": 3, "extra_no_balls": 3,
+                "extra_penalty_runs": 0, "total_extras": 10,
+                "bat": [
+                    _bat(1, "K Dodson", "not out", None, None, 89),
+                    _bat(2, "A Greenwood", "run out", None, "K Dodson", 12),
+                    _bat(3, "D Dwyer", "ct", "K Hodgkiss", "D Higham", 31),
+                    _bat(4, "A Berry", "b", "C Honour", None, 18),
+                    _bat(5, "D Scott", "b", "C Honour", None, 0),
+                    _bat(6, "C Greaves", "b", "J Blair", None, 36),
+                    _bat(7, "M Young", "not out", None, None, 8),
+                    _bat(8, "L Birmingham", "did not bat"),
+                    _bat(9, "D Hadcroft", "did not bat"),
+                    _bat(10, "M Thomson", "did not bat"),
+                    _bat(11, "W Francis", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("J Blair", "13", 0, 65, 1),
+                    _bowl("M Fanning", "10", 2, 26, 0),
+                    _bowl("K Hodgkiss", "6", 0, 34, 1),
+                    _bowl("O Turner", "6", 2, 16, 0),
+                    _bowl("C Honour", "6", 1, 26, 2),
+                    _bowl("D Higham", "2", 0, 21, 0),
+                    _bowl("J Berry", "2", 0, 13, 0),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Westhoughton CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 204, "wickets": 9, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 7, "extra_leg_byes": 1, "extra_wides": 8, "extra_no_balls": 3,
+                "extra_penalty_runs": 0, "total_extras": 19,
+                "bat": [
+                    _bat(1, "J Yearn", "ct", "A Berry", "M Young", 38),
+                    _bat(2, "C Honour", "ct", "A Berry", "C Greaves", 15),
+                    _bat(3, "M Horrocks", "ct", "L Birmingham", "D Dwyer", 0),
+                    _bat(4, "J Blair", "ct", "M Young", "D Dwyer", 20),
+                    _bat(5, "J Berry", "ct", "A Berry", "D Dwyer", 0),
+                    _bat(6, "K Hodgkiss", "b", "M Young", None, 3),
+                    _bat(7, "M Fanning", "b", "C Greaves", None, 47),
+                    _bat(8, "O Turner", "ct", "A Berry", "C Greaves", 30),
+                    _bat(9, "S Miller", "run out", None, "A Berry", 31),
+                    _bat(10, "D Higham", "did not bat"),
+                    _bat(11, "D Fletcher", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("A Berry", "18", 3, 44, 4),
+                    _bowl("L Birmingham", "14", 1, 71, 1),
+                    _bowl("M Thomson", "1", 0, 21, 0),
+                    _bowl("M Young", "10", 0, 42, 2),
+                    _bowl("C Greaves", "2", 0, 8, 1),
                 ],
                 "fow": [],
             },
