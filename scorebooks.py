@@ -452,6 +452,33 @@ re-checked against the photo.
     dismissed around him.
 
 Failsworth 109 vs ELPM 105 -- Failsworth CC won by 4 runs.
+
+============================================================================
+03-Sep-2011: East Lancs Paper Mill CC 2nd XI vs Roe Green CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.10.37.jpg (both
+innings). Same printed club scorebook as the matches above. The scorer's
+own note reads "7pm min 10 overs, rain affected" -- ELPM's chase was cut
+short by rain partway through, matching what the user already knew about
+this match before any image was read: ELPM were 50 for 6 when abandoned.
+
+  - Roe Green: 20+5+15+0+33+14+14+7+0+0 = 108 (matches "S.TOTAL 108") +
+    26 extras (byes 4, leg byes 3, wides 12, no balls 7) = 134 for 9 --
+    Buckleton finished not out. Bowling figures (A Redford 9-3-30-1, L
+    Birmingham 12-1-25-1, D Pearson 10-1-33-2, D Hadcroft 6-2-19-1, B
+    Birtwistle 7.1-1-20-4) sum to all 9 wickets. L Needham's score was
+    first misread as 7; the correct figure (14) is what makes the total
+    reconcile.
+  - ELPM: 2+1+0+8+21+11+0 = 43 + 7 extras (byes 4, leg byes 1, wides 2)
+    = 50 for 6 when the umpires abandoned play for rain, matching the
+    fall-of-wicket line (5, 5, 15, 16, 43, 50) exactly. Bowling figures
+    (J Needham 14-8-11-2, M Buckleton 6-1-9-0, R Green 8-4-12-1, L
+    Needham 4-0-11-2, M Canning 3-1-2-0) sum to 5 bowler-credited
+    wickets; A Redford's run out is the 6th.
+
+Recorded as an abandoned match (no result) rather than a win or loss for
+either side, per the user's own knowledge of the game.
 """
 
 SOURCE = "scorebook"
@@ -1771,6 +1798,103 @@ MATCHES = [
                     _bowl("B Beresconi", "7", 1, 24, 1),
                     _bowl("G Reeves", "9.1", 1, 34, 8),
                     _bowl("T Shepherdson", "4", 3, 16, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Roe Green CC 1st XI|03/09/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Roe Green", "away_club_name": "Roe Green CC",
+        "away_team_id": "Roe Green CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "03/09/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "ELPM",
+        "toss_won_by_team_id": "ELPM 2nd XI",
+        "result": None,
+        "result_applied_to": None,
+        "result_description": "Abandoned (rain) -- ELPM 50 for 6, chasing Roe Green's 134",
+        "status": "Abandoned",
+        "last_updated": None,
+        "players": [
+            {"away_team": [
+                _player("R Bradshaw", 1), _player("R Green", 2), _player("P Shannon", 3),
+                _player("N Pine", 4), _player("T Vast", 5), _player("J Needham", 6, wicket_keeper=True),
+                _player("L Needham", 7, captain=True), _player("N Pane", 8), _player("M Canning", 9),
+                _player("M Buckleton", 10),
+            ]},
+            {"home_team": [
+                _player("A Redford", 1), _player("D Scott", 2), _player("D Dwyer", 3),
+                _player("N Warne", 4, wicket_keeper=True), _player("L Birmingham", 5), _player("D Pearson", 6),
+                _player("A Wilkinson", 7), _player("D Hadcroft", 8), _player("A Birtwistle", 9),
+                _player("B Birtwistle", 10), _player("W Francis", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Roe Green CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 134, "wickets": 9, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 4, "extra_leg_byes": 3, "extra_wides": 12, "extra_no_balls": 7,
+                "extra_penalty_runs": 0, "total_extras": 26,
+                "bat": [
+                    _bat(1, "R Bradshaw", "ct and b", "D Pearson", None, 20),
+                    _bat(2, "R Green", "ct", "A Redford", "N Warne", 5),
+                    _bat(3, "P Shannon", "b", "D Pearson", None, 15),
+                    _bat(4, "N Pine", "st", "D Hadcroft", "N Warne", 0),
+                    _bat(5, "T Vast", "st", "B Birtwistle", "N Warne", 33),
+                    _bat(6, "J Needham", "b", "B Birtwistle", None, 14),
+                    _bat(7, "L Needham", "b", "L Birmingham", None, 14),
+                    _bat(8, "N Pane", "ct", "B Birtwistle", "N Warne", 7),
+                    _bat(9, "M Canning", "ct", "B Birtwistle", "L Needham", 0),
+                    _bat(10, "M Buckleton", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("A Redford", "9", 3, 30, 1),
+                    _bowl("L Birmingham", "12", 1, 25, 1),
+                    _bowl("D Pearson", "10", 1, 33, 2),
+                    _bowl("D Hadcroft", "6", 2, 19, 1),
+                    _bowl("B Birtwistle", "7.1", 1, 20, 4),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 50, "wickets": 6, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 4, "extra_leg_byes": 1, "extra_wides": 2, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 7,
+                "bat": [
+                    _bat(1, "A Redford", "run out", None, None, 2),
+                    _bat(2, "D Scott", "b", "J Needham", None, 1),
+                    _bat(3, "D Dwyer", "lbw", "J Needham", None, 0),
+                    _bat(4, "N Warne", "ct", "R Green", "R Bradshaw", 8),
+                    _bat(5, "L Birmingham", "ct", "L Needham", "M Buckleton", 21),
+                    _bat(6, "D Pearson", "not out", None, None, 11),
+                    _bat(7, "A Wilkinson", "st", "L Needham", "N Pine", 0),
+                    _bat(8, "D Hadcroft", "did not bat"),
+                    _bat(9, "A Birtwistle", "did not bat"),
+                    _bat(10, "B Birtwistle", "did not bat"),
+                    _bat(11, "W Francis", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("J Needham", "14", 8, 11, 2),
+                    _bowl("M Buckleton", "6", 1, 9, 0),
+                    _bowl("R Green", "8", 4, 12, 1),
+                    _bowl("L Needham", "4", 0, 11, 2),
+                    _bowl("M Canning", "3", 1, 2, 0),
                 ],
                 "fow": [],
             },
