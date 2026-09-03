@@ -369,6 +369,28 @@ single full-page read reviewed and corrected by the user. A tie.
     bowler-credited wickets; S Miller's run out is the 9th.
 
 ELPM 204 for 5, Westhoughton 204 for 9 -- match tied.
+
+============================================================================
+02-Jul-2011: East Lancs Paper Mill CC 2nd XI vs Littleborough Lakeside CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.09.53.jpg (both
+innings). Same printed club scorebook as the matches above, also from a
+single full-page read -- but this one reconciled cleanly first pass, with
+only one fielder's name needing the user's confirmation.
+
+  - ELPM: 11+8+17+8+23+5+12+29+1+0+13 = 127 (matches "S.TOTAL 127") + 9
+    extras (byes 2, leg byes 3, wides 4) = 136 all out. Bowling figures
+    (B Hussain 9.3-2-32-3, S Hussain 5-0-21-1, N Sadiq 9-2-29-2, U Haq
+    6-0-24-2, A Hussain 5-0-23-1) sum to 9 bowler-credited wickets; L
+    Birmingham's run out is the 10th, D Hadcroft finishing not out.
+  - Littleborough Lakeside: 37+14+1+69 = 121 + 18 extras (byes 1, leg
+    byes 2, wides 14, no balls 4) = 139 for 2, chasing down ELPM's 136
+    with S Rashid (37) and N Sadiq (69) both finishing not out --
+    Littleborough Lakeside CC won by 8 wickets. Bowling figures (L
+    Birmingham 7-0-27-1, A Berry 11-1-37-1, A Greenwood 3-0-35-0, A
+    Redford 3-0-25-0, D Hadcroft 2.2-0-11-0, C Holt 1-0-4-0) sum to
+    exactly 139 runs and both wickets -- no reconciliation gap this time.
 """
 
 SOURCE = "scorebook"
@@ -1406,6 +1428,96 @@ MATCHES = [
                     _bowl("M Thomson", "1", 0, 21, 0),
                     _bowl("M Young", "10", 0, 42, 2),
                     _bowl("C Greaves", "2", 0, 8, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Littleborough Lakeside CC 1st XI|02/07/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Littleborough Lakeside", "away_club_name": "Littleborough Lakeside CC",
+        "away_team_id": "Littleborough Lakeside CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "02/07/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "ELPM",
+        "toss_won_by_team_id": "ELPM 2nd XI",
+        "result": "Littleborough Lakeside CC won by 8 wickets",
+        "result_applied_to": "Littleborough Lakeside CC 1st XI",
+        "result_description": "Littleborough Lakeside CC won by 8 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("A Greenwood", 2), _player("D Dwyer", 3),
+                _player("A Berry", 4), _player("D Scott", 5), _player("C Holt", 6),
+                _player("N Warne", 7), _player("D Hadcroft", 8), _player("L Birmingham", 9),
+                _player("M Thomson", 10), _player("A Redford", 11),
+            ]},
+            {"away_team": [
+                _player("S Rashid", 1), _player("N Dadd", 2), _player("I Iqbal", 3, captain=True),
+                _player("N Sadiq", 4),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 136, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 2, "extra_leg_byes": 3, "extra_wides": 4, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 9,
+                "bat": [
+                    _bat(1, "K Dodson", "ct", "S Hussain", "F Rashid", 11),
+                    _bat(2, "A Greenwood", "ct", "B Hussain", "N Dadd", 8),
+                    _bat(3, "D Dwyer", "ct", "N Sadiq", "H Rashid", 17),
+                    _bat(4, "A Berry", "b", "B Hussain", None, 8),
+                    _bat(5, "D Scott", "b", "U Haq", None, 23),
+                    _bat(6, "C Holt", "b", "N Sadiq", None, 5),
+                    _bat(7, "N Warne", "ct", "U Haq", "N Dadd", 12),
+                    _bat(8, "D Hadcroft", "not out", None, None, 29),
+                    _bat(9, "L Birmingham", "run out", None, "D Hadcroft", 1),
+                    _bat(10, "M Thomson", "b", "A Hussain", None, 0),
+                    _bat(11, "A Redford", "b", "B Hussain", None, 13),
+                ],
+                "bowl": [
+                    _bowl("B Hussain", "9.3", 2, 32, 3),
+                    _bowl("S Hussain", "5", 0, 21, 1),
+                    _bowl("N Sadiq", "9", 2, 29, 2),
+                    _bowl("U Haq", "6", 0, 24, 2),
+                    _bowl("A Hussain", "5", 0, 23, 1),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Littleborough Lakeside CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 139, "wickets": 2, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 1, "extra_leg_byes": 2, "extra_wides": 14, "extra_no_balls": 4,
+                "extra_penalty_runs": 0, "total_extras": 18,
+                "bat": [
+                    _bat(1, "S Rashid", "not out", None, None, 37),
+                    _bat(2, "N Dadd", "b", "L Birmingham", None, 14),
+                    _bat(3, "I Iqbal", "lbw", "A Berry", None, 1),
+                    _bat(4, "N Sadiq", "not out", None, None, 69),
+                ],
+                "bowl": [
+                    _bowl("L Birmingham", "7", 0, 27, 1),
+                    _bowl("A Berry", "11", 1, 37, 1),
+                    _bowl("A Greenwood", "3", 0, 35, 0),
+                    _bowl("A Redford", "3", 0, 25, 0),
+                    _bowl("D Hadcroft", "2.2", 0, 11, 0),
+                    _bowl("C Holt", "1", 0, 4, 0),
                 ],
                 "fow": [],
             },
