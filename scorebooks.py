@@ -419,6 +419,39 @@ and corrected by the user.
     fall-of-wicket line alone. Bowling figures (A Berry 7-2-31-1, M
     Young 5-0-35-1, G Young 2-0-3-0, A Redford 1-0-7-0, A Birtwistle
     0.3-0-12-0) sum to both wickets.
+
+============================================================================
+13-Aug-2011: Failsworth CC vs East Lancs Paper Mill CC 2nd XI
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.10.23.jpg (both
+innings). Same printed club scorebook as the matches above, from a
+single full-page read reviewed and corrected by the user across two
+rounds -- ELPM's innings in particular needed several batsmen's scores
+re-checked against the photo.
+
+  - Failsworth: 0+17+0+4+13+38+24+3+0+0+0 = 99 (matches "S.TOTAL 99") +
+    10 extras (byes 4, leg byes 1, wides 4, no balls 1) = 109 all out.
+    Bowling figures (A Berry 15-2-49-4, L Birmingham 7-0-15-1, A Redford
+    5-0-38-1, M Young 2.1-0-2-3) sum to 9 bowler-credited wickets; N
+    Reed's run out is the 10th and, unlike the odd-looking printed
+    bowling-analysis row that first suggested A Redford took 2, carries
+    no bowler credit -- Redford's true figure is 1 wicket (I Wilson),
+    matching the dismissals directly attributable to him. M Young's
+    figures were first misread as "21-0-2-3"; the correct reading is
+    2.1 overs, not 21.
+  - ELPM: 21+23+1+16+1+1+12+0+18+6+0 = 99 + 7 extras (byes 4, leg byes 1,
+    wides 1, no balls 1) = 106, 1 run over the user-confirmed final total
+    of 105 -- the same small reconciliation gap seen elsewhere in this
+    scorebook, left as read rather than adjusted to fit. G Reeves took 8
+    of ELPM's 10 wickets (A Berry, A Redford, D Dwyer, D Hadcroft, A
+    Wilkinson, L Birmingham, M Young, A Birtwistle), with B Beresconi (C
+    Holt) and T Shepherdson (G Young) taking one each; his own
+    bowling-analysis row (9.1-1-34-8) matches exactly. D Pearson, batting
+    at 7, finished not out on 12 while all ten other batsmen were
+    dismissed around him.
+
+Failsworth 109 vs ELPM 105 -- Failsworth CC won by 4 runs.
 """
 
 SOURCE = "scorebook"
@@ -1642,6 +1675,102 @@ MATCHES = [
                     _bowl("G Young", "2", 0, 3, 0),
                     _bowl("A Redford", "1", 0, 7, 0),
                     _bowl("A Birtwistle", "0.3", 0, 12, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "Failsworth CC 1st XI|ELPM 2nd XI|13/08/2011",
+        "home_club_id": "Failsworth", "home_club_name": "Failsworth CC",
+        "home_team_id": "Failsworth CC 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "ELPM", "away_club_name": "East Lancs Paper Mill CC",
+        "away_team_id": "ELPM 2nd XI", "away_team_name": "2nd XI",
+        "match_date": "13/08/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "Failsworth",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "ELPM",
+        "toss_won_by_team_id": "ELPM 2nd XI",
+        "result": "Failsworth CC won by 4 runs",
+        "result_applied_to": "Failsworth CC 1st XI",
+        "result_description": "Failsworth CC won by 4 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("J Turnbull", 1), _player("J Davies", 2), _player("T Wood", 3),
+                _player("A Trotter", 4), _player("N Reed", 5), _player("T Shepherdson", 6),
+                _player("I Wilson", 7, captain=True), _player("R Stacey", 8), _player("G Reeves", 9),
+                _player("C Shenton", 10), _player("B Beresconi", 11),
+            ]},
+            {"away_team": [
+                _player("C Holt", 1), _player("A Berry", 2), _player("A Redford", 3),
+                _player("D Dwyer", 4), _player("G Young", 5), _player("D Hadcroft", 6),
+                _player("D Pearson", 7), _player("A Wilkinson", 8), _player("L Birmingham", 9),
+                _player("M Young", 10, captain=True), _player("A Birtwistle", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Failsworth CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 109, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 4, "extra_leg_byes": 1, "extra_wides": 4, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 10,
+                "bat": [
+                    _bat(1, "J Turnbull", "ct", "A Berry", "G Young", 0),
+                    _bat(2, "J Davies", "b", "A Berry", None, 17),
+                    _bat(3, "T Wood", "lbw", "A Berry", None, 0),
+                    _bat(4, "A Trotter", "b", "L Birmingham", None, 4),
+                    _bat(5, "N Reed", "run out", None, "G Young", 13),
+                    _bat(6, "T Shepherdson", "b", "M Young", None, 38),
+                    _bat(7, "I Wilson", "ct", "A Redford", "D Dwyer", 24),
+                    _bat(8, "R Stacey", "b", "M Young", None, 3),
+                    _bat(9, "G Reeves", "lbw", "A Berry", None, 0),
+                    _bat(10, "C Shenton", "b", "M Young", None, 0),
+                    _bat(11, "B Beresconi", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("A Berry", "15", 2, 49, 4),
+                    _bowl("L Birmingham", "7", 0, 15, 1),
+                    _bowl("A Redford", "5", 0, 38, 1),
+                    _bowl("M Young", "2.1", 0, 2, 3),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 105, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 4, "extra_leg_byes": 1, "extra_wides": 1, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 7,
+                "bat": [
+                    _bat(1, "C Holt", "b", "B Beresconi", None, 21),
+                    _bat(2, "A Berry", "b", "G Reeves", None, 23),
+                    _bat(3, "A Redford", "lbw", "G Reeves", None, 1),
+                    _bat(4, "D Dwyer", "st", "G Reeves", "J Turnbull", 16),
+                    _bat(5, "G Young", "ct", "T Shepherdson", "B Beresconi", 1),
+                    _bat(6, "D Hadcroft", "b", "G Reeves", None, 1),
+                    _bat(7, "D Pearson", "not out", None, None, 12),
+                    _bat(8, "A Wilkinson", "lbw", "G Reeves", None, 0),
+                    _bat(9, "L Birmingham", "lbw", "G Reeves", None, 18),
+                    _bat(10, "M Young", "b", "G Reeves", None, 6),
+                    _bat(11, "A Birtwistle", "b", "G Reeves", None, 0),
+                ],
+                "bowl": [
+                    _bowl("I Wilson", "7", 1, 27, 0),
+                    _bowl("B Beresconi", "7", 1, 24, 1),
+                    _bowl("G Reeves", "9.1", 1, 34, 8),
+                    _bowl("T Shepherdson", "4", 3, 16, 1),
                 ],
                 "fow": [],
             },
