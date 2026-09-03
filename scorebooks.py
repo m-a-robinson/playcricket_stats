@@ -479,6 +479,34 @@ this match before any image was read: ELPM were 50 for 6 when abandoned.
 
 Recorded as an abandoned match (no result) rather than a win or loss for
 either side, per the user's own knowledge of the game.
+
+============================================================================
+11-Sep-2011: East Lancs Paper Mill CC 2nd XI vs Westhoughton CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.10.47.jpg (both
+innings). Same printed club scorebook as the matches above -- the return
+fixture to 25-Jun-2011's tie, this time at Westhoughton. Single full-page
+read, reviewed and corrected by the user across two rounds; ELPM's
+middle order in particular was significantly reshuffled from the first
+read.
+
+  - ELPM: 22+0+4+25+20+8+10+0+1+0+1 = 91 (matches "S.TOTAL 91") + 12
+    extras (byes 5, leg byes 4, wides 1, no balls 2) = 103 all out. The
+    printed bowling-analysis wickets (S Ashcroft 15-3-44-1, J Blair
+    11-1-36-3, O Turner 6-2-10-5, C Honour 2-0-4-1) don't match the
+    per-bowler count implied by the corrected dismissals (S Ashcroft 2:
+    K Dodson, G Young; J Blair 2: P Partington, A Redford; O Turner 4: D
+    Dwyer, D Pearson, D Hadcroft, B Birtwistle; C Honour 1: M Young) --
+    both group sum to 9 bowler-credited wickets plus A Birtwistle's run
+    out, but the individual bowlers' shares differ. The dismissals, tied
+    to named batsmen, are used as given rather than adjusted to match
+    the analysis row; the discrepancy is left unresolved.
+  - Westhoughton: 12+30+53+4 = 99 + 7 extras (byes 3, leg byes 1, wides
+    3) = 106 for 2, chasing down ELPM's 103 with G Green (53) and C
+    Honour (4) both finishing not out -- Westhoughton CC won by 8
+    wickets. O Dixon's dismissal is confirmed as stumped (P Partington,
+    ELPM's keeper, b A Redford).
 """
 
 SOURCE = "scorebook"
@@ -1895,6 +1923,103 @@ MATCHES = [
                     _bowl("R Green", "8", 4, 12, 1),
                     _bowl("L Needham", "4", 0, 11, 2),
                     _bowl("M Canning", "3", 1, 2, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Westhoughton CC 1st XI|11/09/2011",
+        "home_club_id": "Westhoughton", "home_club_name": "Westhoughton CC",
+        "home_team_id": "Westhoughton CC 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "ELPM", "away_club_name": "East Lancs Paper Mill CC",
+        "away_team_id": "ELPM 2nd XI", "away_team_name": "2nd XI",
+        "match_date": "11/09/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "Westhoughton",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Westhoughton",
+        "toss_won_by_team_id": "Westhoughton CC 1st XI",
+        "result": "Westhoughton CC won by 8 wickets",
+        "result_applied_to": "Westhoughton CC 1st XI",
+        "result_description": "Westhoughton CC won by 8 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"away_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("P Partington", 2), _player("A Redford", 3),
+                _player("G Young", 4), _player("L Birmingham", 5), _player("D Dwyer", 6),
+                _player("D Pearson", 7), _player("M Young", 8, captain=True), _player("D Hadcroft", 9),
+                _player("B Birtwistle", 10), _player("A Birtwistle", 11),
+            ]},
+            {"home_team": [
+                _player("H Entwistle", 1), _player("O Dixon", 2), _player("G Green", 3),
+                _player("C Honour", 4), _player("C Trom", 5), _player("B Naylor", 6, captain=True),
+                _player("L Ashcroft", 7, wicket_keeper=True), _player("S Ashcroft", 8), _player("O Turner", 9),
+                _player("J Blair", 10), _player("J Yearn", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 103, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 5, "extra_leg_byes": 4, "extra_wides": 1, "extra_no_balls": 2,
+                "extra_penalty_runs": 0, "total_extras": 12,
+                "bat": [
+                    _bat(1, "K Dodson", "b", "S Ashcroft", None, 22),
+                    _bat(2, "P Partington", "ct", "J Blair", "J Yearn", 0),
+                    _bat(3, "A Redford", "b", "J Blair", None, 4),
+                    _bat(4, "G Young", "lbw", "S Ashcroft", None, 25),
+                    _bat(5, "L Birmingham", "not out", None, None, 20),
+                    _bat(6, "D Dwyer", "ct", "O Turner", "H Entwistle", 8),
+                    _bat(7, "D Pearson", "lbw", "O Turner", None, 10),
+                    _bat(8, "M Young", "ct", "C Honour", "G Green", 0),
+                    _bat(9, "D Hadcroft", "b", "O Turner", None, 1),
+                    _bat(10, "B Birtwistle", "b", "O Turner", None, 0),
+                    _bat(11, "A Birtwistle", "run out", None, None, 1),
+                ],
+                "bowl": [
+                    _bowl("S Ashcroft", "15", 3, 44, 1),
+                    _bowl("J Blair", "11", 1, 36, 3),
+                    _bowl("O Turner", "6", 2, 10, 5),
+                    _bowl("C Honour", "2", 0, 4, 1),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Westhoughton CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 106, "wickets": 2, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 3, "extra_leg_byes": 1, "extra_wides": 3, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 7,
+                "bat": [
+                    _bat(1, "H Entwistle", "b", "M Young", None, 12),
+                    _bat(2, "O Dixon", "st", "A Redford", "P Partington", 30),
+                    _bat(3, "G Green", "not out", None, None, 53),
+                    _bat(4, "C Honour", "not out", None, None, 4),
+                    _bat(5, "C Trom", "did not bat"),
+                    _bat(6, "B Naylor", "did not bat"),
+                    _bat(7, "L Ashcroft", "did not bat"),
+                    _bat(8, "S Ashcroft", "did not bat"),
+                    _bat(9, "O Turner", "did not bat"),
+                    _bat(10, "J Blair", "did not bat"),
+                    _bat(11, "J Yearn", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("M Young", "14.1", 1, 63, 1),
+                    _bowl("L Birmingham", "7", 2, 16, 0),
+                    _bowl("D Pearson", "5", 1, 20, 0),
+                    _bowl("A Redford", "2", 0, 18, 1),
+                    _bowl("B Birtwistle", "0.5", 0, 5, 0),
                 ],
                 "fow": [],
             },
