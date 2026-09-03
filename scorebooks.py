@@ -391,6 +391,34 @@ only one fielder's name needing the user's confirmation.
     Birmingham 7-0-27-1, A Berry 11-1-37-1, A Greenwood 3-0-35-0, A
     Redford 3-0-25-0, D Hadcroft 2.2-0-11-0, C Holt 1-0-4-0) sum to
     exactly 139 runs and both wickets -- no reconciliation gap this time.
+
+============================================================================
+06-Aug-2011: East Lancs Paper Mill CC 2nd XI vs Thornham CC
+============================================================================
+
+Source image: scorebooks/2nd XI/2011/2026-08-30 10.10.11.jpg (both
+innings). Same printed club scorebook as the matches above, but ELPM's
+own page records each dismissal's bowler by number (1/2/3) rather than
+name, cross-referenced against the bowling-analysis table beneath it --
+the only match in this batch to do that. Single full-page read, reviewed
+and corrected by the user.
+
+  - ELPM: 12+4+15+19+13+1+12+4+1+6+0 = 87 (matches "S.TOTAL 87") + 4
+    extras (leg byes 1, wides 3) = 91 all out. Bowler "2" (J Clarke) is
+    credited with the first four dismissals (K Dodson, A Redford, G
+    Young, A Berry) plus the 9th (D Hadcroft) -- 5 wickets, matching his
+    own analysis row (12-1-40-5) exactly; bowler "3" (M Fitzpatrick)
+    takes the rest (D Scott, D Dwyer, C Holt, M Young, D Pearson) -- the
+    other 5, matching his row (7-1-14-5); bowler "1" (M Turvey, 6-0-34-0)
+    takes none. G Young's catch is "ct Towler" (behind the stumps, i.e.
+    the wicketkeeper), not "ct Tower" as first read.
+  - Thornham: 1+1+76+20 = 98 + 3 extras (byes 1, leg byes 1, no balls 1)
+    = 101 for 2, chasing down ELPM's 91 with S Mohammed (76) and R
+    Whitehouse (20) both finishing not out -- Thornham won by 8 wickets.
+    D Harrop's score is 1, not the 15 first estimated from the
+    fall-of-wicket line alone. Bowling figures (A Berry 7-2-31-1, M
+    Young 5-0-35-1, G Young 2-0-3-0, A Redford 1-0-7-0, A Birtwistle
+    0.3-0-12-0) sum to both wickets.
 """
 
 SOURCE = "scorebook"
@@ -1518,6 +1546,102 @@ MATCHES = [
                     _bowl("A Redford", "3", 0, 25, 0),
                     _bowl("D Hadcroft", "2.2", 0, 11, 0),
                     _bowl("C Holt", "1", 0, 4, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 2nd XI|Thornham CC 1st XI|06/08/2011",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 2nd XI", "home_team_name": "2nd XI",
+        "away_club_id": "Thornham", "away_club_name": "Thornham CC",
+        "away_team_id": "Thornham CC 1st XI", "away_team_name": "1st XI",
+        "match_date": "06/08/2011",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL",
+        "competition_type": "League",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": "Thornham",
+        "toss_won_by_team_id": "Thornham CC 1st XI",
+        "result": "Thornham CC won by 8 wickets",
+        "result_applied_to": "Thornham CC 1st XI",
+        "result_description": "Thornham CC won by 8 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("K Dodson", 1, wicket_keeper=True), _player("A Redford", 2), _player("G Young", 3),
+                _player("A Berry", 4), _player("D Scott", 5), _player("D Dwyer", 6),
+                _player("C Holt", 7), _player("M Young", 8, captain=True), _player("D Hadcroft", 9),
+                _player("D Pearson", 10), _player("A Birtwistle", 11),
+            ]},
+            {"away_team": [
+                _player("J Carnegie", 1), _player("D Harrop", 2), _player("S Mohammed", 3),
+                _player("R Whitehouse", 4), _player("J Clarke", 5), _player("M Fitzpatrick", 6),
+                _player("M Chadderton", 7), _player("D Parr", 8), _player("M Turvey", 9),
+                _player("P Speedy", 10), _player("A Towler", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 2nd XI", "team_batting_name": "2nd XI",
+                "runs": 91, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 1, "extra_wides": 3, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 4,
+                "bat": [
+                    _bat(1, "K Dodson", "b", "J Clarke", None, 12),
+                    _bat(2, "A Redford", "b", "J Clarke", None, 4),
+                    _bat(3, "G Young", "ct", "J Clarke", "A Towler", 15),
+                    _bat(4, "A Berry", "b", "J Clarke", None, 19),
+                    _bat(5, "D Scott", "b", "M Fitzpatrick", None, 13),
+                    _bat(6, "D Dwyer", "ct", "M Fitzpatrick", "D Harrop", 1),
+                    _bat(7, "C Holt", "ct", "M Fitzpatrick", "M Turvey", 12),
+                    _bat(8, "M Young", "b", "M Fitzpatrick", None, 4),
+                    _bat(9, "D Hadcroft", "b", "J Clarke", None, 1),
+                    _bat(10, "D Pearson", "ct", "M Fitzpatrick", "P Speedy", 6),
+                    _bat(11, "A Birtwistle", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("M Turvey", "6", 0, 34, 0),
+                    _bowl("J Clarke", "12", 1, 40, 5),
+                    _bowl("M Fitzpatrick", "7", 1, 14, 5),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Thornham CC 1st XI", "team_batting_name": "1st XI",
+                "runs": 101, "wickets": 2, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 1, "extra_leg_byes": 1, "extra_wides": 0, "extra_no_balls": 1,
+                "extra_penalty_runs": 0, "total_extras": 3,
+                "bat": [
+                    _bat(1, "J Carnegie", "b", "M Young", None, 1),
+                    _bat(2, "D Harrop", "ct", "A Berry", None, 1),
+                    _bat(3, "S Mohammed", "not out", None, None, 76),
+                    _bat(4, "R Whitehouse", "not out", None, None, 20),
+                    _bat(5, "J Clarke", "did not bat"),
+                    _bat(6, "M Fitzpatrick", "did not bat"),
+                    _bat(7, "M Chadderton", "did not bat"),
+                    _bat(8, "D Parr", "did not bat"),
+                    _bat(9, "M Turvey", "did not bat"),
+                    _bat(10, "P Speedy", "did not bat"),
+                    _bat(11, "A Towler", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("A Berry", "7", 2, 31, 1),
+                    _bowl("M Young", "5", 0, 35, 1),
+                    _bowl("G Young", "2", 0, 3, 0),
+                    _bowl("A Redford", "1", 0, 7, 0),
+                    _bowl("A Birtwistle", "0.3", 0, 12, 0),
                 ],
                 "fow": [],
             },
