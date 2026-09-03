@@ -54,11 +54,37 @@ scorebook pages the user photographed and uploaded, starting with the
 11-Jul-2010 ELPM 1st XI v Failsworth Macedonia CC match (Gavin Greaves
 170, Ian Wade 163, a 339-run 3rd-wicket stand) — a match `nmcl_stats.py`'s
 2010 residual-total rows already knew was missing but couldn't supply
-match-level detail for. 2011-2013, and the rest of 2010 beyond what's now
-captured, still have no match-level source, only season aggregates; if
-genuine scorecards or scorebook pages for those turn up, the same
-`cricketstatz_txt.py`/`scorebooks.py` pipelines would replace the
+match-level detail for.
+
+That one match was the start, not the end, of the scorebook-digitisation
+effort: the user went on to photograph and upload 71 more scorebook
+pages covering the club's 2nd XI across five seasons (2007, 2011-2014),
+sorted into `scorebooks/2nd XI/<season>/`. **2011 is now fully
+transcribed** — all 13 2nd XI matches that season played (Austerlands,
+Failsworth twice, Farnworth Social, Littleborough Lake Sides/Lakeside
+twice, Swinton Moorside twice, Westhoughton twice including a tie, a
+rain-abandoned game v Roe Green, and Thornham) are in `scorebooks.py`,
+each cross-checked innings-by-innings (batsmen runs + extras = team
+total, bowling figures reconciled against dismissals and overs) before
+being added — plus the one 2007 match (East Lancs PM 2nd XI v Bury CC)
+that came in the same photo batch. **2012 and 2013 are photographed but
+not yet transcribed** — 19 photos apiece, organised into their own season
+folders, awaiting the same treatment. 2014's photos (17) fill a 2nd XI
+gap too, though that season already has 1st XI match-level coverage from
+CricketStatz. The rest of 2010 beyond what's captured, and the
+still-untranscribed years, have no match-level source yet, only season
+aggregates; if genuine scorecards or further scorebook pages turn up, the
+same `cricketstatz_txt.py`/`scorebooks.py` pipelines would replace the
 aggregate figures with real per-match data.
+
+Transcription for a photographed-but-not-typed match goes through an
+extra step the other sources don't need: since there's no machine-readable
+text at all, each match starts as a single-pass read of the scorebook
+photo, presented back as a scorecard for the user to check against the
+same photo before it's written into `scorebooks.py` — the arithmetic
+cross-check (batsmen + extras = total, bowling figures reconcile against
+dismissals) still applies once the reading is confirmed, same as every
+other source.
 
 Building a season-by-season match export as an early cross-check tool for
 the scorebook-digitisation effort (a workbook with one sheet per season,
@@ -296,12 +322,17 @@ complete by definition once ingested.
   as every other source here) — including one genuine read correction
   this way: a batsman's dismissal that first looked like "absent" only
   reconciled against the bowling-wicket arithmetic once read again more
-  carefully. First (and so far only) match: 11-Jul-2010, ELPM 1st XI away
+  carefully. First match: 11-Jul-2010, ELPM 1st XI away
   to Failsworth Macedonia CC — the scorecard behind Gavin Greaves' 170 and
   Ian Wade's 163 in a 339-run 3rd-wicket stand, previously missing from
   every source including `nmcl_stats.py`'s own 2010 residual-total rows
   (which knew matches were missing but not which innings they contained).
-  Run `python3 scorebooks.py --sqlite-db <path>` after the other sources.
+  **15 matches total as of this writing**: that one 2010 1st XI match,
+  one 2007 2nd XI match (East Lancs PM v Bury CC, team XI unstated on the
+  page itself), and all 13 of the 2nd XI's 2011 matches — see the
+  "Milestone" section above for the season-by-season breakdown and what's
+  still pending (2012/2013 photographed, not yet transcribed). Run
+  `python3 scorebooks.py --sqlite-db <path>` after the other sources.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
