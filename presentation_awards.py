@@ -214,22 +214,30 @@ def most_sixes(conn, season):
 
 
 def most_ducks(conn, season, team_ids):
+    """Most ducks, all teams -- ties broken by fewest batting innings, so
+    the "winner" is whoever racked up that many ducks in the fewest trips
+    to the crease, not just whoever batted the most often."""
+
     placeholders = ", ".join("?" * len(team_ids))
 
     query = f"""
-        SELECT p.known_as AS player_name, COUNT(*) AS ducks
+        SELECT
+            p.known_as AS player_name,
+            SUM(CASE
+                    WHEN b.runs = 0 AND b.not_out = 0 AND b.how_out IS NOT NULL
+                    THEN 1 ELSE 0
+                END) AS ducks,
+            COUNT(*) AS batting_innings
         FROM batting_innings b
         JOIN innings i ON i.innings_id = b.innings_id
         JOIN matches m ON m.match_id = i.match_id
         JOIN players p ON p.player_id = b.player_id
         WHERE m.season = ?
           AND b.team_id IN ({placeholders})
-          AND b.runs = 0
-          AND b.not_out = 0
-          AND b.how_out IS NOT NULL
-          AND b.how_out != 'did not bat'
+          AND COALESCE(b.how_out, '') != 'did not bat'
         GROUP BY b.player_id
-        ORDER BY ducks DESC
+        HAVING ducks > 0
+        ORDER BY ducks DESC, batting_innings ASC
         LIMIT {TOP_N}
     """
 
@@ -478,7 +486,7 @@ def build_report(conn, season):
     report.append((
         "Trophies you don't want to win", "Duck",
         most_ducks(conn, season, nonjunior_ids),
-        "Most ducks, all teams"
+        "Most ducks, all teams (ties broken by fewest batting innings)"
     ))
 
     report.append((
