@@ -31,8 +31,11 @@ out (documented again at each function below):
   are read as every non-junior ELPMCC team, not just 1st/2nd/3rd XI --
   there's no qualification row restricting them the way the three main
   XIs are restricted.
-- "White Boot Trophy" (worst bowling performance) ranks single-innings
-  figures by runs conceded, among spells of at least MIN_BALLS_BOWLED
+- "White Boot Trophy" (worst bowling performance) is split into two
+  shortlists -- most runs conceded, and worst economy rate -- since
+  either can be the "worse" spell (a long spell that's merely expensive
+  throughout vs. a short one that's truly dreadful), and each ranks
+  single-innings figures among spells of at least MIN_BALLS_BOWLED
   balls, so one expensive over doesn't crowd out a genuinely bad spell.
 - "Most improved player" has no defined metric in the document at all;
   the batting-average-improvement shortlist here is offered as an aid to
@@ -233,9 +236,12 @@ def most_ducks(conn, season, team_ids):
     return pd.read_sql_query(query, conn, params=[season] + team_ids)
 
 
-def worst_bowling_performance(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
-    """Single-innings figures, ranked by runs conceded, among spells of at
-    least `min_balls` balls -- see MIN_BALLS_BOWLED."""
+def worst_bowling_by_runs(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
+    """Single-innings figures, ranked by total runs conceded, among spells
+    of at least `min_balls` balls -- see MIN_BALLS_BOWLED. Rewards being
+    taken for plenty over a long spell; see worst_bowling_by_economy() for
+    the same idea scored by rate instead of total, which can surface a
+    shorter, more expensive-per-over spell this misses."""
 
     placeholders = ", ".join("?" * len(team_ids))
 
@@ -251,6 +257,33 @@ def worst_bowling_performance(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED
           AND bo.team_id IN ({placeholders})
           AND bo.balls >= ?
         ORDER BY bo.runs DESC, bo.wickets ASC
+        LIMIT {TOP_N}
+    """
+
+    return pd.read_sql_query(query, conn, params=[season] + team_ids + [min_balls])
+
+
+def worst_bowling_by_economy(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
+    """Single-innings figures, ranked by economy rate (runs per over),
+    among spells of at least `min_balls` balls -- see MIN_BALLS_BOWLED.
+    Catches a spell that was expensive throughout even if the bowler
+    wasn't kept on long enough to rack up worst_bowling_by_runs()'s total."""
+
+    placeholders = ", ".join("?" * len(team_ids))
+
+    query = f"""
+        SELECT
+            p.known_as AS player_name, m.match_date,
+            bo.overs, bo.wickets, bo.runs AS runs_conceded,
+            bo.runs * 6.0 / bo.balls AS economy
+        FROM bowling_innings bo
+        JOIN innings i ON i.innings_id = bo.innings_id
+        JOIN matches m ON m.match_id = i.match_id
+        JOIN players p ON p.player_id = bo.player_id
+        WHERE m.season = ?
+          AND bo.team_id IN ({placeholders})
+          AND bo.balls >= ?
+        ORDER BY economy DESC, bo.wickets ASC
         LIMIT {TOP_N}
     """
 
@@ -454,9 +487,15 @@ def build_report(conn, season):
     ))
 
     report.append((
-        "Trophies you don't want to win", "White Boot Trophy",
-        worst_bowling_performance(conn, season, nonjunior_ids),
-        f"Worst single-innings bowling figures (min {MIN_BALLS_BOWLED} balls bowled)"
+        "Trophies you don't want to win", "White Boot Trophy -- Most Runs Conceded",
+        worst_bowling_by_runs(conn, season, nonjunior_ids),
+        f"Worst single-innings bowling figures by total runs conceded (min {MIN_BALLS_BOWLED} balls bowled)"
+    ))
+
+    report.append((
+        "Trophies you don't want to win", "White Boot Trophy -- Worst Economy Rate",
+        worst_bowling_by_economy(conn, season, nonjunior_ids),
+        f"Worst single-innings economy rate (min {MIN_BALLS_BOWLED} balls bowled)"
     ))
 
     return report
