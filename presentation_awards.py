@@ -77,22 +77,50 @@ MIN_IMPROVEMENT_INNINGS = 5
 # TEAM LOOKUP
 # ==================================================================
 
-def _team_ids(conn, team_names, club_name=ELPMCC_NAME):
-    """Map each of `team_names` to its team_id for this club, in this build."""
+def _short_team_name(team_name, club_name=ELPMCC_NAME):
+    """Strip a leading club name off `team_name`, however it's joined --
+    "<club> - <team>", "<club> <team>", or not joined at all -- so
+    "1st XI", "East Lancs Paper Mill CC 1st XI" and "East Lancs Paper
+    Mill CC - 1st XI" all normalise to the same "1st XI".
 
-    placeholders = ", ".join("?" * len(team_names))
+    Real data here is inconsistent: for this club, 1st/2nd XI happen to
+    be stored with the club name embedded in team_name (apparently
+    however Play-Cricket's API returned them for those matches), while
+    3rd XI/Friendly XI/juniors aren't. Rather than editing the stored
+    team_name (see the module-level note on why that's not durable --
+    _upsert_team() re-matches by source-provided name on every rebuild,
+    not by what's in the database), every lookup below normalises
+    through this function instead."""
+
+    for prefix in (f"{club_name} - ", f"{club_name} "):
+        while team_name.startswith(prefix):
+            team_name = team_name[len(prefix):]
+
+    return team_name
+
+
+def _team_ids(conn, team_names, club_name=ELPMCC_NAME):
+    """Map each of `team_names` (short form, e.g. "1st XI") to its team_id
+    for this club, in this build -- matched via _short_team_name() since
+    team_name isn't stored consistently (see its docstring). A name with
+    no matching team is simply left out of the result."""
 
     rows = conn.execute(
-        f"""
+        """
         SELECT t.team_name, t.team_id
         FROM teams t
         JOIN clubs c ON c.club_id = t.club_id
-        WHERE c.club_name = ? AND t.team_name IN ({placeholders})
+        WHERE c.club_name = ?
         """,
-        [club_name] + list(team_names)
+        (club_name,)
     ).fetchall()
 
-    return dict(rows)
+    by_short_name = {
+        _short_team_name(raw_name, club_name): team_id
+        for raw_name, team_id in rows
+    }
+
+    return {name: by_short_name[name] for name in team_names if name in by_short_name}
 
 
 def _nonjunior_team_ids(conn, club_name=ELPMCC_NAME):
@@ -245,7 +273,10 @@ def top_partnerships(conn, season, club_name=ELPMCC_NAME):
         (club_name,)
     ).fetchall()
 
-    allowed_team_names = {f"{club_name} - {name}" for (name,) in team_names}
+    # Short names (see _short_team_name()) -- matched against partnerships'
+    # own team_name column the same way, since neither is guaranteed to
+    # carry (or not carry) the club name as a prefix.
+    allowed_short_names = {_short_team_name(name, club_name) for (name,) in team_names}
 
     rows = conn.execute(
         "SELECT match_id, match_date, source_payload FROM matches WHERE season = ?",
@@ -263,12 +294,13 @@ def top_partnerships(conn, season, club_name=ELPMCC_NAME):
         if partnerships.empty:
             continue
 
-        ours = partnerships[partnerships["team_name"].isin(allowed_team_names)]
+        short_names = partnerships["team_name"].apply(_short_team_name, club_name=club_name)
+        ours = partnerships[short_names.isin(allowed_short_names)]
 
         for _, row in ours.iterrows():
             candidates.append({
                 "match_date": match_date,
-                "team": row["team_name"].replace(f"{club_name} - ", ""),
+                "team": _short_team_name(row["team_name"], club_name),
                 "opposition": row["opposition_name"],
                 "wicket": row["wickets"],
                 "partnership": f"{row['batsman_out_name']} & {row['batsman_in_name']}",
