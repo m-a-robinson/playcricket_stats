@@ -31,8 +31,11 @@ out (documented again at each function below):
   are read as every non-junior ELPMCC team, not just 1st/2nd/3rd XI --
   there's no qualification row restricting them the way the three main
   XIs are restricted.
-- "White Boot Trophy" (worst bowling performance) ranks single-innings
-  figures by runs conceded, among spells of at least MIN_BALLS_BOWLED
+- "White Boot Trophy" (worst bowling performance) is split into two
+  shortlists -- most runs conceded, and worst economy rate -- since
+  either can be the "worse" spell (a long spell that's merely expensive
+  throughout vs. a short one that's truly dreadful), and each ranks
+  single-innings figures among spells of at least MIN_BALLS_BOWLED
   balls, so one expensive over doesn't crowd out a genuinely bad spell.
 - "Most improved player" has no defined metric in the document at all;
   the batting-average-improvement shortlist here is offered as an aid to
@@ -46,7 +49,7 @@ import sqlite3
 import pandas as pd
 
 from playcricket_scorecard import Scorecard
-from sqlite_queries import ELPMCC_NAME, career_stats
+from sqlite_queries import ELPMCC_NAME, career_stats, notable_performances_summary
 
 
 SENIOR_TEAMS = ["1st XI", "2nd XI", "3rd XI"]
@@ -203,39 +206,58 @@ def top_fielding(conn, season, team_id):
 # ==================================================================
 
 def most_sixes(conn, season):
+    """Most sixes, all teams -- alongside what share of the player's runs
+    that season actually came from sixes, since two players tied on sixes
+    can have earned them very differently (a big-hitting cameo vs. sixes
+    scattered through a much longer, more measured innings total)."""
+
     data = career_stats(conn, season=season)
     data = data[data["sixes"] > 0]
+    data["pct_runs_from_sixes"] = data["sixes"] * 6 * 100.0 / data["runs"]
     data = data.sort_values("sixes", ascending=False)
 
-    return data.head(TOP_N)[["player_name", "games_played", "sixes", "runs"]]
+    columns = ["player_name", "games_played", "sixes", "runs", "pct_runs_from_sixes"]
+
+    return data.head(TOP_N)[columns]
 
 
 def most_ducks(conn, season, team_ids):
+    """Most ducks, all teams -- ties broken by fewest batting innings, so
+    the "winner" is whoever racked up that many ducks in the fewest trips
+    to the crease, not just whoever batted the most often."""
+
     placeholders = ", ".join("?" * len(team_ids))
 
     query = f"""
-        SELECT p.known_as AS player_name, COUNT(*) AS ducks
+        SELECT
+            p.known_as AS player_name,
+            SUM(CASE
+                    WHEN b.runs = 0 AND b.not_out = 0 AND b.how_out IS NOT NULL
+                    THEN 1 ELSE 0
+                END) AS ducks,
+            COUNT(*) AS batting_innings
         FROM batting_innings b
         JOIN innings i ON i.innings_id = b.innings_id
         JOIN matches m ON m.match_id = i.match_id
         JOIN players p ON p.player_id = b.player_id
         WHERE m.season = ?
           AND b.team_id IN ({placeholders})
-          AND b.runs = 0
-          AND b.not_out = 0
-          AND b.how_out IS NOT NULL
-          AND b.how_out != 'did not bat'
+          AND COALESCE(b.how_out, '') != 'did not bat'
         GROUP BY b.player_id
-        ORDER BY ducks DESC
+        HAVING ducks > 0
+        ORDER BY ducks DESC, batting_innings ASC
         LIMIT {TOP_N}
     """
 
     return pd.read_sql_query(query, conn, params=[season] + team_ids)
 
 
-def worst_bowling_performance(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
-    """Single-innings figures, ranked by runs conceded, among spells of at
-    least `min_balls` balls -- see MIN_BALLS_BOWLED."""
+def worst_bowling_by_runs(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
+    """Single-innings figures, ranked by total runs conceded, among spells
+    of at least `min_balls` balls -- see MIN_BALLS_BOWLED. Rewards being
+    taken for plenty over a long spell; see worst_bowling_by_economy() for
+    the same idea scored by rate instead of total, which can surface a
+    shorter, more expensive-per-over spell this misses."""
 
     placeholders = ", ".join("?" * len(team_ids))
 
@@ -251,6 +273,33 @@ def worst_bowling_performance(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED
           AND bo.team_id IN ({placeholders})
           AND bo.balls >= ?
         ORDER BY bo.runs DESC, bo.wickets ASC
+        LIMIT {TOP_N}
+    """
+
+    return pd.read_sql_query(query, conn, params=[season] + team_ids + [min_balls])
+
+
+def worst_bowling_by_economy(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
+    """Single-innings figures, ranked by economy rate (runs per over),
+    among spells of at least `min_balls` balls -- see MIN_BALLS_BOWLED.
+    Catches a spell that was expensive throughout even if the bowler
+    wasn't kept on long enough to rack up worst_bowling_by_runs()'s total."""
+
+    placeholders = ", ".join("?" * len(team_ids))
+
+    query = f"""
+        SELECT
+            p.known_as AS player_name, m.match_date,
+            bo.overs, bo.wickets, bo.runs AS runs_conceded,
+            bo.runs * 6.0 / bo.balls AS economy
+        FROM bowling_innings bo
+        JOIN innings i ON i.innings_id = bo.innings_id
+        JOIN matches m ON m.match_id = i.match_id
+        JOIN players p ON p.player_id = bo.player_id
+        WHERE m.season = ?
+          AND bo.team_id IN ({placeholders})
+          AND bo.balls >= ?
+        ORDER BY economy DESC, bo.wickets ASC
         LIMIT {TOP_N}
     """
 
@@ -317,17 +366,24 @@ def top_partnerships(conn, season, club_name=ELPMCC_NAME):
 
 def secretarys_cup_shortlist(conn, season):
     """Notable performances (centuries, five-wicket hauls, ...) of the
-    season, as an aid to the committee's choice -- "notable performance of
+    season, with what they actually were (see
+    sqlite_queries.notable_performances_summary()) rather than just a
+    count, as an aid to the committee's choice -- "notable performance of
     the year" is inherently a judgement call, not something a season total
     alone can settle."""
 
     data = career_stats(conn, season=season)
     data = data[data["notable_performances"] > 0]
+
+    summary = notable_performances_summary(conn, season=season)
+    data = data.merge(summary, on="player_id", how="left")
+
     data = data.sort_values("notable_performances", ascending=False)
 
     columns = [
         "player_name", "games_played", "fifties", "hundreds",
-        "double_hundreds", "five_wicket_hauls", "notable_performances"
+        "double_hundreds", "five_wicket_hauls", "notable_performances",
+        "performances"
     ]
 
     return data.head(TOP_N)[columns]
@@ -438,7 +494,7 @@ def build_report(conn, season):
     report.append((
         "Trophies you don't want to win", "Duck",
         most_ducks(conn, season, nonjunior_ids),
-        "Most ducks, all teams"
+        "Most ducks, all teams (ties broken by fewest batting innings)"
     ))
 
     report.append((
@@ -447,12 +503,34 @@ def build_report(conn, season):
     ))
 
     report.append((
-        "Trophies you don't want to win", "White Boot Trophy",
-        worst_bowling_performance(conn, season, nonjunior_ids),
-        f"Worst single-innings bowling figures (min {MIN_BALLS_BOWLED} balls bowled)"
+        "Trophies you don't want to win", "White Boot Trophy -- Most Runs Conceded",
+        worst_bowling_by_runs(conn, season, nonjunior_ids),
+        f"Worst single-innings bowling figures by total runs conceded (min {MIN_BALLS_BOWLED} balls bowled)"
+    ))
+
+    report.append((
+        "Trophies you don't want to win", "White Boot Trophy -- Worst Economy Rate",
+        worst_bowling_by_economy(conn, season, nonjunior_ids),
+        f"Worst single-innings economy rate (min {MIN_BALLS_BOWLED} balls bowled)"
     ))
 
     return report
+
+
+# Column names to round to 2dp for display -- every average/economy-rate
+# column any award above can produce, in one place, rather than rounding
+# ad hoc inside each award function (and forgetting one).
+RATE_COLUMNS = ["batting_average", "batting_average_prev", "improvement", "bowling_average", "economy"]
+
+
+def _round_rates(data):
+    data = data.copy()
+
+    for column in RATE_COLUMNS:
+        if column in data.columns:
+            data[column] = data[column].round(2)
+
+    return data
 
 
 def render_markdown(report, season):
@@ -477,7 +555,7 @@ def render_markdown(report, season):
             lines.append("_No qualifying candidates this season._")
         else:
             lines.append("```")
-            lines.append(data.to_string(index=False))
+            lines.append(_round_rates(data).to_string(index=False))
             lines.append("```")
 
         lines.append("")
