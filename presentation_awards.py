@@ -263,7 +263,7 @@ def worst_bowling_by_runs(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED):
 
     query = f"""
         SELECT
-            p.known_as AS player_name, m.match_date,
+            p.known_as AS player_name, m.match_id, m.match_date,
             bo.overs, bo.wickets, bo.runs AS runs_conceded
         FROM bowling_innings bo
         JOIN innings i ON i.innings_id = bo.innings_id
@@ -289,7 +289,7 @@ def worst_bowling_by_economy(conn, season, team_ids, min_balls=MIN_BALLS_BOWLED)
 
     query = f"""
         SELECT
-            p.known_as AS player_name, m.match_date,
+            p.known_as AS player_name, m.match_id, m.match_date,
             bo.overs, bo.wickets, bo.runs AS runs_conceded,
             bo.runs * 6.0 / bo.balls AS economy
         FROM bowling_innings bo
@@ -348,6 +348,7 @@ def top_partnerships(conn, season, club_name=ELPMCC_NAME):
 
         for _, row in ours.iterrows():
             candidates.append({
+                "match_id": match_id,
                 "match_date": match_date,
                 "team": _short_team_name(row["team_name"], club_name),
                 "opposition": row["opposition_name"],

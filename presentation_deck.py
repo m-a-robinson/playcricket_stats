@@ -128,7 +128,13 @@ def _award_slide(prs, section, award, data, criteria):
     slide = prs.slides.add_slide(prs.slide_layouts[5])
     _add_title(slide, f"{section} -- {award}")
     _add_subtitle(slide, criteria)
-    _add_table(slide, data)
+
+    # match_id is there for --scorecard lookups against the markdown
+    # report, not for the audience -- a raw database key adds nothing to
+    # a presentation slide.
+    display_data = data.drop(columns=["match_id"], errors="ignore") if data is not None else data
+    _add_table(slide, display_data)
+
     return slide
 
 
@@ -169,10 +175,21 @@ def _scorecard_tables(conn, match_id, player_name, discipline, scorecard_cache):
     _best_performance()'s docstring for the same reasoning)."""
 
     if match_id not in scorecard_cache:
-        source_payload = conn.execute(
+        row = conn.execute(
             "SELECT source_payload FROM matches WHERE match_id = ?", (match_id,)
-        ).fetchone()[0]
-        scorecard_cache[match_id] = Scorecard(json.loads(source_payload))
+        ).fetchone()
+
+        if row is None:
+            raise ValueError(
+                f"No match with match_id={match_id} in this database. "
+                "For a --scorecard override, match_id is the matches table's own "
+                "primary key -- e.g. `SELECT match_id, match_date FROM matches "
+                "WHERE match_date = '<date shown in the award's shortlist>'` -- "
+                "not a value to guess or reuse from another database (match_id "
+                "is a surrogate key that isn't stable across rebuilds)."
+            )
+
+        scorecard_cache[match_id] = Scorecard(json.loads(row[0]))
 
     scorecard = scorecard_cache[match_id]
 
