@@ -517,6 +517,22 @@ def build_report(conn, season):
     return report
 
 
+# Column names to round to 2dp for display -- every average/economy-rate
+# column any award above can produce, in one place, rather than rounding
+# ad hoc inside each award function (and forgetting one).
+RATE_COLUMNS = ["batting_average", "batting_average_prev", "improvement", "bowling_average", "economy"]
+
+
+def _round_rates(data):
+    data = data.copy()
+
+    for column in RATE_COLUMNS:
+        if column in data.columns:
+            data[column] = data[column].round(2)
+
+    return data
+
+
 def render_markdown(report, season):
     lines = [f"# Presentation Evening {season} -- Awards Shortlists", ""]
 
@@ -539,7 +555,7 @@ def render_markdown(report, season):
             lines.append("_No qualifying candidates this season._")
         else:
             lines.append("```")
-            lines.append(data.to_string(index=False))
+            lines.append(_round_rates(data).to_string(index=False))
             lines.append("```")
 
         lines.append("")
