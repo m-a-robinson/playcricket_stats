@@ -46,7 +46,7 @@ import sqlite3
 import pandas as pd
 
 from playcricket_scorecard import Scorecard
-from sqlite_queries import ELPMCC_NAME, career_stats
+from sqlite_queries import ELPMCC_NAME, career_stats, notable_performances_summary
 
 
 SENIOR_TEAMS = ["1st XI", "2nd XI", "3rd XI"]
@@ -317,17 +317,24 @@ def top_partnerships(conn, season, club_name=ELPMCC_NAME):
 
 def secretarys_cup_shortlist(conn, season):
     """Notable performances (centuries, five-wicket hauls, ...) of the
-    season, as an aid to the committee's choice -- "notable performance of
+    season, with what they actually were (see
+    sqlite_queries.notable_performances_summary()) rather than just a
+    count, as an aid to the committee's choice -- "notable performance of
     the year" is inherently a judgement call, not something a season total
     alone can settle."""
 
     data = career_stats(conn, season=season)
     data = data[data["notable_performances"] > 0]
+
+    summary = notable_performances_summary(conn, season=season)
+    data = data.merge(summary, on="player_id", how="left")
+
     data = data.sort_values("notable_performances", ascending=False)
 
     columns = [
         "player_name", "games_played", "fifties", "hundreds",
-        "double_hundreds", "five_wicket_hauls", "notable_performances"
+        "double_hundreds", "five_wicket_hauls", "notable_performances",
+        "performances"
     ]
 
     return data.head(TOP_N)[columns]
