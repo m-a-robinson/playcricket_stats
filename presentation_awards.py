@@ -206,11 +206,19 @@ def top_fielding(conn, season, team_id):
 # ==================================================================
 
 def most_sixes(conn, season):
+    """Most sixes, all teams -- alongside what share of the player's runs
+    that season actually came from sixes, since two players tied on sixes
+    can have earned them very differently (a big-hitting cameo vs. sixes
+    scattered through a much longer, more measured innings total)."""
+
     data = career_stats(conn, season=season)
     data = data[data["sixes"] > 0]
+    data["pct_runs_from_sixes"] = data["sixes"] * 6 * 100.0 / data["runs"]
     data = data.sort_values("sixes", ascending=False)
 
-    return data.head(TOP_N)[["player_name", "games_played", "sixes", "runs"]]
+    columns = ["player_name", "games_played", "sixes", "runs", "pct_runs_from_sixes"]
+
+    return data.head(TOP_N)[columns]
 
 
 def most_ducks(conn, season, team_ids):
