@@ -64,9 +64,9 @@ QUALIFICATION = {
 TOP_N = 5
 
 # Minimum balls bowled in a single innings to be considered for the White
-# Boot Trophy -- excludes a single over from swamping a genuinely poor
-# spell. Adjustable; not given by the source document.
-MIN_BALLS_BOWLED = 18
+# Boot Trophy
+# Adjustable; not given by the source document.
+MIN_BALLS_BOWLED = 6
 
 # Minimum batting innings in each of two seasons to be considered for the
 # "most improved player" shortlist. Not given by the source document.
