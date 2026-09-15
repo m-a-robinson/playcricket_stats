@@ -482,6 +482,115 @@ def team_awards(conn, team_id=None, season=None):
 
 
 # ==================================================================
+# NOTABLE PERFORMANCES (individual milestones, one row each)
+# ==================================================================
+#
+# career_stats()'s notable_performances column is just a count (fifties +
+# hundreds + double_hundreds + five_wicket_hauls). This gives the
+# individual performances behind that count -- one row per half-century/
+# century/double-century/five-wicket-haul, via the always-in-sync
+# v_batting_achievements/v_bowling_achievements views (schema.sql) --
+# rather than requiring a second lookup per player to see what a
+# "4" in that column actually was.
+
+_NOTABLE_PERFORMANCES_SQL = """
+SELECT * FROM (
+    SELECT
+        p.player_id, p.known_as AS player_name, m.season, m.match_id, m.match_date,
+        'batting' AS discipline, va.achievement,
+        b.runs AS value, b.not_out AS not_out, NULL AS wickets,
+        CASE WHEN b.team_id = m.home_team_id
+             THEN away_c.club_name || ' ' || away_t.team_name
+             ELSE home_c.club_name || ' ' || home_t.team_name
+        END AS opposition
+    FROM v_batting_achievements va
+    JOIN batting_innings b ON b.batting_id = va.batting_id
+    JOIN matches m ON m.match_id = va.match_id
+    JOIN players p ON p.player_id = va.player_id
+    JOIN teams home_t ON home_t.team_id = m.home_team_id
+    JOIN clubs home_c ON home_c.club_id = home_t.club_id
+    JOIN teams away_t ON away_t.team_id = m.away_team_id
+    JOIN clubs away_c ON away_c.club_id = away_t.club_id
+    WHERE (:season IS NULL OR m.season = :season)
+      AND (:team_id IS NULL OR b.team_id = :team_id)
+
+    UNION ALL
+
+    SELECT
+        p.player_id, p.known_as AS player_name, m.season, m.match_id, m.match_date,
+        'bowling' AS discipline, wa.achievement,
+        bo.runs AS value, NULL AS not_out, bo.wickets AS wickets,
+        CASE WHEN bo.team_id = m.home_team_id
+             THEN away_c.club_name || ' ' || away_t.team_name
+             ELSE home_c.club_name || ' ' || home_t.team_name
+        END AS opposition
+    FROM v_bowling_achievements wa
+    JOIN bowling_innings bo ON bo.bowling_id = wa.bowling_id
+    JOIN matches m ON m.match_id = wa.match_id
+    JOIN players p ON p.player_id = wa.player_id
+    JOIN teams home_t ON home_t.team_id = m.home_team_id
+    JOIN clubs home_c ON home_c.club_id = home_t.club_id
+    JOIN teams away_t ON away_t.team_id = m.away_team_id
+    JOIN clubs away_c ON away_c.club_id = away_t.club_id
+    WHERE (:season IS NULL OR m.season = :season)
+      AND (:team_id IS NULL OR bo.team_id = :team_id)
+)
+ORDER BY player_id, match_date
+"""
+
+
+def notable_performances(conn, season=None, team_id=None):
+    """
+    Return one row per individual batting milestone (half-century/
+    century/double-century) or bowling milestone (five-wicket haul),
+    each with the match it happened in, the opposition, and a
+    human-readable `description` ("112* vs Stand CC 2nd XI" /
+    "5/42 vs Stand CC 2nd XI") -- the detail behind career_stats()'s
+    notable_performances count. See notable_performances_summary() for
+    these folded into one semicolon-separated line per player, the way
+    career_stats()'s `awards` column does for player_awards.
+    """
+
+    params = {
+        "season": int(season) if season is not None else None,
+        "team_id": int(team_id) if team_id is not None else None
+    }
+
+    data = pd.read_sql_query(_NOTABLE_PERFORMANCES_SQL, conn, params=params)
+
+    def describe(row):
+        if row["discipline"] == "batting":
+            suffix = "*" if row["not_out"] else ""
+            return f"{int(row['value'])}{suffix} vs {row['opposition']}"
+        return f"{int(row['wickets'])}/{int(row['value'])} vs {row['opposition']}"
+
+    data["description"] = data.apply(describe, axis=1)
+
+    return data
+
+
+def notable_performances_summary(conn, season=None, team_id=None):
+    """
+    notable_performances(), folded to one row per player_id with a
+    `performances` column -- every description joined "; ", ordered by
+    date -- for merging into a leaderboard (see SQLPlayerStats.highlights()
+    and presentation_awards.py's Secretary's Cup shortlist).
+    """
+
+    data = notable_performances(conn, season=season, team_id=team_id)
+
+    if data.empty:
+        return pd.DataFrame(columns=["player_id", "performances"])
+
+    return (
+        data
+        .groupby("player_id")["description"]
+        .apply("; ".join)
+        .reset_index(name="performances")
+    )
+
+
+# ==================================================================
 # LEADERBOARDS
 # ==================================================================
 
@@ -769,10 +878,22 @@ class SQLPlayerStats:
     # ----------------------------------------------------------
 
     def highlights(self, season=None, team_id=None, top_n=10):
+        """
+        Top players by notable_performances count, with a `performances`
+        column listing what they actually were (see
+        notable_performances_summary()) -- e.g. "132 vs Stand CC 2nd XI;
+        5/42 vs Stand CC 2nd XI" -- rather than just the count on its own.
+        """
 
         data = self.career(season=season, team_id=team_id)
 
-        columns = ["player_id", "player_name", "games_played", "notable_performances"]
+        columns = [
+            "player_id", "player_name", "games_played", "notable_performances",
+            "performances"
+        ]
+
+        summary = notable_performances_summary(self.conn, season=season, team_id=team_id)
+        data = data.merge(summary, on="player_id", how="left")
 
         return self._leaderboard(data, columns, "notable_performances", top_n=top_n)
 

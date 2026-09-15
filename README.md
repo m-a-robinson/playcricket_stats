@@ -820,13 +820,26 @@ cache:
 from playcricket_api import PlayCricketAPI
 from playcricket_database import PlayCricketDatabase
 
-api = PlayCricketAPI(site_id=9653)   # ELPMCC's Play-Cricket site id
-# api_key comes from the PLAY_CRICKET_API_KEY env var by default,
-# or pass api_key="..." explicitly here instead
+# api_key here is whatever variable your environment already loaded the
+# Play-Cricket API key into. PlayCricketAPI itself falls back to the
+# PLAY_CRICKET_API_KEY env var when api_key= isn't passed at all -- see
+# the note below on why that's the setup actually worth having in place,
+# rather than relying on an already-loaded variable each session.
+api = PlayCricketAPI(site_id=9653, api_key=api_key)   # ELPMCC's Play-Cricket site id
 
 db = PlayCricketDatabase(api=api, filename="playcricket/playcricket_24_25_26.json")
 db.sync_season(2026)   # fetches new/changed matches, saves the JSON cache
 ```
+
+**TODO: proper API key handling is still needed.** The snippet above
+assumes an `api_key` variable already exists in your session -- fine for
+a one-off, but not a real setup. Before this becomes a routine job (see
+[ROADMAP.md](ROADMAP.md) item 8 on scheduling it), set
+`PLAY_CRICKET_API_KEY` as an actual environment variable (shell profile,
+`.env` file loaded via `python-dotenv`, or your OS's secret manager --
+whatever fits how this gets run) so `PlayCricketAPI(site_id=9653)` picks
+it up on its own with no key floating around in a notebook variable or
+committed anywhere. **Never commit the key itself to this repo.**
 
 ```bash
 python3 sqlite_store.py --json-db playcricket/playcricket_24_25_26.json --sqlite-db playcricket_stats.sqlite
