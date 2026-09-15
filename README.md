@@ -188,7 +188,10 @@ match against already-canonical rows — the first six can run in any order.
 This is the same six sources listed at the top of this
 README, all landing in one store: **248 Play-Cricket + 374 CricHQ + 304
 CricketStatz + 37 CricketStatz-text matches, plus 77 NMCL season-aggregate
-rows (no match rows of their own) and 1 scorebook match** — see
+rows (no match rows of their own) and 15 scorebook matches** (the 2010
+Failsworth Macedonia match, one 2007 2nd XI match, and all 13 of the 2nd
+XI's 2011 matches — see [development_notes.md](development_notes.md)'s
+"Milestone" section for the full list and what's still pending) — see
 [development_notes.md](development_notes.md) for the exact reconciled
 totals once duplicates are removed. This is a **one-time build**; see
 "Play-Cricket — the one source that actually needs re-syncing" below for

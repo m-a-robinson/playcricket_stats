@@ -37,14 +37,21 @@ history behind the items marked *Done* below.
   section) is now
   partially filled, not fully: 2010 has real match-level data
   (`cricketstatz_txt.py`, `cricketstatz/2010 scorecards/`; plus one
-  further match from a hand-scored scorebook page via `scorebooks.py`),
-  topped up with season-aggregate figures for the still-missing 1st XI
-  matches (`nmcl_stats.py`, derived from the club's official 2010 season
-  summaries). 2011-2013 only have NMCL season averages
-  (`nmcl_stats.py`, native Excel this time, not scans) — no match-level
-  source has turned up for those three years at all. If real scorecards
-  or scorebook pages for 2011-2013 are found, `cricketstatz_txt.py`'s or
-  `scorebooks.py`'s pipeline is what would ingest them.
+  further match from a hand-scored scorebook page via `scorebooks.py`).
+  **2011 is now fully covered** by hand-scored scorebook pages: all 13
+  2nd XI matches the user photographed for that season are transcribed
+  into `scorebooks.py` (`scorebooks/2nd XI/2011/*.jpg`), replacing what
+  would otherwise have been season-aggregate-only coverage. 2012-2013
+  still only have NMCL season averages (`nmcl_stats.py`, native Excel
+  this time, not scans) — no match-level source has turned up for those
+  two years yet, **though the user has uploaded 2nd XI scorebook photos
+  for both 2012 and 2013** (`scorebooks/2nd XI/2012/`,
+  `scorebooks/2nd XI/2013/`, plus a 2014 folder — 2014 already has some
+  1st XI match-level coverage from CricketStatz) that are organised and
+  ready for the same transcribe-and-cross-check treatment `scorebooks.py`
+  already gave 2011, just not yet done. If real scorecards turn up for
+  the gaps that remain, `cricketstatz_txt.py`'s pipeline is what would
+  ingest them.
 - `nmcl_season_stats` blending into `career_stats()`/leaderboards is now
   built (`include_nmcl=True`, see the README's "Using the main database"
   and "Using the example files" sections) for the figures that stay valid
