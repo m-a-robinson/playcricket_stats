@@ -792,6 +792,94 @@ the "total" column rather than a self-consistency check.
     9-1-39-3, C Akin 7-2-20-2, I Wilson 6.4-0-27-1) sum to exactly the 8
     bowler-credited wickets, plus G Young's run out as the 9th. Failsworth
     Macedonia won by 107 runs.
+
+============================================================================
+30-May-2004: East Lancs Paper Mill CC 1st XI vs Tott St John CC
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.03.31.jpg and
+2026-09-15 13.03.38.jpg (both innings). Bowling-analysis figures for both
+innings needed the user's own direct read of the book -- the OVERS/M'DNS/
+RUNS/WKTS grid was too cramped to trust from the photo alone, even after a
+crop-and-zoom pass (see below).
+
+  - ELPM: F Daly 2 (ct C Brook b M Cotton), J Sheils 16 (ct Coe b R
+    Brooks), J Wade 82 (ct C Brook b N Butterworth), I Wade 2 (ct Chadwick
+    b R Brooks), G Young 27 (run out), A McCheyne 5 (ct C Brook b P
+    Meehan), N Warne 36 not out, A Berry 12 not out; S Dalton, S Carr and
+    P Hewart did not bat. 2+16+82+2+27+5+36+12 = 182, matching the
+    scorebook's own printed batsmen's total exactly. Extras 18, total 200
+    for 6. Tott St John's bowling figures (M Cotton 8-1-30-1, P Skundric
+    8-0-48-0, S Moriarty 7-2-29-0, R Brooks 4-0-20-2, N Butterworth
+    5-0-21-1, P Meehan 8-0-39-1) sum to 5 bowler-credited wickets, plus G
+    Young's run out as the 6th.
+  - Tott St John: K Coe 5 (ct P Hewart b S Carr), M Deegan 3 (ct A
+    McCheyne b P Hewart), R Brooks 4 (b P Hewart), N Butterworth 45 (ct N
+    Warne b A Berry), P Meehan 14 (ct J Wade b A Berry), P Skundric 17 (b
+    A Berry), S Smith 17 (ct F Daly b A Berry), M Chadwick 5 (ct J Sheils
+    b A Berry), C Brooks 3 (b J Sheils), S Moriarty 22 not out, M Cotton
+    13 not out. 5+3+4+45+14+17+17+5+3+22+13 = 148 + 18 extras = 166.
+    ELPM's bowling figures (P Hewart 8-2-29-2, S Carr 6-2-13-1, S Dalton
+    7-0-50-0, I Wade 8-1-21-0, A Berry 8-0-25-5, J Sheils 3-0-15-1) sum to
+    exactly all 9 wickets. ELPM won by 34 runs.
+
+============================================================================
+5-Jun-2004: East Lancs Paper Mill CC 1st XI vs Rochdale Catholic Club
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.04.03.jpg and
+2026-09-15 13.04.21.jpg (both innings). Fully reconciled on the first
+detailed pass -- every dismissal cross-checks against the bowling
+analysis and both innings' component runs match the scorebook's own
+printed totals exactly. Distinct from the away leg of this fixture on
+10-Aug-2004 and the Calverley Cup Final (also vs Rochdale Catholic Club).
+
+  - ELPM: F Daly 13 (ct Mulkeen b M Sohail), A McCheyne 1 (ct J Rafique b
+    J Iqbal), J Wade 35 not out, I Wade 5 (ct J Rafique b J Iqbal), G
+    Young 2 (ct D Mulkeen b J Iqbal), N Warne 12 (b J Iqbal), A Berry 0 (b
+    M Sohail), P Hewart 0 (b M Sohail), S Dalton 2 (ct H Khan b M Tayab),
+    S Carr 0 (ct H Khan b M Tayab), A Openshaw 0 (b M Sohail).
+    13+1+35+5+2+12+0+0+2+0+0 = 70, matching the scorebook's own printed
+    batsmen's total exactly. Extras 18, total 88 all out. Rochdale
+    Catholic Club's bowling figures (M Sohail 12-0-41-4, J Iqbal 9-1-38-4,
+    M Tayab 2.3-0-8-2) sum to exactly all 10 wickets.
+  - Rochdale Catholic Club: H Khan 1 (ct S Dalton b P Hewart), D Mulkeen
+    jnr 5 (ct F Daly b P Hewart), D Mulkeen 11 (ct Warne b S Carr), J
+    Rafique 23 not out, S Khan 42 (b S Dalton), Z Shah 0 not out; M Tayab,
+    W Ali, M Sohail, J Iqbal and B Anjum did not bat. 1+5+11+23+42 = 82,
+    matching the scorebook's own printed batsmen's total exactly. Extras
+    9, total 91 for 4. ELPM's bowling figures (P Hewart 4-0-19-2, S Carr
+    4-0-20-1, A Berry 3.5-0-17-0, S Dalton 2-0-30-1) sum to exactly the 4
+    wickets. Rochdale Catholic Club won by 6 wickets.
+
+============================================================================
+12-Jun-2004: East Lancs Paper Mill CC 1st XI vs Elton Vale CC
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.04.40.jpg and
+2026-09-15 13.04.48.jpg (both innings). The first pass badly confused
+which page belonged to which team (Elton Vale's own bowlers' names --M
+Ikram, Z Daddaboy, etc.-- were misread as ELPM batsmen further down the
+order, and vice versa); the user's full re-read of both batting cards
+resolved it.
+
+  - Elton Vale: M Irfan 7 (b S Carr), F Ahmed 2 (ct J Sheils b P Hewart),
+    Z Daddaboy 23 (ct I Wade b A Berry), A Khan 2 (ct P Partington b S
+    Carr), T Ahmed 36 (ct I Wade b S Dalton), M Ikram 10 (b S Dalton), L
+    Marsden 0 (b S Dalton), J Khan 23 (lbw b S Dalton), C Keyworth 14 not
+    out, K Hothersall 0 (ct J Sheils b A Berry), B Baker 0 (st P
+    Partington b S Carr). 7+2+23+2+36+10+0+23+14+0+0 = 117, matching the
+    scorebook's own printed batsmen's total exactly. Extras 5, total 122
+    all out. ELPM's bowling figures (P Hewart 11-3-24-1, S Carr
+    10.1-4-30-3, A Berry 6-1-33-2, S Dalton 7-4-15-4, I Wade 3-0-14-0, J
+    Sheils 5-2-3-0) sum to exactly all 10 wickets.
+  - ELPM: F Daly 3 (ct L Marsden b M Ikram), J Sheils 13 (b Z Daddaboy), J
+    Wade 73 (ct L Marsden b J Khan), I Wade 8 (ct T Ahmed b M Ikram), G
+    Young 5 (ct Z Daddaboy b M Irfan), A McCheyne 3 (c&b M Irfan), P
+    Partington 3 not out, A Berry 5 not out; S Dalton, P Hewart and S Carr
+    did not bat. 3+13+73+8+5+3+3+5 = 113, matching the scorebook's own
+    printed batsmen's total exactly. Extras 10, total 123 for 6. ELPM won
+    by 4 wickets, chasing down Elton Vale's 122.
 """
 
 SOURCE = "scorebook"
@@ -3101,6 +3189,294 @@ MATCHES = [
                     _bowl("C Akin", "7", 2, 20, 2),
                     _bowl("I Wilson", "6.4", 0, 27, 1),
                 ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Tott St John 1st XI|30/05/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Tott St John", "away_club_name": "Tott St John CC",
+        "away_team_id": "Tott St John 1st XI", "away_team_name": "1st XI",
+        "match_date": "30/05/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Won by 34 runs",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "East Lancs Paper Mill CC won by 34 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("J Wade", 3),
+                _player("I Wade", 4), _player("G Young", 5), _player("A McCheyne", 6),
+                _player("N Warne", 7), _player("A Berry", 8), _player("S Dalton", 9),
+                _player("S Carr", 10), _player("P Hewart", 11),
+            ]},
+            {"away_team": [
+                _player("K Coe", 1), _player("M Deegan", 2), _player("R Brooks", 3),
+                _player("N Butterworth", 4), _player("P Meehan", 5), _player("P Skundric", 6),
+                _player("S Smith", 7), _player("M Chadwick", 8), _player("C Brooks", 9),
+                _player("S Moriarty", 10), _player("M Cotton", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 200, "wickets": 6, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 18, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 18,
+                "bat": [
+                    _bat(1, "F Daly", "ct", "M Cotton", "C Brook", 2),
+                    _bat(2, "J Sheils", "ct", "R Brooks", "Coe", 16),
+                    _bat(3, "J Wade", "ct", "N Butterworth", "C Brook", 82),
+                    _bat(4, "I Wade", "ct", "R Brooks", "Chadwick", 2),
+                    _bat(5, "G Young", "run out", None, None, 27),
+                    _bat(6, "A McCheyne", "ct", "P Meehan", "C Brook", 5),
+                    _bat(7, "N Warne", "not out", None, None, 36),
+                    _bat(8, "A Berry", "not out", None, None, 12),
+                    _bat(9, "S Dalton", "did not bat"),
+                    _bat(10, "S Carr", "did not bat"),
+                    _bat(11, "P Hewart", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("M Cotton", "8", 1, 30, 1),
+                    _bowl("P Skundric", "8", 0, 48, 0),
+                    _bowl("S Moriarty", "7", 2, 29, 0),
+                    _bowl("R Brooks", "4", 0, 20, 2),
+                    _bowl("N Butterworth", "5", 0, 21, 1),
+                    _bowl("P Meehan", "8", 0, 39, 1),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Tott St John 1st XI", "team_batting_name": "1st XI",
+                "runs": 166, "wickets": 9, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 18, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 18,
+                "bat": [
+                    _bat(1, "K Coe", "ct", "S Carr", "P Hewart", 5),
+                    _bat(2, "M Deegan", "ct", "P Hewart", "A McCheyne", 3),
+                    _bat(3, "R Brooks", "b", "P Hewart", None, 4),
+                    _bat(4, "N Butterworth", "ct", "A Berry", "N Warne", 45),
+                    _bat(5, "P Meehan", "ct", "A Berry", "J Wade", 14),
+                    _bat(6, "P Skundric", "b", "A Berry", None, 17),
+                    _bat(7, "S Smith", "ct", "A Berry", "F Daly", 17),
+                    _bat(8, "M Chadwick", "ct", "A Berry", "J Sheils", 5),
+                    _bat(9, "C Brooks", "b", "J Sheils", None, 3),
+                    _bat(10, "S Moriarty", "not out", None, None, 22),
+                    _bat(11, "M Cotton", "not out", None, None, 13),
+                ],
+                "bowl": [
+                    _bowl("P Hewart", "8", 2, 29, 2),
+                    _bowl("S Carr", "6", 2, 13, 1),
+                    _bowl("S Dalton", "7", 0, 50, 0),
+                    _bowl("I Wade", "8", 1, 21, 0),
+                    _bowl("A Berry", "8", 0, 25, 5),
+                    _bowl("J Sheils", "3", 0, 15, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Rochdale Catholic Club 1st XI|05/06/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Rochdale Catholic Club", "away_club_name": "Rochdale Catholic Club",
+        "away_team_id": "Rochdale Catholic Club 1st XI", "away_team_name": "1st XI",
+        "match_date": "05/06/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Lost by 6 wickets",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "Rochdale Catholic Club won by 6 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("A McCheyne", 2), _player("J Wade", 3),
+                _player("I Wade", 4), _player("G Young", 5), _player("N Warne", 6),
+                _player("A Berry", 7), _player("P Hewart", 8), _player("S Dalton", 9),
+                _player("S Carr", 10), _player("A Openshaw", 11),
+            ]},
+            {"away_team": [
+                _player("H Khan", 1), _player("D Mulkeen jnr", 2), _player("D Mulkeen", 3),
+                _player("J Rafique", 4), _player("S Khan", 5), _player("Z Shah", 6),
+                _player("M Tayab", 7), _player("W Ali", 8), _player("M Sohail", 9),
+                _player("J Iqbal", 10), _player("B Anjum", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 88, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 18, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 18,
+                "bat": [
+                    _bat(1, "F Daly", "ct", "M Sohail", "Mulkeen", 13),
+                    _bat(2, "A McCheyne", "ct", "J Iqbal", "J Rafique", 1),
+                    _bat(3, "J Wade", "not out", None, None, 35),
+                    _bat(4, "I Wade", "ct", "J Iqbal", "J Rafique", 5),
+                    _bat(5, "G Young", "ct", "J Iqbal", "D Mulkeen", 2),
+                    _bat(6, "N Warne", "b", "J Iqbal", None, 12),
+                    _bat(7, "A Berry", "b", "M Sohail", None, 0),
+                    _bat(8, "P Hewart", "b", "M Sohail", None, 0),
+                    _bat(9, "S Dalton", "ct", "M Tayab", "H Khan", 2),
+                    _bat(10, "S Carr", "ct", "M Tayab", "H Khan", 0),
+                    _bat(11, "A Openshaw", "b", "M Sohail", None, 0),
+                ],
+                "bowl": [
+                    _bowl("M Sohail", "12", 0, 41, 4),
+                    _bowl("J Iqbal", "9", 1, 38, 4),
+                    _bowl("M Tayab", "2.3", 0, 8, 2),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Rochdale Catholic Club 1st XI", "team_batting_name": "1st XI",
+                "runs": 91, "wickets": 4, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 9, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 9,
+                "bat": [
+                    _bat(1, "H Khan", "ct", "P Hewart", "S Dalton", 1),
+                    _bat(2, "D Mulkeen jnr", "ct", "P Hewart", "F Daly", 5),
+                    _bat(3, "D Mulkeen", "ct", "S Carr", "Warne", 11),
+                    _bat(4, "J Rafique", "not out", None, None, 23),
+                    _bat(5, "S Khan", "b", "S Dalton", None, 42),
+                    _bat(6, "Z Shah", "not out", None, None, 0),
+                    _bat(7, "M Tayab", "did not bat"),
+                    _bat(8, "W Ali", "did not bat"),
+                    _bat(9, "M Sohail", "did not bat"),
+                    _bat(10, "J Iqbal", "did not bat"),
+                    _bat(11, "B Anjum", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("P Hewart", "4", 0, 19, 2),
+                    _bowl("S Carr", "4", 0, 20, 1),
+                    _bowl("A Berry", "3.5", 0, 17, 0),
+                    _bowl("S Dalton", "2", 0, 30, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Elton Vale 1st XI|12/06/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Elton Vale", "away_club_name": "Elton Vale CC",
+        "away_team_id": "Elton Vale 1st XI", "away_team_name": "1st XI",
+        "match_date": "12/06/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Won by 4 wickets",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "East Lancs Paper Mill CC won by 4 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("J Wade", 3),
+                _player("I Wade", 4), _player("G Young", 5), _player("A McCheyne", 6),
+                _player("P Partington", 7), _player("A Berry", 8), _player("S Dalton", 9),
+                _player("P Hewart", 10), _player("S Carr", 11, wicket_keeper=True),
+            ]},
+            {"away_team": [
+                _player("M Irfan", 1), _player("F Ahmed", 2), _player("Z Daddaboy", 3),
+                _player("A Khan", 4), _player("T Ahmed", 5), _player("M Ikram", 6),
+                _player("L Marsden", 7), _player("J Khan", 8), _player("C Keyworth", 9),
+                _player("K Hothersall", 10), _player("B Baker", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Elton Vale 1st XI", "team_batting_name": "1st XI",
+                "runs": 122, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 5, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 5,
+                "bat": [
+                    _bat(1, "M Irfan", "b", "S Carr", None, 7),
+                    _bat(2, "F Ahmed", "ct", "P Hewart", "J Sheils", 2),
+                    _bat(3, "Z Daddaboy", "ct", "A Berry", "I Wade", 23),
+                    _bat(4, "A Khan", "ct", "S Carr", "P Partington", 2),
+                    _bat(5, "T Ahmed", "ct", "S Dalton", "I Wade", 36),
+                    _bat(6, "M Ikram", "b", "S Dalton", None, 10),
+                    _bat(7, "L Marsden", "b", "S Dalton", None, 0),
+                    _bat(8, "J Khan", "lbw", "S Dalton", None, 23),
+                    _bat(9, "C Keyworth", "not out", None, None, 14),
+                    _bat(10, "K Hothersall", "ct", "A Berry", "J Sheils", 0),
+                    _bat(11, "B Baker", "st", "S Carr", "P Partington", 0),
+                ],
+                "bowl": [
+                    _bowl("P Hewart", "11", 3, 24, 1),
+                    _bowl("S Carr", "10.1", 4, 30, 3),
+                    _bowl("A Berry", "6", 1, 33, 2),
+                    _bowl("S Dalton", "7", 4, 15, 4),
+                    _bowl("I Wade", "3", 0, 14, 0),
+                    _bowl("J Sheils", "5", 2, 3, 0),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 123, "wickets": 6, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 10, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 10,
+                "bat": [
+                    _bat(1, "F Daly", "ct", "M Ikram", "L Marsden", 3),
+                    _bat(2, "J Sheils", "b", "Z Daddaboy", None, 13),
+                    _bat(3, "J Wade", "ct", "J Khan", "L Marsden", 73),
+                    _bat(4, "I Wade", "ct", "M Ikram", "T Ahmed", 8),
+                    _bat(5, "G Young", "ct", "M Irfan", "Z Daddaboy", 5),
+                    _bat(6, "A McCheyne", "c&b", "M Irfan", None, 3),
+                    _bat(7, "P Partington", "not out", None, None, 3),
+                    _bat(8, "A Berry", "not out", None, None, 5),
+                    _bat(9, "S Dalton", "did not bat"),
+                    _bat(10, "P Hewart", "did not bat"),
+                    _bat(11, "S Carr", "did not bat"),
+                ],
+                "bowl": [],
                 "fow": [],
             },
         ],
