@@ -882,6 +882,53 @@ resolved it.
     Vale's bowling figures (M Ikram 8-1-30-2, Z Daddaboy 6-0-39-1, C
     Keyworth 3-0-18-0, M Irfan 5-0-19-2, J Khan 4.1-1-15-1) sum to exactly
     the 6 wickets. ELPM won by 4 wickets, chasing down Elton Vale's 122.
+
+============================================================================
+13-Jun-2004: East Lancs Paper Mill CC 1st XI vs Degham Hibbert CC
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.04.57.jpg and
+2026-09-15 13.05.10.jpg (both innings). "Degham Hibbert" is the club name
+as read from the page and confirmed by the user -- an unfamiliar club not
+seen elsewhere in the archive, but not a misread. ELPM's batting order was
+significantly reshuffled by the user across two correction rounds
+(J Wade/I Wade's runs and dismissal methods were swapped twice before
+landing correctly, and S Keyworth/N Warne's batting positions moved).
+Seven separate crop-and-zoom attempts on this specific photo failed to
+isolate a clean OVERS/M'DNS/RUNS/WKTS summary block the way that technique
+worked on other matches this batch -- this page's tally grid runs to 47
+overs with cumulative scores annotated inline in the tally cells rather
+than a separate boxed summary, so both innings' complete bowling figures
+came from the user reading the book directly.
+
+  - ELPM: F Daly 14 (lbw b E Ziz), J Sheils 63 (ct B Farouk b M Bhana), J
+    Wade 36 (run out), I Wade 18 (ct A Ziz b Mustaq Patel), G Young 57
+    (c&b B Erfan), S Keyworth 1 (b B Erfan), N Warne 12 (ct Iqbal b P
+    Younas), A McCheyne 22 not out, A Berry 13 not out; O Hellyer and S
+    Carr did not bat (S Carr last in the printed order). 14+63+36+18+57+
+    1+12+22+13 = 236, matching the scorebook's own printed batsmen's total
+    exactly. Extras 18, total 254 for 7. Degham Hibbert's bowling figures
+    (E Ziz 6-1-15-1, M Bhana 9-0-42-1, Mustaq Patel 8-0-62-1, B Erfan
+    7-0-44-2, P Younas 9-1-30-1, Mo Patel 6-0-47-0) sum to exactly 6
+    bowler-credited wickets, plus J Wade's run out as the 7th.
+  - Degham Hibbert: P Iqbal 32 (ct J Wade b I Wade), an unidentified No. 2
+    batsman, P Faruk 24 (ct J Sheils b I Wade -- specifically the "P
+    Faruk" who batted third, distinct from "B Faruk" below), P Seed 13 (b
+    I Wade), P Muamaf 18 (b I Wade), B Faruk 10 (ct N Warne b A Berry), P
+    Mustaq 2 (b P Hewart), P Mustaqa 65 not out, P Younas 31 not out.
+    ELPM's bowling figures (P Hewart 9-0-44-2, S Carr 7.2-0-58-0, I Wade
+    9-2-49-4, A Berry 7-0-49-1, S Keyworth 3-0-16-0, J Sheils 3-0-14-0, J
+    Wade 1-0-2-0) sum to 7 wickets, one more than the 6 named dismissals
+    above -- and the 8 named batsmen's runs (32+24+13+18+10+2+65+31 = 195)
+    fall 38 short of the scorebook's own printed batsmen's total of 233
+    (256 total minus 23 extras). Both gaps are almost certainly the same
+    missing person: the unidentified No. 2 batsman, inferred here at 38
+    runs and a dismissal credited to P Hewart's second wicket (his other
+    one is P Mustaq's) purely to make both the runs and the wickets
+    reconcile exactly -- genuinely inferred rather than read, unlike every
+    other figure in this file, and flagged as such rather than presented
+    as a normal transcription. Chasing ELPM's 254, Degham Hibbert reached
+    256 with 7 wickets down -- Degham Hibbert won by 3 wickets.
 """
 
 SOURCE = "scorebook"
@@ -3484,6 +3531,109 @@ MATCHES = [
                     _bowl("C Keyworth", "3", 0, 18, 0),
                     _bowl("M Irfan", "5", 0, 19, 2),
                     _bowl("J Khan", "4.1", 1, 15, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Degham Hibbert 1st XI|13/06/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Degham Hibbert", "away_club_name": "Degham Hibbert CC",
+        "away_team_id": "Degham Hibbert 1st XI", "away_team_name": "1st XI",
+        "match_date": "13/06/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Lost by 3 wickets",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "Degham Hibbert CC won by 3 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("J Wade", 3),
+                _player("I Wade", 4), _player("G Young", 5), _player("S Keyworth", 6),
+                _player("N Warne", 7), _player("A McCheyne", 8), _player("A Berry", 9),
+                _player("O Hellyer", 10), _player("S Carr", 11),
+            ]},
+            {"away_team": [
+                _player("P Iqbal", 1), _player("P Faruk", 3), _player("P Seed", 4),
+                _player("P Muamaf", 5), _player("B Faruk", 6), _player("P Mustaq", 7),
+                _player("P Mustaqa", 8), _player("P Younas", 9),
+                # No. 2 in the order is unidentified -- see the module
+                # docstring above.
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 254, "wickets": 7, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 18, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 18,
+                "bat": [
+                    _bat(1, "F Daly", "lbw", "E Ziz", None, 14),
+                    _bat(2, "J Sheils", "ct", "M Bhana", "B Farouk", 63),
+                    _bat(3, "J Wade", "run out", None, None, 36),
+                    _bat(4, "I Wade", "ct", "Mustaq Patel", "A Ziz", 18),
+                    _bat(5, "G Young", "c&b", "B Erfan", None, 57),
+                    _bat(6, "S Keyworth", "b", "B Erfan", None, 1),
+                    _bat(7, "N Warne", "ct", "P Younas", "Iqbal", 12),
+                    _bat(8, "A McCheyne", "not out", None, None, 22),
+                    _bat(9, "A Berry", "not out", None, None, 13),
+                    _bat(10, "O Hellyer", "did not bat"),
+                    _bat(11, "S Carr", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("E Ziz", "6", 1, 15, 1),
+                    _bowl("M Bhana", "9", 0, 42, 1),
+                    _bowl("Mustaq Patel", "8", 0, 62, 1),
+                    _bowl("B Erfan", "7", 0, 44, 2),
+                    _bowl("P Younas", "9", 1, 30, 1),
+                    _bowl("Mo Patel", "6", 0, 47, 0),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Degham Hibbert 1st XI", "team_batting_name": "1st XI",
+                "runs": 256, "wickets": 7, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 23, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 23,
+                "bat": [
+                    _bat(1, "P Iqbal", "ct", "I Wade", "J Wade", 32),
+                    # inferred, not transcribed -- see the module docstring
+                    # above: the only way both the runs (233 batsmen's
+                    # total) and the bowling analysis (7 wickets) reconcile.
+                    _bat(2, "Unknown", "b", "P Hewart", None, 38),
+                    _bat(3, "P Faruk", "ct", "I Wade", "J Sheils", 24),
+                    _bat(4, "P Seed", "b", "I Wade", None, 13),
+                    _bat(5, "P Muamaf", "b", "I Wade", None, 18),
+                    _bat(6, "B Faruk", "ct", "A Berry", "N Warne", 10),
+                    _bat(7, "P Mustaq", "b", "P Hewart", None, 2),
+                    _bat(8, "P Mustaqa", "not out", None, None, 65),
+                    _bat(9, "P Younas", "not out", None, None, 31),
+                ],
+                "bowl": [
+                    _bowl("P Hewart", "9", 0, 44, 2),
+                    _bowl("S Carr", "7.2", 0, 58, 0),
+                    _bowl("I Wade", "9", 2, 49, 4),
+                    _bowl("A Berry", "7", 0, 49, 1),
+                    _bowl("S Keyworth", "3", 0, 16, 0),
+                    _bowl("J Sheils", "3", 0, 14, 0),
+                    _bowl("J Wade", "1", 0, 2, 0),
                 ],
                 "fow": [],
             },
