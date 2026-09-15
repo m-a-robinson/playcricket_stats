@@ -642,6 +642,87 @@ refer to the same club.
     for 3. Ashton Ladysmith's bowling figures (A Camps 7.1-0-24-2, P
     Reynolds 12-0-19-0, J Hillson 3.5-1-39-1) sum to the 3 wickets. ELPM
     won by 7 wickets.
+
+============================================================================
+15-May-2004: East Lancs Paper Mill CC 1st XI vs Rochdalians CC
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.01.08.jpg and
+2026-09-15 13.01.16.jpg (both innings). The user asked for extra care on
+this match and the next (16-May, below) specifically on dismissals, since
+this scorebook often splits a single "how out" entry across two printed
+lines (a catcher's name above the bowler's, or a wicketkeeper's name above
+the bowler's for a stumping) that are easy to misread as one name or to
+transpose -- both matches were re-read slowly with that in mind, and the
+dismissals below were corrected by the user across one further round.
+
+  - ELPM: F Daly 9 (b S Rahman), J Sheils 0 (ct J Dell b S Heighway), A
+    McCheyne 55 not out, I Wade 11 (ct S Mehmood b S Rahman -- fielder
+    corrected from an initial guess of "M Shahzeb"), G Young 12 (lbw b F
+    Butt), Qamer 0 (ct Z Khan b F Butt), A Berry 8 (b F Butt), P Hewart 2
+    (b F Butt), S Carr 2 (st b A Rauf -- the wicketkeeper's name couldn't
+    be read and the user confirmed none was legible, so it's left blank
+    rather than guessed), S Dalton 26 (b S Rahman), M Robinson 0 (lbw b S
+    Heighway). 9+0+55+11+12+0+8+2+2+26+0 = 125, one more than the
+    scorebook's own printed batsmen's total of 124 -- left unresolved, as
+    with the similar 1- and 9-run gaps in the Robinsons and Springhead
+    matches above. Extras 44, total 168 all out; Rochdalians' bowling
+    figures (S Heighway 9.1-1-26-2, S Rahman 9-2-39-3, F Butt 4-0-28-4, S
+    Mehmood 10-3-32-0, A Rauf 8-0-30-1) sum to all 10 wickets and to 155
+    runs conceded, which plus 13 non-bowler extras (byes/leg byes, out of
+    the 44 total) reconciles to 168 -- the wides/no-balls/byes/leg-byes
+    split within the 44 wasn't captured with confidence, so is recorded
+    as a single bucket.
+  - Rochdalians: M Tyyub 75 (b J Sheils), N Hayee 60 (ct I Wade b S
+    Carr), A Rauf 0 not out, M Shahzeb 18 (ct P Hewart b S Carr), M Iqbal
+    6 not out; Z Khan, S Rahman, F Butt, S Mehmood, J Dell and S Heighway
+    did not bat. 75+60+0+18+6 = 159, matching the scorebook's own printed
+    batsmen's total exactly. Extras 10, total 169 for 3, chasing down
+    ELPM's 168. ELPM's bowling figures, as corrected by the user (P
+    Hewart 7-1-31-0, S Dalton 6-2-33-0, A Berry 4-0-24-0, S Carr
+    11-3-54-3, I Wade 3-0-13-0, J Sheils 5-1-11-1) sum to 4 wickets
+    against the batting card's 3 real dismissals (S Carr's two catches
+    plus J Sheils' bowled) -- the same "bowling analysis and named
+    dismissals don't quite agree" situation as the 11-Sep-2011 Westhoughton
+    match, and left unresolved the same way, with the named dismissals
+    used as given. Rochdalians won by 7 wickets.
+
+============================================================================
+16-May-2004: East Lancs Paper Mill CC 1st XI vs Rochdalians CC (cup match)
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.02.15.jpg and
+2026-09-15 13.02.42.jpg (both innings). A genuinely separate fixture from
+the league match the previous day, per the user -- a cup tie, same
+opponent. Dismissals again re-read slowly for two-line catcher/bowler
+splits, with several rows requiring a second correction round from the
+user to resolve which of M Young/J Sheils/A Berry bowled which of
+Rochdalians' middle order.
+
+  - ELPM: F Daly 95 (b S Mehmood), J Sheils 50 (run out, fielder M
+    Tyyub), J Wade 41 (ct A Smith b M Tyyub), I Wade 42 (b F Butt), G
+    Young 16 (ct M Tyyub b G Khan), S Keyworth 10 not out, M Hodson 1 not
+    out; A Berry, S Dalton, M Robinson and M Young did not bat.
+    95+50+41+42+16+10+1 = 255, matching the scorebook's own printed
+    batsmen's total exactly. Extras 52, total 307 for 5 (innings closed
+    with 4 of the order unused). Rochdalians' bowling figures (G Khan
+    7-0-37-1, S Rahman 7-0-54-0, S Mehmood 8-0-35-1, F Butt 7-0-47-1, M
+    Tyyub 9-0-61-1, A Rauf 7-0-50-0) sum to the 4 bowler-credited
+    wickets, plus J Sheils' run out as the 5th.
+  - Rochdalians: M Tyyub 2 (ct M Robinson b S Dalton), N Hayee 29 (ct F
+    Daly b M Young), S Mehmood 7 (ct A Berry b M Hodson), M Shaheed 44 (b
+    I Wade), F Butt 40 (ct M Robinson b J Sheils), S Rahman 26 (c&b J
+    Sheils), A Smith 2 (ct F Daly b A Berry), G Khan 6 (c&b M Young), J
+    Dell 3 (b M Young), M Iqbal 10 (b M Young -- the first read had this
+    as "not out", which conflicted with the innings' own fall-of-wicket
+    table showing a 10th wicket falling at 191; the user's correction
+    resolves that), A Rauf 0 not out.
+    2+29+7+44+40+26+2+6+3+10+0 = 169, matching the scorebook's own
+    printed batsmen's total exactly. Extras 22, total 191 all out. ELPM's
+    bowling figures (M Hodson 9-1-43-1, S Dalton 9-0-35-1, I Wade
+    4-0-30-1, M Young 4-0-28-4, J Sheils 4-0-18-2, A Berry 4-0-24-1) sum
+    to exactly all 10 wickets against the corrected dismissals above.
+    ELPM won by 116 runs.
 """
 
 SOURCE = "scorebook"
@@ -2552,6 +2633,213 @@ MATCHES = [
                     _bowl("A Camps", "7.1", 0, 24, 2),
                     _bowl("P Reynolds", "12", 0, 19, 0),
                     _bowl("J Hillson", "3.5", 1, 39, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Rochdalians 1st XI|15/05/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Rochdalians", "away_club_name": "Rochdalians CC",
+        "away_team_id": "Rochdalians 1st XI", "away_team_name": "1st XI",
+        "match_date": "15/05/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Lost by 7 wickets",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "Rochdalians CC won by 7 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("A McCheyne", 3),
+                _player("I Wade", 4), _player("G Young", 5), _player("Qamer", 6),
+                _player("A Berry", 7), _player("P Hewart", 8), _player("S Carr", 9),
+                _player("S Dalton", 10), _player("M Robinson", 11, wicket_keeper=True),
+            ]},
+            {"away_team": [
+                _player("M Tyyub", 1), _player("N Hayee", 2), _player("A Rauf", 3),
+                _player("M Shahzeb", 4), _player("M Iqbal", 5), _player("Z Khan", 6),
+                _player("S Rahman", 7), _player("F Butt", 8), _player("S Mehmood", 9),
+                _player("J Dell", 10), _player("S Heighway", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 168, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                # total (44) confirmed by arithmetic; byes/leg-byes/wides/
+                # no-balls split wasn't attempted -- see the module
+                # docstring above.
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 44, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 44,
+                "bat": [
+                    _bat(1, "F Daly", "b", "S Rahman", None, 9),
+                    _bat(2, "J Sheils", "ct", "S Heighway", "J Dell", 0),
+                    _bat(3, "A McCheyne", "not out", None, None, 55),
+                    _bat(4, "I Wade", "ct", "S Rahman", "S Mehmood", 11),
+                    _bat(5, "G Young", "lbw", "F Butt", None, 12),
+                    _bat(6, "Qamer", "ct", "F Butt", "Z Khan", 0),
+                    _bat(7, "A Berry", "b", "F Butt", None, 8),
+                    _bat(8, "P Hewart", "b", "F Butt", None, 2),
+                    _bat(9, "S Carr", "st", "A Rauf", None, 2),
+                    _bat(10, "S Dalton", "b", "S Rahman", None, 26),
+                    _bat(11, "M Robinson", "lbw", "S Heighway", None, 0),
+                ],
+                "bowl": [
+                    _bowl("S Heighway", "9.1", 1, 26, 2),
+                    _bowl("S Rahman", "9", 2, 39, 3),
+                    _bowl("F Butt", "4", 0, 28, 4),
+                    _bowl("S Mehmood", "10", 3, 32, 0),
+                    _bowl("A Rauf", "8", 0, 30, 1),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Rochdalians 1st XI", "team_batting_name": "1st XI",
+                "runs": 169, "wickets": 3, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 10, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 10,
+                "bat": [
+                    _bat(1, "M Tyyub", "b", "J Sheils", None, 75),
+                    _bat(2, "N Hayee", "ct", "S Carr", "I Wade", 60),
+                    _bat(3, "A Rauf", "not out", None, None, 0),
+                    _bat(4, "M Shahzeb", "ct", "S Carr", "P Hewart", 18),
+                    _bat(5, "M Iqbal", "not out", None, None, 6),
+                    _bat(6, "Z Khan", "did not bat"),
+                    _bat(7, "S Rahman", "did not bat"),
+                    _bat(8, "F Butt", "did not bat"),
+                    _bat(9, "S Mehmood", "did not bat"),
+                    _bat(10, "J Dell", "did not bat"),
+                    _bat(11, "S Heighway", "did not bat"),
+                ],
+                "bowl": [
+                    # sums to 4 wickets against 3 real dismissals -- see
+                    # the module docstring above.
+                    _bowl("P Hewart", "7", 1, 31, 0),
+                    _bowl("S Dalton", "6", 2, 33, 0),
+                    _bowl("A Berry", "4", 0, 24, 0),
+                    _bowl("S Carr", "11", 3, 54, 3),
+                    _bowl("I Wade", "3", 0, 13, 0),
+                    _bowl("J Sheils", "5", 1, 11, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Rochdalians 1st XI|16/05/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Rochdalians", "away_club_name": "Rochdalians CC",
+        "away_team_id": "Rochdalians 1st XI", "away_team_name": "1st XI",
+        "match_date": "16/05/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": "Cup",
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Won by 116 runs",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "East Lancs Paper Mill CC won by 116 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("J Wade", 3),
+                _player("I Wade", 4), _player("G Young", 5), _player("S Keyworth", 6),
+                _player("M Hodson", 7), _player("A Berry", 8), _player("S Dalton", 9),
+                _player("M Robinson", 10, wicket_keeper=True), _player("M Young", 11),
+            ]},
+            {"away_team": [
+                _player("M Tyyub", 1), _player("N Hayee", 2), _player("S Mehmood", 3),
+                _player("M Shaheed", 4), _player("F Butt", 5), _player("S Rahman", 6),
+                _player("A Smith", 7), _player("G Khan", 8), _player("J Dell", 9),
+                _player("M Iqbal", 10), _player("A Rauf", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 307, "wickets": 5, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                # total (52) confirmed by arithmetic; byes/leg-byes/wides/
+                # no-balls split wasn't attempted -- see the module
+                # docstring above.
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 52, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 52,
+                "bat": [
+                    _bat(1, "F Daly", "b", "S Mehmood", None, 95),
+                    _bat(2, "J Sheils", "run out", None, "M Tyyub", 50),
+                    _bat(3, "J Wade", "ct", "M Tyyub", "A Smith", 41),
+                    _bat(4, "I Wade", "b", "F Butt", None, 42),
+                    _bat(5, "G Young", "ct", "G Khan", "M Tyyub", 16),
+                    _bat(6, "S Keyworth", "not out", None, None, 10),
+                    _bat(7, "M Hodson", "not out", None, None, 1),
+                    _bat(8, "A Berry", "did not bat"),
+                    _bat(9, "S Dalton", "did not bat"),
+                    _bat(10, "M Robinson", "did not bat"),
+                    _bat(11, "M Young", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("G Khan", "7", 0, 37, 1),
+                    _bowl("S Rahman", "7", 0, 54, 0),
+                    _bowl("S Mehmood", "8", 0, 35, 1),
+                    _bowl("F Butt", "7", 0, 47, 1),
+                    _bowl("M Tyyub", "9", 0, 61, 1),
+                    _bowl("A Rauf", "7", 0, 50, 0),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Rochdalians 1st XI", "team_batting_name": "1st XI",
+                "runs": 191, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 22, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 22,
+                "bat": [
+                    _bat(1, "M Tyyub", "ct", "S Dalton", "M Robinson", 2),
+                    _bat(2, "N Hayee", "ct", "M Young", "F Daly", 29),
+                    _bat(3, "S Mehmood", "ct", "M Hodson", "A Berry", 7),
+                    _bat(4, "M Shaheed", "b", "I Wade", None, 44),
+                    _bat(5, "F Butt", "ct", "J Sheils", "M Robinson", 40),
+                    _bat(6, "S Rahman", "c&b", "J Sheils", None, 26),
+                    _bat(7, "A Smith", "ct", "A Berry", "F Daly", 2),
+                    _bat(8, "G Khan", "c&b", "M Young", None, 6),
+                    _bat(9, "J Dell", "b", "M Young", None, 3),
+                    _bat(10, "M Iqbal", "b", "M Young", None, 10),
+                    _bat(11, "A Rauf", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("M Hodson", "9", 1, 43, 1),
+                    _bowl("S Dalton", "9", 0, 35, 1),
+                    _bowl("I Wade", "4", 0, 30, 1),
+                    _bowl("M Young", "4", 0, 28, 4),
+                    _bowl("J Sheils", "4", 0, 18, 2),
+                    _bowl("A Berry", "4", 0, 24, 1),
                 ],
                 "fow": [],
             },
