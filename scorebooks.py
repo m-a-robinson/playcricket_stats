@@ -878,8 +878,10 @@ resolved it.
     Young 5 (ct Z Daddaboy b M Irfan), A McCheyne 3 (c&b M Irfan), P
     Partington 3 not out, A Berry 5 not out; S Dalton, P Hewart and S Carr
     did not bat. 3+13+73+8+5+3+3+5 = 113, matching the scorebook's own
-    printed batsmen's total exactly. Extras 10, total 123 for 6. ELPM won
-    by 4 wickets, chasing down Elton Vale's 122.
+    printed batsmen's total exactly. Extras 10, total 123 for 6. Elton
+    Vale's bowling figures (M Ikram 8-1-30-2, Z Daddaboy 6-0-39-1, C
+    Keyworth 3-0-18-0, M Irfan 5-0-19-2, J Khan 4.1-1-15-1) sum to exactly
+    the 6 wickets. ELPM won by 4 wickets, chasing down Elton Vale's 122.
 """
 
 SOURCE = "scorebook"
@@ -3476,7 +3478,13 @@ MATCHES = [
                     _bat(10, "P Hewart", "did not bat"),
                     _bat(11, "S Carr", "did not bat"),
                 ],
-                "bowl": [],
+                "bowl": [
+                    _bowl("M Ikram", "8", 1, 30, 2),
+                    _bowl("Z Daddaboy", "6", 0, 39, 1),
+                    _bowl("C Keyworth", "3", 0, 18, 0),
+                    _bowl("M Irfan", "5", 0, 19, 2),
+                    _bowl("J Khan", "4.1", 1, 15, 1),
+                ],
                 "fow": [],
             },
         ],
