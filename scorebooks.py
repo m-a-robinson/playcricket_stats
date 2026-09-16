@@ -929,6 +929,40 @@ came from the user reading the book directly.
     other figure in this file, and flagged as such rather than presented
     as a normal transcription. Chasing ELPM's 254, Degham Hibbert reached
     256 with 7 wickets down -- Degham Hibbert won by 3 wickets.
+
+============================================================================
+19-Jun-2004: East Lancs Paper Mill CC 1st XI vs Ashton Ladysmith CC
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.05.20.jpg and
+2026-09-15 13.05.32.jpg (both innings). The first pass badly misread this
+match -- the wrong crop region for "how out"/"bowler"/"total" produced a
+run list (12,14,4,14,8,4,14,10...) the user flagged as "almost all wrong",
+and ELPM's total looked like an abandoned 97-1 rather than a completed
+chase. Locating the correct crop (the HOW OUT/BOWLER/TOTAL block sits as
+one unit in the lower-right of each page, separate from the runs-scored
+tally grid that was confusing the first pass) and re-reading fixed both:
+the corrected run list matches the user's figures exactly, and the
+"missing" 47 runs in ELPM's total turned out to be a Daly/Sheils score
+swap, not an incomplete innings.
+
+  - Ashton Ladysmith: S Shields 3 (b S Carr), G Pinder 55 (ct G Young b I
+    Wade), P Reynolds 5 (ct I Wade b P Hewart), M Shields 18 (ct S Dalton
+    b S Keyworth), C Collings 8 (ct S Carr b S Keyworth), C Bennett 5 (ct
+    J Sheils b S Keyworth), D Shields 0 (b I Wade), M Collings 6 (run
+    out), B Collings 4 (ct S Dalton b J Sheils), C Rose 15 (b J Sheils), S
+    Telfer 0 not out. 3+55+5+18+8+5+0+6+4+15+0 = 119, matching the
+    scorebook's own printed batsmen's total exactly. Extras 21, total 140
+    all out. ELPM's bowling figures (P Hewart 7-2-33-1, S Carr 7-1-20-1, A
+    Berry 5-0-15-0, S Keyworth 10-1-29-3, I Wade 6-1-13-2, J Sheils
+    2.3-1-5-2, S Dalton 2-0-10-0) sum to exactly 9 bowler-credited
+    wickets, plus M Collings' run out as the 10th.
+  - ELPM: F Daly 51 (ct C Rose b S Shields), J Sheils 66 not out, I Wade 14
+    not out; all others did not bat. 51+66+14 = 131 + 13 extras = 144-1.
+    Ashton Ladysmith's bowling figures (P Reynolds 11-0-42-0, J Telfer
+    5-0-30-0, G Pinder 6-0-30-0, S Shields 3-0-17-1, M Collings 2.4-0-17-0)
+    sum to exactly the 1 wicket, and their runs conceded (136) plus extras
+    (8) reconcile to 144 exactly. ELPM won by 9 wickets.
 """
 
 SOURCE = "scorebook"
@@ -3634,6 +3668,102 @@ MATCHES = [
                     _bowl("S Keyworth", "3", 0, 16, 0),
                     _bowl("J Sheils", "3", 0, 14, 0),
                     _bowl("J Wade", "1", 0, 2, 0),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Ashton Ladysmith 1st XI|19/06/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Ashton Ladysmith", "away_club_name": "Ashton Ladysmith CC",
+        "away_team_id": "Ashton Ladysmith 1st XI", "away_team_name": "1st XI",
+        "match_date": "19/06/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Won by 9 wickets",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "East Lancs Paper Mill CC won by 9 wickets",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("I Wade", 3),
+                _player("P Hewart", 4), _player("S Carr", 5), _player("A Berry", 6),
+                _player("S Keyworth", 7), _player("S Dalton", 8),
+            ]},
+            {"away_team": [
+                _player("S Shields", 1), _player("G Pinder", 2), _player("P Reynolds", 3),
+                _player("M Shields", 4), _player("C Collings", 5), _player("C Bennett", 6),
+                _player("D Shields", 7), _player("M Collings", 8), _player("B Collings", 9),
+                _player("C Rose", 10), _player("S Telfer", 11),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "Ashton Ladysmith 1st XI", "team_batting_name": "1st XI",
+                "runs": 140, "wickets": 10, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 21, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 21,
+                "bat": [
+                    _bat(1, "S Shields", "b", "S Carr", None, 3),
+                    _bat(2, "G Pinder", "ct", "I Wade", "G Young", 55),
+                    _bat(3, "P Reynolds", "ct", "P Hewart", "I Wade", 5),
+                    _bat(4, "M Shields", "ct", "S Keyworth", "S Dalton", 18),
+                    _bat(5, "C Collings", "ct", "S Keyworth", "S Carr", 8),
+                    _bat(6, "C Bennett", "ct", "S Keyworth", "J Sheils", 5),
+                    _bat(7, "D Shields", "b", "I Wade", None, 0),
+                    _bat(8, "M Collings", "run out", None, None, 6),
+                    _bat(9, "B Collings", "ct", "J Sheils", "S Dalton", 4),
+                    _bat(10, "C Rose", "b", "J Sheils", None, 15),
+                    _bat(11, "S Telfer", "not out", None, None, 0),
+                ],
+                "bowl": [
+                    _bowl("P Hewart", "7", 2, 33, 1),
+                    _bowl("S Carr", "7", 1, 20, 1),
+                    _bowl("A Berry", "5", 0, 15, 0),
+                    _bowl("S Keyworth", "10", 1, 29, 3),
+                    _bowl("I Wade", "6", 1, 13, 2),
+                    _bowl("J Sheils", "2.3", 1, 5, 2),
+                    _bowl("S Dalton", "2", 0, 10, 0),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 144, "wickets": 1, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 13, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 13,
+                "bat": [
+                    _bat(1, "F Daly", "ct", "S Shields", "C Rose", 51),
+                    _bat(2, "J Sheils", "not out", None, None, 66),
+                    _bat(3, "I Wade", "not out", None, None, 14),
+                    _bat(4, "P Hewart", "did not bat"),
+                    _bat(5, "S Carr", "did not bat"),
+                    _bat(6, "A Berry", "did not bat"),
+                    _bat(7, "S Keyworth", "did not bat"),
+                    _bat(8, "S Dalton", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("P Reynolds", "11", 0, 42, 0),
+                    _bowl("J Telfer", "5", 0, 30, 0),
+                    _bowl("G Pinder", "6", 0, 30, 0),
+                    _bowl("S Shields", "3", 0, 17, 1),
+                    _bowl("M Collings", "2.4", 0, 17, 0),
                 ],
                 "fow": [],
             },
