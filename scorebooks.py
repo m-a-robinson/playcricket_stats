@@ -1000,6 +1000,47 @@ enough to trust either time it was attempted.
     bowling figures (A Lloyd 11.3-1-66-2, I Atkinson 8-2-23-1, C Ralph
     8-0-24-1, KH Sadiq 5-0-23-1) sum to exactly the 5 wickets. ELPM won by
     5 wickets.
+
+============================================================================
+3-Jul-2004: East Lancs Paper Mill CC 1st XI vs Springhead CC
+============================================================================
+
+Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.05.54.jpg and
+2026-09-15 13.06.00.jpg (both innings). Return fixture to 1-May-2004's
+match. Both batting orders were significantly wrong on the first pass --
+the how-out/bowler/total column was read correctly but matched against
+the wrong names, most visibly having G Young batting 3rd instead of J
+Wade. Rebuilt from a direct read of the batsmen-names column (the same
+technique used throughout this batch), plus the user's own read of both
+bowling analyses, neither of which cropped legibly.
+
+  - ELPM: F Daly 50 (ct D Percival b DeHavilland), J Sheils 16 (c&b
+    DeHavilland), J Wade 39 (ct Milner b J Cook), G Young 40 (b
+    DeHavilland), A McCheyne 4 (b DeHavilland), S Keyworth 7 (b M
+    Sweeting), K Hocking 8 not out, P Partington 18 (lbw b M Sweeting), N
+    Warne 17 (b M Sweeting), P Hewart 4 not out; S Carr did not bat. A
+    McCheyne's own score isn't something the user stated directly -- it's
+    the one value that makes 50+16+39+40+4+7+8+18+17+4 = 203 match the
+    scorebook's own printed batsmen's total exactly, so it's inferred
+    rather than read, the same "reconcile then flag" approach used for
+    Degham Hibbert's unidentified batsman earlier in this file. Extras
+    26, total 229 for 8. Springhead's bowling figures (K Lees 14-2-46-0,
+    DeHavilland 16-2-76-4, J Cook 6-0-54-1, M Sweeting 9-1-38-3) sum to
+    exactly the 8 wickets -- K Lees bowled but took none, which is why he
+    hadn't shown up in the dismissals at all until the bowling card
+    confirmed his figures.
+  - Springhead: J Batey 17 (ct J Sheils b S Keyworth), K Fielding 0 (ct J
+    Wade b P Hewart), D Percival 8 (b P Hewart), R Shaw 8 (b P Hewart), K
+    DeHavilland 0 (c&b P Hewart), K Lees 0 (b P Hewart), A Milner 21 (run
+    out, fielder J Wade), J Walmesly 12 (st P Partington b N Warne), J
+    Cook 14 (b S Carr), M Sweeting 6 not out.
+    17+0+8+8+0+0+21+12+14+6 = 86, eight short of the scorebook's own
+    printed batsmen's total of 94 -- left unresolved, same pattern as
+    elsewhere in this file. Extras 5, total 99 for 9. ELPM's bowling
+    figures (P Hewart 16-7-26-5, S Carr 11-1-25-1, S Keyworth 8-3-23-1, J
+    Wade 4-0-10-0, J Sheils 3-1-13-0, N Warne 0.1-0-0-1) sum to exactly 8
+    bowler-credited wickets, plus A Milner's run out as the 9th. ELPM won
+    by 130 runs.
 """
 
 SOURCE = "scorebook"
@@ -3898,6 +3939,105 @@ MATCHES = [
                     _bowl("I Atkinson", "8", 2, 23, 1),
                     _bowl("C Ralph", "8", 0, 24, 1),
                     _bowl("KH Sadiq", "5", 0, 23, 1),
+                ],
+                "fow": [],
+            },
+        ],
+    },
+    {
+        "id": "ELPM 1st XI|Springhead 1st XI|03/07/2004",
+        "home_club_id": "ELPM", "home_club_name": "East Lancs Paper Mill CC",
+        "home_team_id": "ELPM 1st XI", "home_team_name": "1st XI",
+        "away_club_id": "Springhead", "away_club_name": "Springhead CC",
+        "away_team_id": "Springhead 1st XI", "away_team_name": "1st XI",
+        "match_date": "03/07/2004",
+        "match_time": None,
+        "competition_id": None,
+        "competition_name": "NMCL Division 1",
+        "competition_type": None,
+        "league_id": None, "league_name": None,
+        "ground_id": None, "ground_name": "ELPM",
+        "no_of_innings": 2,
+        "no_of_overs": None,
+        "no_of_days": 1,
+        "toss": None,
+        "toss_won_by_team_id": None,
+        "result": "Won by 130 runs",
+        "result_applied_to": "ELPM 1st XI",
+        "result_description": "East Lancs Paper Mill CC won by 130 runs",
+        "status": "Played",
+        "last_updated": None,
+        "players": [
+            {"home_team": [
+                _player("F Daly", 1), _player("J Sheils", 2), _player("J Wade", 3),
+                _player("G Young", 4), _player("A McCheyne", 5), _player("S Keyworth", 6),
+                _player("K Hocking", 7), _player("P Partington", 8, wicket_keeper=True),
+                _player("N Warne", 9), _player("P Hewart", 10), _player("S Carr", 11),
+            ]},
+            {"away_team": [
+                _player("J Batey", 1), _player("K Fielding", 2), _player("D Percival", 3),
+                _player("R Shaw", 4), _player("K DeHavilland", 5), _player("K Lees", 6),
+                _player("A Milner", 7), _player("J Walmesly", 8), _player("J Cook", 9),
+                _player("M Sweeting", 10),
+            ]},
+        ],
+        "innings": [
+            {
+                "innings_number": 1,
+                "team_batting_id": "ELPM 1st XI", "team_batting_name": "1st XI",
+                "runs": 229, "wickets": 8, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 26, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 26,
+                "bat": [
+                    _bat(1, "F Daly", "ct", "DeHavilland", "D Percival", 50),
+                    _bat(2, "J Sheils", "c&b", "DeHavilland", None, 16),
+                    _bat(3, "J Wade", "ct", "J Cook", "Milner", 39),
+                    _bat(4, "G Young", "b", "DeHavilland", None, 40),
+                    # inferred score -- see the module docstring above; the
+                    # dismissal (b DeHavilland) is directly from the user.
+                    _bat(5, "A McCheyne", "b", "DeHavilland", None, 4),
+                    _bat(6, "S Keyworth", "b", "M Sweeting", None, 7),
+                    _bat(7, "K Hocking", "not out", None, None, 8),
+                    _bat(8, "P Partington", "lbw", "M Sweeting", None, 18),
+                    _bat(9, "N Warne", "b", "M Sweeting", None, 17),
+                    _bat(10, "P Hewart", "not out", None, None, 4),
+                    _bat(11, "S Carr", "did not bat"),
+                ],
+                "bowl": [
+                    _bowl("K Lees", "14", 2, 46, 0),
+                    _bowl("DeHavilland", "16", 2, 76, 4),
+                    _bowl("J Cook", "6", 0, 54, 1),
+                    _bowl("M Sweeting", "9", 1, 38, 3),
+                ],
+                "fow": [],
+            },
+            {
+                "innings_number": 2,
+                "team_batting_id": "Springhead 1st XI", "team_batting_name": "1st XI",
+                "runs": 99, "wickets": 9, "overs": None,
+                "declared": 0, "forfeited_innings": 0,
+                "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 5, "extra_no_balls": 0,
+                "extra_penalty_runs": 0, "total_extras": 5,
+                "bat": [
+                    _bat(1, "J Batey", "ct", "S Keyworth", "J Sheils", 17),
+                    _bat(2, "K Fielding", "ct", "P Hewart", "J Wade", 0),
+                    _bat(3, "D Percival", "b", "P Hewart", None, 8),
+                    _bat(4, "R Shaw", "b", "P Hewart", None, 8),
+                    _bat(5, "K DeHavilland", "c&b", "P Hewart", None, 0),
+                    _bat(6, "K Lees", "b", "P Hewart", None, 0),
+                    _bat(7, "A Milner", "run out", None, "J Wade", 21),
+                    _bat(8, "J Walmesly", "st", "N Warne", "P Partington", 12),
+                    _bat(9, "J Cook", "b", "S Carr", None, 14),
+                    _bat(10, "M Sweeting", "not out", None, None, 6),
+                ],
+                "bowl": [
+                    _bowl("P Hewart", "16", 7, 26, 5),
+                    _bowl("S Carr", "11", 1, 25, 1),
+                    _bowl("S Keyworth", "8", 3, 23, 1),
+                    _bowl("J Wade", "4", 0, 10, 0),
+                    _bowl("J Sheils", "3", 1, 13, 0),
+                    _bowl("N Warne", "0.1", 0, 0, 1),
                 ],
                 "fow": [],
             },
