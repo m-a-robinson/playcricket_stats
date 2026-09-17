@@ -1097,13 +1097,12 @@ Rauf and G Khan all appear in the earlier matches too).
     bowling figures (I Wade 3-1-15-0, S Carr 4-1-26-0, P Hewart
     13-2-65-3, S Keyworth 15-2-64-3, J Wade 7-0-51-3) sum to exactly the 9
     real dismissals (P Hewart 3, J Wade 3, S Keyworth 3; no run outs).
-  - ELPM: F Daly 1 (ct unnamed keeper b T Khan), P Partington 15 (b A
-    Dar), J Wade 120 (b G Khan), I Wade 40 (b N Hayee), A McCheyne 31 not
-    out, S Keyworth 11 not out. 1+15+120+40+31+11 = 218, matching the
-    scorebook's own printed batsmen's total exactly -- S Keyworth's 11 is
-    back-solved from that total rather than directly legible in the
-    ball-by-ball tally column, the same "reconcile then flag" inference
-    used elsewhere in this file. Extras 20, total 238 for 4. Rochdalians'
+  - ELPM: F Daly 1 (ct M Tayyab b T Khan), P Partington 15 (b A Dar), J
+    Wade 120 (b G Khan), I Wade 40 (b N Hayee), A McCheyne 11 not out, S
+    Keyworth 31 not out; P Hewart, S Carr and M Robinson did not bat.
+    1+15+120+40+11+31 = 218, matching the scorebook's own printed
+    batsmen's total exactly (the first-pass read had McCheyne's and
+    Keyworth's scores swapped). Extras 20, total 238 for 4. Rochdalians'
     bowling figures (S Rahman 0.1-0-0-0, T Khan 3-0-51-1, A Dar 4-0-40-1,
     A Rauf 3-0-24-0, G Khan 7-0-51-1, N Hayee 8-0-69-1) sum to exactly the
     4 real dismissals, matching the bowler credited against each of
@@ -4284,12 +4283,15 @@ MATCHES = [
                 "extra_byes": 0, "extra_leg_byes": 0, "extra_wides": 20, "extra_no_balls": 0,
                 "extra_penalty_runs": 0, "total_extras": 20,
                 "bat": [
-                    _bat(1, "F Daly", "ct", "T Khan", "Unknown", 1),
+                    _bat(1, "F Daly", "ct", "T Khan", "M Tayyab", 1),
                     _bat(2, "P Partington", "b", "A Dar", None, 15),
                     _bat(3, "J Wade", "b", "G Khan", None, 120),
                     _bat(4, "I Wade", "b", "N Hayee", None, 40),
-                    _bat(5, "A McCheyne", "not out", None, None, 31),
-                    _bat(6, "S Keyworth", "not out", None, None, 11),
+                    _bat(5, "A McCheyne", "not out", None, None, 11),
+                    _bat(6, "S Keyworth", "not out", None, None, 31),
+                    _bat(9, "P Hewart", "did not bat"),
+                    _bat(10, "S Carr", "did not bat"),
+                    _bat(11, "M Robinson", "did not bat"),
                 ],
                 "bowl": [
                     _bowl("S Rahman", "0.1", 0, 0, 0),
