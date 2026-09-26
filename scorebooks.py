@@ -769,7 +769,7 @@ the "total" column rather than a self-consistency check.
 
   - Failsworth Macedonia: P Haselden 0 (ct J Wade b S Carr), G Martin 1
     (b P Hewart), D Rigney 55 (b S Dalton), N Daly 62 (b J Sheils), C
-    Gawber 43 not out, C Akin 33 (b S Dalton), D Marriot 0 (ct A Berry b
+    Gawler 43 not out, C Akin 33 (b S Dalton), D Marriot 0 (ct A Berry b
     S Dalton), I Wilson 1 not out. 0+1+55+62+43+33+0+1 = 195, matching
     the scorebook's own printed batsmen's total exactly. Extras 30, total
     225 for 6 (the innings box's own "for 7" doesn't match either the 6
@@ -780,7 +780,7 @@ the "total" column rather than a self-consistency check.
   - ELPM: F Daly 0 (ct N Daly b G Broadhead), J Sheils 9 (b D Atkin), J
     Wade 5 (b G Broadhead), I Wade 0 (ct N Daly b D Atkin), G Young 1 (run
     out), A McCheyne 16 (b C Akin), A Berry 5 (ct P Haselden b D Atkin),
-    P Hewart 22 (b C Akin), S Dalton 20 not out, S Carr 24 (ct C Gawber b
+    P Hewart 22 (b C Akin), S Dalton 20 not out, S Carr 24 (ct C Gawler b
     I Wilson), M Robinson 0 (retired hurt). Several of these dismissals
     were reshuffled from the first-pass read (P Hewart was originally
     read as not out, S Dalton and S Carr's dismissals were swapped, and M
@@ -1226,8 +1226,8 @@ and "H Kahn" are recorded as S Khan and H Khan to match the June game;
 
 Source images: scorebooks/1xt XI/2004 1st XI/2026-09-15 13.08.25.jpg and
 2026-09-15 13.08.32.jpg (both innings). Home return fixture to
-29-May-2004's match ("Failsworth Mace" in the book). "C Gauler" is
-recorded as C Gawber to match the May game.
+29-May-2004's match ("Failsworth Mace" in the book). The book's "C
+Gauler" (and the May game's "C Gawler") is recorded as C Gawler.
 
   - ELPM: F Daly 7 (ct C Collier b G Broadhead), J Sheils 62 (ct C
     Collier b G Broadhead), A McCheyne 34 (b G Broadhead), I Wade 5 (ct L
@@ -1247,7 +1247,7 @@ recorded as C Gawber to match the May game.
     needed for the 170.
   - Failsworth Macedonia: G Martin 24 (ct M Robinson b P Hewart), L
     Maddocks 13 (st M Robinson b S Keyworth), D Rigney 11 (st M Robinson b
-    S Keyworth), N Daly 78 not out, C Gawber 0 (b P Hewart), C Akin 27 (b
+    S Keyworth), N Daly 78 not out, C Gawler 0 (b P Hewart), C Akin 27 (b
     J Sheils), D Marriot 7 (lbw b J Sheils), K Rehmen 9 not out; C
     Collier, G Broadhead and N Broadhead did not bat.
     24+13+11+78+0+27+7+9 = 169, matching the scorebook's own printed
@@ -3496,7 +3496,7 @@ MATCHES = [
         "players": [
             {"home_team": [
                 _player("P Haselden", 1), _player("G Martin", 2), _player("D Rigney", 3),
-                _player("N Daly", 4), _player("C Gawber", 5), _player("C Akin", 6),
+                _player("N Daly", 4), _player("C Gawler", 5), _player("C Akin", 6),
                 _player("D Marriot", 7), _player("I Wilson", 8), _player("G Broadhead", 9),
                 _player("D Atkin", 10),
                 # only 10 names are legible for Failsworth Macedonia's XI --
@@ -3524,7 +3524,7 @@ MATCHES = [
                     _bat(2, "G Martin", "b", "P Hewart", None, 1),
                     _bat(3, "D Rigney", "b", "S Dalton", None, 55),
                     _bat(4, "N Daly", "b", "J Sheils", None, 62),
-                    _bat(5, "C Gawber", "not out", None, None, 43),
+                    _bat(5, "C Gawler", "not out", None, None, 43),
                     _bat(6, "C Akin", "b", "S Dalton", None, 33),
                     _bat(7, "D Marriot", "ct", "S Dalton", "A Berry", 0),
                     _bat(8, "I Wilson", "not out", None, None, 1),
@@ -3556,7 +3556,7 @@ MATCHES = [
                     _bat(7, "A Berry", "ct", "D Atkin", "P Haselden", 5),
                     _bat(8, "P Hewart", "b", "C Akin", None, 22),
                     _bat(9, "S Dalton", "not out", None, None, 20),
-                    _bat(10, "S Carr", "ct", "I Wilson", "C Gawber", 24),
+                    _bat(10, "S Carr", "ct", "I Wilson", "C Gawler", 24),
                     _bat(11, "M Robinson", "retired hurt", None, None, 0),
                 ],
                 "bowl": [
@@ -4776,7 +4776,7 @@ MATCHES = [
             ]},
             {"away_team": [
                 _player("G Martin", 1), _player("L Maddocks", 2), _player("D Rigney", 3),
-                _player("N Daly", 4), _player("C Gawber", 5), _player("C Akin", 6),
+                _player("N Daly", 4), _player("C Gawler", 5), _player("C Akin", 6),
                 _player("D Marriot", 7), _player("K Rehmen", 8), _player("C Collier", 9),
                 _player("G Broadhead", 10), _player("N Broadhead", 11),
             ]},
@@ -4822,7 +4822,7 @@ MATCHES = [
                     _bat(2, "L Maddocks", "st", "S Keyworth", "M Robinson", 13),
                     _bat(3, "D Rigney", "st", "S Keyworth", "M Robinson", 11),
                     _bat(4, "N Daly", "not out", None, None, 78),
-                    _bat(5, "C Gawber", "b", "P Hewart", None, 0),
+                    _bat(5, "C Gawler", "b", "P Hewart", None, 0),
                     _bat(6, "C Akin", "b", "J Sheils", None, 27),
                     _bat(7, "D Marriot", "lbw", "J Sheils", None, 7),
                     _bat(8, "K Rehmen", "not out", None, None, 9),
