@@ -78,19 +78,23 @@ same `cricketstatz_txt.py`/`scorebooks.py` pipelines would replace the
 aggregate figures with real per-match data.
 
 A second, separate scorebook batch followed the same pattern for the
-**1st XI**: 45 photos covering the club's professional printed "Bourne's
+**1st XI**: 46 photos covering the club's professional printed "Bourne's
 Cumulative" ledger book for the 2004 season (`scorebooks/1xt XI/2004 1st
 XI/` — the folder name's "1xt" typo is the user's own upload naming, left
-as-is), plus two photos of that year's Calverley Cup Final. **12 of
-roughly 24 identified 2004 1st XI fixtures are transcribed so far**
-(24-Apr Robinsons through 13-Jun Degham Hibbert, chronologically
-unbroken) — Springhead, Fothergill & Harvey, Ashton Ladysmith, both
-Rochdalians matches (a league game and a separate cup tie two days
-apart), Glodwick, Failsworth Macedonia, Tott St John, Rochdale Catholic
-Club, Elton Vale and Degham Hibbert. The remainder (Ashton Ladysmith
-again from 19-Jun onward, Westleigh Meths, Springhead and Robinsons'
-return legs, and the Calverley Cup Final itself) are photographed and
-identified but not yet transcribed.
+as-is), plus two photos of that year's Calverley Cup Final. **The whole
+2004 season is transcribed: all 24 matches.** The first half (24-Apr
+Robinsons through 13-Jun Degham Hibbert) covers Robinsons, Springhead,
+Fothergill & Harvey, Ashton Ladysmith, both Rochdalians matches (a league
+game and a separate cup tie two days apart), Glodwick, Failsworth
+Macedonia, Tott St John, Rochdale Catholic Club, Elton Vale and Degham
+Hibbert. The second half covers Ashton Ladysmith (19-Jun), West Leigh
+(20-Jun), Springhead (3-Jul), Robinsons (10-Jul), Rochdalians (24-Jul),
+Glodwick (31-Jul), West Leigh (1-Aug), Rochdale Catholic Club (7-Aug),
+Failsworth Macedonia (14-Aug), Elton Vale (21-Aug) and Ashton Ladysmith
+(28-Aug), then the Calverley Cup Final v Rochdale Catholic Club at
+Greenmount on 12-Sep, which Rochdale won by 1 wicket. A few innings keep
+small documented gaps where the book's own figures don't quite agree;
+each is noted in `scorebooks.py`'s docstring.
 
 Transcription for a photographed-but-not-typed match goes through an
 extra step the other sources don't need: since there's no machine-readable
@@ -106,10 +110,14 @@ column), which repeatedly caught wrong bowler credit the first pass alone
 wouldn't have surfaced; and for handwriting too small or cramped to trust
 in a full-page read, cropping and upscaling just the relevant region of
 the source photo (via Pillow, before presenting anything) works well for
-batting cards and dismissal columns specifically, though it isn't
-reliable for every page's bowling-analysis grid, whose exact position
-varies page to page — when it doesn't land quickly, asking the user to
-read that one table directly beats guessing crop coordinates repeatedly.
+batting cards and dismissal columns specifically. For this book, after
+rotating each photo 90° clockwise, the batsmen/runs column sits in the
+right-hand page's top half, the how-out/bowler/total columns in its
+bottom half, and the bowling analysis (names and over-by-over grid top,
+overs/maidens/runs/wickets bottom) on the left-hand page. When the two
+disagree, the over-by-over bowling analysis is usually more reliable
+than the batting card's bowler column: it shows when each wicket fell,
+which can be matched against the fall-of-wicket order.
 On at least one occasion (Degham Hibbert) neither approach recovered one
 batsman's identity at all; that innings' total and bowling analysis still
 reconcile exactly, but with a documented inferred entry rather than a
@@ -356,15 +364,14 @@ complete by definition once ingested.
   Ian Wade's 163 in a 339-run 3rd-wicket stand, previously missing from
   every source including `nmcl_stats.py`'s own 2010 residual-total rows
   (which knew matches were missing but not which innings they contained).
-  **27 matches total as of this writing**: that one 2010 1st XI match,
+  **39 matches total as of this writing**: that one 2010 1st XI match,
   one 2007 2nd XI match (East Lancs PM v Bury CC, team XI unstated on the
-  page itself), all 13 of the 2nd XI's 2011 matches, and 12 of the 1st
-  XI's 2004 season (24-Apr through 13-Jun, chronologically unbroken so
-  far) — see the "Milestone" section above for the season-by-season
-  breakdown and what's still pending (2012/2013 2nd XI photographed but
-  not transcribed; the rest of the 2004 1st XI season from 19-Jun onward,
-  plus that year's Calverley Cup Final, likewise). Run `python3
-  scorebooks.py --sqlite-db <path>` after the other sources.
+  page itself), all 13 of the 2nd XI's 2011 matches, and all 24 of the
+  1st XI's 2004 matches (23 league games plus the Calverley Cup Final) —
+  see the "Milestone" section above for the season-by-season breakdown
+  and what's still pending (2012/2013 2nd XI photographed but not
+  transcribed). Run `python3 scorebooks.py --sqlite-db <path>` after the
+  other sources.
 - **`sqlite_queries.py`** — Career stats and leaderboards computed directly
   from the SQLite store: `career_stats()` (true career totals per player,
   splitting by team only if asked) and `SQLPlayerStats` (qualification-based
