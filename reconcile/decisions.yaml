@@ -434,6 +434,9 @@ players:
       - source: cricketstatz_txt
         id: Robinson,M
         name: Robinson,M
+      - source: scorebook
+        id: M Robinson
+        name: M Robinson
   - canonical_name: Shasvat Kakkar
     refs:
       - source: play_cricket
