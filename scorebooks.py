@@ -1339,10 +1339,12 @@ Source images: scorebooks/1xt XI/2004 1st XI/Calverley Cup Final 2004
   - ELPM: F Daly 31 (ct J Rafique b I Mughal), J Sheils 25 (ct D Mulkeen
     b J Iqbal), J Wade 38 (lbw b J Iqbal), I Wade 0 (b J Iqbal), A
     McCheyne 16 (st D Mulkeen b D Mulkeen jnr), S Keyworth 10 not out, M
-    Robinson 8 (b D Mulkeen jnr), S Carr 0 (b D Mulkeen jnr), S Dalton 1
+    Robinson 0 (b D Mulkeen jnr), S Carr 8 (b D Mulkeen jnr), S Dalton 1
     (b M Tayab), P Hewart 2 (b M Tayab), A Berry 0 (b M Tayab).
-    31+25+38+0+16+10+8+0+1+2+0 = 131, matching the scorebook's own
-    printed batsmen's total exactly. Extras 17 (wides 4, byes 6, leg byes
+    31+25+38+0+16+10+0+8+1+2+0 = 131, matching the scorebook's own
+    printed batsmen's total exactly (the book's total column has
+    Robinson 8 and Carr 0; the user confirmed they are the other way
+    round). Extras 17 (wides 4, byes 6, leg byes
     7), total 148 all out. Rochdale's bowling figures (M Tayab 6.2-1-19-3,
     S Khan 6-1-27-0, Z Shah 6-0-23-0, I Mughal 1.3-0-9-1, D Mulkeen jnr
     7.3-1-33-3, J Iqbal 8-3-24-3) total 135 runs = 131 + 4 wides, and
@@ -1351,14 +1353,18 @@ Source images: scorebooks/1xt XI/2004 1st XI/Calverley Cup Final 2004
   - Rochdale Catholic Club: D Mulkeen 23 (b I Wade), B Anjum 0 (ct M
     Robinson b S Carr), I Mughal 4 (ct F Daly b S Carr), D Mulkeen jnr 15
     (b S Carr), S Khan 5 (ct S Keyworth b I Wade), J Rafique 0 (b S Carr),
-    H Khan 28 not out, Z Shah 0 (lbw b I Wade), M Tayab 29 (lbw b S
+    H Khan 29 not out, Z Shah 0 (lbw b I Wade), M Tayab 29 (lbw b S
     Keyworth), W Ali 27 (b J Sheils), J Iqbal 0 not out.
-    23+0+4+15+5+0+28+0+29+27+0 = 131, matching the scorebook's own printed
-    batsmen's total exactly. Extras 17 (wides 10, byes 1, leg byes 6),
-    total 148 for 9. ELPM's bowling figures (P Hewart 2-0-23-0, S Carr
-    8-3-19-4, I Wade 7-0-50-3, S Dalton 8-1-15-0, S Keyworth 8-4-13-1, A
-    Berry 4-0-14-0, J Sheils 3-0-7-1) total 141 runs = 131 + 10 wides, and
-    exactly 9 wickets. Scores tied on 148.
+    23+0+4+15+5+0+29+0+29+27+0 = 132. Extras 17 (wides 10, byes 1, leg
+    byes 6), total 149 for 9. The book itself shows H Khan 28, a batsmen's
+    total of 131 and a final score of 148 (level with ELPM); the user
+    confirmed H Khan made 29 and Rochdale finished on 149 for 9, winning
+    the cup. ELPM's bowling figures (P Hewart 2-0-23-0, S Carr 8-3-19-4, I
+    Wade 7-0-50-3, S Dalton 8-1-15-0, S Keyworth 8-4-13-1, A Berry
+    4-0-14-0, J Sheils 3-0-7-1) total 141 runs, one short of 132 + 10
+    wides = 142 because the book's analysis was compiled to its 148
+    total; which bowler conceded the missing run is not recorded. Exactly
+    9 wickets. Rochdale Catholic Club won by 1 wicket.
 """
 
 SOURCE = "scorebook"
@@ -5164,9 +5170,9 @@ MATCHES = [
         "no_of_days": 1,
         "toss": None,
         "toss_won_by_team_id": None,
-        "result": "Tied",
-        "result_applied_to": None,
-        "result_description": "Match tied",
+        "result": "Won by 1 wicket",
+        "result_applied_to": "Rochdale Catholic Club 1st XI",
+        "result_description": "Rochdale Catholic Club won by 1 wicket",
         "status": "Played",
         "last_updated": None,
         "players": [
@@ -5198,8 +5204,8 @@ MATCHES = [
                     _bat(4, "I Wade", "b", "J Iqbal", None, 0),
                     _bat(5, "A McCheyne", "st", "D Mulkeen jnr", "D Mulkeen", 16),
                     _bat(6, "S Keyworth", "not out", None, None, 10),
-                    _bat(7, "M Robinson", "b", "D Mulkeen jnr", None, 8),
-                    _bat(8, "S Carr", "b", "D Mulkeen jnr", None, 0),
+                    _bat(7, "M Robinson", "b", "D Mulkeen jnr", None, 0),
+                    _bat(8, "S Carr", "b", "D Mulkeen jnr", None, 8),
                     _bat(9, "S Dalton", "b", "M Tayab", None, 1),
                     _bat(10, "P Hewart", "b", "M Tayab", None, 2),
                     _bat(11, "A Berry", "b", "M Tayab", None, 0),
@@ -5217,7 +5223,7 @@ MATCHES = [
             {
                 "innings_number": 2,
                 "team_batting_id": "Rochdale Catholic Club 1st XI", "team_batting_name": "1st XI",
-                "runs": 148, "wickets": 9, "overs": None,
+                "runs": 149, "wickets": 9, "overs": None,
                 "declared": 0, "forfeited_innings": 0,
                 "extra_byes": 1, "extra_leg_byes": 6, "extra_wides": 10, "extra_no_balls": 0,
                 "extra_penalty_runs": 0, "total_extras": 17,
@@ -5228,7 +5234,7 @@ MATCHES = [
                     _bat(4, "D Mulkeen jnr", "b", "S Carr", None, 15),
                     _bat(5, "S Khan", "ct", "I Wade", "S Keyworth", 5),
                     _bat(6, "J Rafique", "b", "S Carr", None, 0),
-                    _bat(7, "H Khan", "not out", None, None, 28),
+                    _bat(7, "H Khan", "not out", None, None, 29),
                     _bat(8, "Z Shah", "lbw", "I Wade", None, 0),
                     _bat(9, "M Tayab", "lbw", "S Keyworth", None, 29),
                     _bat(10, "W Ali", "b", "J Sheils", None, 27),
