@@ -983,7 +983,7 @@ enough to trust either time it was attempted.
   - West Leigh: KH Sadiq 7 (b P Hewart), D Jackson 5 (b S Carr), J Taylor
     0 (ct G Young b P Hewart), C Ralph 61 (ct J Sheils b S Keyworth), K
     Lloyd 5 (b S Dalton), C Brett 1 (ct G Young b S Keyworth), A Lloyd 17
-    (ct P Hewart b A Berry), S Ralph 13 (b A Berry), D Alridge 4 (b S
+    (ct P Hewart b A Berry), S Ralph 13 (b A Berry), D Aldred 4 (b S
     Dalton), I Atkinson 6 not out, L Brennan 0 (ct J Sheils b A Berry).
     7+5+0+61+5+1+17+13+4+6+0 = 119, five short of the scorebook's own
     printed batsmen's total of 124 -- left unresolved, as with similar
@@ -4013,7 +4013,7 @@ MATCHES = [
             {"home_team": [
                 _player("KH Sadiq", 1), _player("D Jackson", 2), _player("J Taylor", 3),
                 _player("C Ralph", 4), _player("K Lloyd", 5), _player("C Brett", 6),
-                _player("A Lloyd", 7), _player("S Ralph", 8), _player("D Alridge", 9),
+                _player("A Lloyd", 7), _player("S Ralph", 8), _player("D Aldred", 9),
                 _player("I Atkinson", 10), _player("L Brennan", 11),
             ]},
             {"away_team": [
@@ -4040,7 +4040,7 @@ MATCHES = [
                     _bat(6, "C Brett", "ct", "S Keyworth", "G Young", 1),
                     _bat(7, "A Lloyd", "ct", "A Berry", "P Hewart", 17),
                     _bat(8, "S Ralph", "b", "A Berry", None, 13),
-                    _bat(9, "D Alridge", "b", "S Dalton", None, 4),
+                    _bat(9, "D Aldred", "b", "S Dalton", None, 4),
                     _bat(10, "I Atkinson", "not out", None, None, 6),
                     _bat(11, "L Brennan", "ct", "A Berry", "J Sheils", 0),
                 ],
