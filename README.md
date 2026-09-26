@@ -188,9 +188,10 @@ match against already-canonical rows — the first six can run in any order.
 This is the same six sources listed at the top of this
 README, all landing in one store: **248 Play-Cricket + 374 CricHQ + 304
 CricketStatz + 37 CricketStatz-text matches, plus 77 NMCL season-aggregate
-rows (no match rows of their own) and 27 scorebook matches** (the 2010
+rows (no match rows of their own) and 39 scorebook matches** (the 2010
 Failsworth Macedonia match, one 2007 2nd XI match, all 13 of the 2nd XI's
-2011 matches, and 12 of the 2004 1st XI's season so far — see
+2011 matches, and all 24 of the 1st XI's 2004 matches including the
+Calverley Cup Final — see
 [development_notes.md](development_notes.md)'s "Milestone" section for the
 full list and what's still pending) — see
 [development_notes.md](development_notes.md) for the exact reconciled

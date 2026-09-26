@@ -52,13 +52,12 @@ history behind the items marked *Done* below.
   already gave 2011, just not yet done. If real scorecards turn up for
   the gaps that remain, `cricketstatz_txt.py`'s pipeline is what would
   ingest them.
-- A separate, ongoing scorebook batch for the **1st XI's 2004 season**
-  (`scorebooks/1xt XI/2004 1st XI/*.jpg`, 45 photos plus that year's
-  Calverley Cup Final) is partway through the same transcribe-and-
-  cross-check treatment: **12 of roughly 24 identified fixtures are done**
-  (24-Apr through 13-Jun, chronologically unbroken), the rest (19-Jun
-  onward, plus the Cup Final) still to go — see development_notes.md's
-  "Milestone" section for the full list.
+- The **1st XI's 2004 season** is now fully transcribed from its scorebook
+  (`scorebooks/1xt XI/2004 1st XI/*.jpg`, 46 photos plus two of that
+  year's Calverley Cup Final): **all 24 matches** — 23 league games
+  (24-Apr through 28-Aug) and the Cup Final v Rochdale Catholic Club on
+  12-Sep — are in `scorebooks.py`, each cross-checked and confirmed by the
+  user. See development_notes.md's "Milestone" section for the full list.
 - `nmcl_season_stats` blending into `career_stats()`/leaderboards is now
   built (`include_nmcl=True`, see the README's "Using the main database"
   and "Using the example files" sections) for the figures that stay valid
