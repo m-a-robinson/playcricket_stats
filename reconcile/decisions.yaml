@@ -96,6 +96,27 @@
 
 players:
 
+  - canonical_name: "J Bond"
+    decided: 2026-10-17
+    refs:
+      - source: nmcl_stats
+        id: J BOND
+        name: J Bond
+      - source: scorebook
+        id: J Bond
+        name: J Bond
+      - source: scorebook
+        id: G Bond
+        name: G Bond
+    reason: >
+      Confirmed via exact season + division + discipline overlap between
+      nmcl_stats' "J BOND" and the 2012 1st XI scorebooks. Two 2012
+      scorebook pages show the same player retiring not out mid-innings
+      and resuming later at a different batting position; one page
+      records the resumed entry as "G Bond" rather than "J Bond" (a
+      scorer's slip on the same person, not a second player -- there is
+      no other Bond active in the 1st XI that season).
+
   - canonical_name: "Ian Wade"
     decided: 2026-08-26
     refs:
@@ -2462,6 +2483,12 @@ teams:
       - source: cricketstatz_txt
         id: AL 1st XI
         name: AL 1st XI
+      - source: scorebook
+        id: Ashton Ladysmith 1st XI
+        name: Ashton Ladysmith 1st XI
+      - source: scorebook
+        id: Ashton Ladysmith CC 1st XI
+        name: Ashton Ladysmith CC 1st XI
   - canonical_name: South West Manchester CC 1st XI
     refs:
       - source: crichq_pdf
@@ -2549,6 +2576,12 @@ teams:
       - source: cricketstatz_txt
         id: EV 1st XI
         name: EV 1st XI
+      - source: scorebook
+        id: Elton Vale 1st XI
+        name: Elton Vale 1st XI
+      - source: scorebook
+        id: Elton Vale CC 1st XI
+        name: Elton Vale CC 1st XI
   - canonical_name: Glossop CC 2nd XI
     refs:
       - source: crichq_pdf
@@ -2629,6 +2662,9 @@ teams:
       - source: cricketstatz
         id: '29'
         name: BL 1st XI
+      - source: scorebook
+        id: Blackley CC 1st XI
+        name: Blackley CC 1st XI
   - canonical_name: Egerton CC 2nd XI
     refs:
       - source: crichq_pdf
