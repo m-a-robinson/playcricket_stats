@@ -96,6 +96,27 @@
 
 players:
 
+  - canonical_name: "J Bond"
+    decided: 2026-10-17
+    refs:
+      - source: nmcl_stats
+        id: J BOND
+        name: J Bond
+      - source: scorebook
+        id: J Bond
+        name: J Bond
+      - source: scorebook
+        id: G Bond
+        name: G Bond
+    reason: >
+      Confirmed via exact season + division + discipline overlap between
+      nmcl_stats' "J BOND" and the 2012 1st XI scorebooks. Two 2012
+      scorebook pages show the same player retiring not out mid-innings
+      and resuming later at a different batting position; one page
+      records the resumed entry as "G Bond" rather than "J Bond" (a
+      scorer's slip on the same person, not a second player -- there is
+      no other Bond active in the 1st XI that season).
+
   - canonical_name: "Ian Wade"
     decided: 2026-08-26
     refs:
@@ -199,6 +220,9 @@ players:
       - source: nmcl_stats
         id: M PARTINGTON
         name: M Partington
+      - source: scorebook
+        id: M Partington
+        name: M Partington
   - canonical_name: Carl Dearden
     refs:
       - source: crichq_pdf
@@ -247,6 +271,9 @@ players:
       - source: cricketstatz_txt
         id: D Dwyer
         name: D Dwyer
+      - source: scorebook
+        id: D Dwyer
+        name: D Dwyer
   - canonical_name: Ash birtwistle
     refs:
       - source: crichq_pdf
@@ -268,6 +295,9 @@ players:
         id: Mr Ashley J birtwistle birtwistle
         name: Mr Ashley J birtwistle birtwistle
       - source: cricketstatz_txt
+        id: A Birtwistle
+        name: A Birtwistle
+      - source: scorebook
         id: A Birtwistle
         name: A Birtwistle
   - canonical_name: Daniel McCaffery
@@ -345,6 +375,9 @@ players:
       - source: cricketstatz
         id: '839'
         name: Lewis Birmingham
+      - source: scorebook
+        id: L Birmingham
+        name: L Birmingham
   - canonical_name: Andrew Lomax
     refs:
       - source: play_cricket
@@ -411,6 +444,9 @@ players:
       - source: cricketstatz_txt
         id: B Birtwistle
         name: B Birtwistle
+      - source: scorebook
+        id: B Birtwistle
+        name: B Birtwistle
   - canonical_name: Mark Robinson
     refs:
       - source: play_cricket
@@ -434,6 +470,9 @@ players:
       - source: cricketstatz_txt
         id: Robinson,M
         name: Robinson,M
+      - source: scorebook
+        id: M Robinson
+        name: M Robinson
   - canonical_name: Shasvat Kakkar
     refs:
       - source: play_cricket
@@ -480,6 +519,9 @@ players:
         id: S CARR
         name: S Carr
       - source: cricketstatz_txt
+        id: S Carr
+        name: S Carr
+      - source: scorebook
         id: S Carr
         name: S Carr
   - canonical_name: Carter Charlesworth
@@ -530,6 +572,9 @@ players:
       - source: nmcl_stats
         id: D PEARSON
         name: D Pearson
+      - source: scorebook
+        id: D Pearson
+        name: D Pearson
   - canonical_name: Alan Redford
     refs:
       - source: play_cricket
@@ -548,6 +593,9 @@ players:
         id: A Redders
         name: A Redders
       - source: cricketstatz_txt
+        id: A Redford
+        name: A Redford
+      - source: scorebook
         id: A Redford
         name: A Redford
   - canonical_name: Adam Sajewicz
@@ -696,6 +744,9 @@ players:
       - source: cricketstatz_txt
         id: D Scott
         name: D Scott
+      - source: scorebook
+        id: D Scott
+        name: D Scott
   - canonical_name: Dave Barbe
     refs:
       - source: crichq_pdf
@@ -839,6 +890,9 @@ players:
       - source: nmcl_stats
         id: P PARTINGTON
         name: P Partington
+      - source: scorebook
+        id: P Partington
+        name: P Partington
   - canonical_name: Jack Leonard
     refs:
       - source: crichq_pdf
@@ -978,6 +1032,9 @@ players:
         name: Kevin Dodson
       - source: nmcl_stats
         id: K DODSON
+        name: K Dodson
+      - source: scorebook
+        id: K Dodson
         name: K Dodson
   - canonical_name: Craig Belston
     refs:
@@ -1155,6 +1212,9 @@ players:
       - source: nmcl_stats
         id: C GREAVES
         name: C Greaves
+      - source: scorebook
+        id: C Greaves
+        name: C Greaves
     reason: Confirmed by the user as the same person across sources.
   - canonical_name: Mark Dawes
     decided: '2026-08-28'
@@ -1223,6 +1283,9 @@ players:
       - source: cricketstatz_txt
         id: M Hodson
         name: M Hodson
+      - source: scorebook
+        id: M Hodson
+        name: M Hodson
     reason: Confirmed by the user as the same person across all three source rows.
   - canonical_name: Steve Dwyer
     decided: '2026-08-28'
@@ -1283,6 +1346,9 @@ players:
         name: Openshaw,A
       - source: nmcl_stats
         id: A OPENSHAW
+        name: A Openshaw
+      - source: scorebook
+        id: A Openshaw
         name: A Openshaw
     reason: Same cricketstatz source, adjacent years -- looks like cricketstatz's own naming convention changed. Confirmed by the user.
   - canonical_name: Josh Kobryn
@@ -1346,6 +1412,9 @@ players:
       - source: cricketstatz_txt
         id: A Berry
         name: A Berry
+      - source: scorebook
+        id: A Berry
+        name: A Berry
   - canonical_name: Adrian Cambell
     refs:
       - source: crichq_pdf
@@ -1362,6 +1431,9 @@ players:
         id: A Greenwood
         name: A Greenwood
       - source: cricketstatz_txt
+        id: A Greenwood
+        name: A Greenwood
+      - source: scorebook
         id: A Greenwood
         name: A Greenwood
   - canonical_name: A Greenwood
@@ -1401,6 +1473,9 @@ players:
         id: '400'
         name: A Wilkinson
       - source: cricketstatz_txt
+        id: A Wilkinson
+        name: A Wilkinson
+      - source: scorebook
         id: A Wilkinson
         name: A Wilkinson
   - canonical_name: AZ Zain
@@ -1456,6 +1531,18 @@ players:
       - source: cricketstatz_txt
         id: D Hadcroft
         name: D Hadcroft
+      - source: scorebook
+        id: D Hadcoft
+        name: D Hadcoft
+      - source: scorebook
+        id: D Hadcroft
+        name: D Hadcroft
+      - source: scorebook
+        id: D Haidcroft
+        name: D Haidcroft
+      - source: scorebook
+        id: D Haocroft
+        name: D Haocroft
   - canonical_name: Dom Morris
     refs:
       - source: cricketstatz
@@ -1465,6 +1552,9 @@ players:
     refs:
       - source: cricketstatz
         id: '418'
+        name: D Salmon
+      - source: scorebook
+        id: D Salmon
         name: D Salmon
   - canonical_name: D Turrell
     refs:
@@ -1487,6 +1577,9 @@ players:
       - source: cricketstatz_txt
         id: Dalton,S
         name: Dalton,S
+      - source: scorebook
+        id: S Dalton
+        name: S Dalton
   - canonical_name: Fran Daly
     refs:
       - source: cricketstatz
@@ -1496,6 +1589,9 @@ players:
         id: F DALY
         name: F Daly
       - source: cricketstatz_txt
+        id: F Daly
+        name: F Daly
+      - source: scorebook
         id: F Daly
         name: F Daly
   - canonical_name: G Merriman
@@ -1512,6 +1608,9 @@ players:
         id: G YOUNG
         name: G Young
       - source: cricketstatz_txt
+        id: G Young
+        name: G Young
+      - source: scorebook
         id: G Young
         name: G Young
   - canonical_name: Mark Gaygan
@@ -1534,12 +1633,18 @@ players:
       - source: cricketstatz
         id: '135'
         name: Hocking,K
+      - source: scorebook
+        id: K Hocking
+        name: K Hocking
   - canonical_name: Ian Simpson
     refs:
       - source: cricketstatz
         id: '388'
         name: I Simpson
       - source: cricketstatz_txt
+        id: I Simpson
+        name: I Simpson
+      - source: scorebook
         id: I Simpson
         name: I Simpson
   - canonical_name: Ian Wilkinson
@@ -1574,6 +1679,12 @@ players:
       - source: scorebook
         id: J Shiels
         name: J Shiels
+      - source: scorebook
+        id: J Sheils
+        name: J Sheils
+      - source: scorebook
+        id: Shiels
+        name: Shiels
   - canonical_name: Adam Jones
     refs:
       - source: cricketstatz
@@ -1603,6 +1714,9 @@ players:
     refs:
       - source: cricketstatz
         id: '311'
+        name: L Santos
+      - source: scorebook
+        id: L Santos
         name: L Santos
   - canonical_name: Mark Lavery
     refs:
@@ -1662,6 +1776,9 @@ players:
       - source: nmcl_stats
         id: M YOUNG
         name: M Young
+      - source: scorebook
+        id: M Young
+        name: M Young
   - canonical_name: M Z Shah
     refs:
       - source: crichq_pdf
@@ -1672,6 +1789,9 @@ players:
       - source: cricketstatz
         id: '211'
         name: Moore,G
+      - source: scorebook
+        id: G Moore
+        name: G Moore
   - canonical_name: Nigel Warne
     refs:
       - source: cricketstatz
@@ -1681,6 +1801,9 @@ players:
         id: N WARNE
         name: N Warne
       - source: cricketstatz_txt
+        id: N Warne
+        name: N Warne
+      - source: scorebook
         id: N Warne
         name: N Warne
   - canonical_name: P Hodgkin
@@ -1699,6 +1822,9 @@ players:
         id: '238'
         name: R Moore
       - source: cricketstatz_txt
+        id: R Moore
+        name: R Moore
+      - source: scorebook
         id: R Moore
         name: R Moore
   - canonical_name: S Ali Mirza
@@ -1757,6 +1883,9 @@ players:
       - source: cricketstatz_txt
         id: T Birtwistle
         name: T Birtwistle
+      - source: scorebook
+        id: T Birtwistle
+        name: T Birtwistle
   - canonical_name: T McMahon
     refs:
       - source: crichq_pdf
@@ -1775,11 +1904,17 @@ players:
       - source: nmcl_stats
         id: J WADE
         name: J Wade
+      - source: scorebook
+        id: J Wade
+        name: J Wade
   - canonical_name: Dave Woodward
     refs:
       - source: cricketstatz
         id: '186'
         name: Woodward,D
+      - source: scorebook
+        id: D Woodward
+        name: D Woodward
   - canonical_name: Zeeshan Ali
     refs:
       - source: cricketstatz
@@ -1823,7 +1958,18 @@ players:
       - source: nmcl_stats
         id: J BAILEY
         name: J Bailey
+      - source: scorebook
+        id: J Bailey
+        name: J Bailey
     reason: Confirmed by the user.
+  - canonical_name: Paul Santos
+    refs:
+      - source: cricketstatz
+        id: '349'
+        name: Paul Santos
+      - source: scorebook
+        id: P Santos
+        name: P Santos
 clubs:
 
   - canonical_name: "Westleigh Meths CC"
@@ -2337,6 +2483,12 @@ teams:
       - source: cricketstatz_txt
         id: AL 1st XI
         name: AL 1st XI
+      - source: scorebook
+        id: Ashton Ladysmith 1st XI
+        name: Ashton Ladysmith 1st XI
+      - source: scorebook
+        id: Ashton Ladysmith CC 1st XI
+        name: Ashton Ladysmith CC 1st XI
   - canonical_name: South West Manchester CC 1st XI
     refs:
       - source: crichq_pdf
@@ -2424,6 +2576,12 @@ teams:
       - source: cricketstatz_txt
         id: EV 1st XI
         name: EV 1st XI
+      - source: scorebook
+        id: Elton Vale 1st XI
+        name: Elton Vale 1st XI
+      - source: scorebook
+        id: Elton Vale CC 1st XI
+        name: Elton Vale CC 1st XI
   - canonical_name: Glossop CC 2nd XI
     refs:
       - source: crichq_pdf
@@ -2504,6 +2662,9 @@ teams:
       - source: cricketstatz
         id: '29'
         name: BL 1st XI
+      - source: scorebook
+        id: Blackley CC 1st XI
+        name: Blackley CC 1st XI
   - canonical_name: Egerton CC 2nd XI
     refs:
       - source: crichq_pdf
@@ -2709,6 +2870,46 @@ teams:
         id: FM 1st XI
         name: FM 1st XI
     reason: Needed for the 11-Jul-2010 hand-scored scorebook match (scorebooks/); merges the cricketstatz_txt short-code team onto the existing cricketstatz team row.
+  - canonical_name: Prestwich 3rd XI
+    refs:
+      - source: cricketstatz
+        id: '14'
+        name: Prestwich 3rd XI
+      - source: cricketstatz_txt
+        id: Prestwich 3rd XI
+        name: 3rd XI
+  - canonical_name: Rochdale 3rd XI
+    refs:
+      - source: cricketstatz
+        id: '39'
+        name: Rochdale 3rd XI
+      - source: cricketstatz_txt
+        id: Rochdale 3rd XI
+        name: 3rd XI
+  - canonical_name: Bury 1st XI
+    refs:
+      - source: cricketstatz
+        id: '63'
+        name: Bury 1st XI
+      - source: scorebook
+        id: Bury CC 1st XI
+        name: 1st XI
+  - canonical_name: Glodwick 1st XI
+    refs:
+      - source: cricketstatz
+        id: '6'
+        name: Glodwick 1st XI
+      - source: scorebook
+        id: Glodwick 1st XI
+        name: 1st XI
+  - canonical_name: Rob 1st XI
+    refs:
+      - source: cricketstatz
+        id: '7'
+        name: Rob 1st XI
+      - source: scorebook
+        id: Robinsons 1st XI
+        name: 1st XI
 grounds:
 
   - canonical_name: "ELPMCC, Croft Lane"
@@ -2918,25 +3119,7 @@ rejected:
 
 pending:
   clubs: []
-  teams:
-    - canonical_name: Prestwich 3rd XI
-      status: pending
-      refs:
-        - source: cricketstatz
-          id: '14'
-          name: Prestwich 3rd XI
-        - source: cricketstatz_txt
-          id: Prestwich 3rd XI
-          name: 3rd XI
-    - canonical_name: Rochdale 3rd XI
-      status: pending
-      refs:
-        - source: cricketstatz
-          id: '39'
-          name: Rochdale 3rd XI
-        - source: cricketstatz_txt
-          id: Rochdale 3rd XI
-          name: 3rd XI
+  teams: []
   grounds: []
   players: []
 duplicate_matches:

@@ -11,6 +11,7 @@ docstring documentation of every module.
 ## Contents
 
 - [Milestone: all original data now imported (2026-08-26)](#milestone-all-original-data-now-imported-2026-08-26)
+- [2012 1st XI season and 2004/2011 scorebook backlog (2026-10-18)](#2012-1st-xi-season-and-20042011-scorebook-backlog-2026-10-18)
 - [Modules](#modules)
 - [Retired](#retired)
 - [Sample data](#sample-data)
@@ -156,6 +157,49 @@ Play-Cricket presence goes, likely somewhere in the 2018-2023 range CricHQ
 already covers) remain a possible future backfill, see "Maintaining the
 database" in the README. CricHQ and CricketStatz, being closed archives, are
 complete by definition once ingested.
+
+## 2012 1st XI season and 2004/2011 scorebook backlog (2026-10-18)
+
+Two pieces of follow-up work on the scorebook archive, done together.
+
+**2004/2011 backlog reconciliation.** An earlier session's 39 scorebook
+matches (the 2010 Failsworth Macedonia match, one 2007 2nd XI match, the
+2nd XI's 2011 season, and the 1st XI's 2004 season) had left 47 ELPM-side
+player identities unmerged against the rest of the archive — each scorebook
+appearance had created its own new player row instead of attaching to the
+already-established canonical identity, since `scorebooks.py`'s player
+upsert has no auto-merge of its own (unlike clubs/teams, which merge on
+near-exact name match). Found by querying for scorebook-source
+`player_source_ids` whose `player_id` has only one distinct source. 39 of
+the 47 were resolved with high-confidence single-candidate matches (season,
+division and discipline overlap) or candidates the user had already
+confirmed in a prior pending review; the remaining 8 were left unmerged as
+genuinely ambiguous, each noted in the merge commit.
+
+**2012 1st XI season.** 37 newly-uploaded scorebook photos (`scorebooks/1xt
+XI/2012 1st XI/`) covering 18 matches, Apr-Sep 2012 — transcribed, then
+re-verified page by page in a second pass against the same photos (every
+batting figure, dismissal, fielder/bowler attribution and extras breakdown
+re-read and cross-checked against the printed totals). The second pass
+found and fixed: numerous bowler/fielder pairs transcribed in reversed
+order, several misattributed or misread individual scores, one match's
+entire first innings that had been transcribed from the wrong source
+entirely (corrected against the real photo), a fabricated player entry
+with no basis in the scorebook, and a handful of missing or misread names.
+See `scorebooks.py`'s own docstring for the season-level account, including
+the "G Bond"/"J Bond" retire-and-resume identity and the two matches with
+no legible date on the page.
+
+Digitizing this season also surfaced a small amount of team-identity
+fragmentation it didn't cause as well as some it did: Ashton Ladysmith CC,
+Elton Vale CC and Blackley CC 1st XIs each ended up as two team rows
+because the 2012 scorebook pages used a slightly different `team_name`
+string than the one already established by crichq_pdf/cricketstatz or an
+earlier scorebook batch, and `SQLiteStore`'s auto-merge only matches
+identical strings — fixed with three new `reconcile/decisions.yaml`
+`teams:` refs. Littleborough Lakeside CC and Rochdale Catholic Club are
+known to have the same kind of split from the 2004/2011 batch, pre-dating
+this session; left as a follow-up rather than fixed here.
 
 ## Modules
 
