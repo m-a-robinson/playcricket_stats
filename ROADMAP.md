@@ -145,7 +145,7 @@ new logic.
 | 5.6 | Soak test on the target Pi and TV for a week | S | No crashes, memory growth or burn-in issues |
 
 Recommended hardware: Raspberry Pi 4 or 5 with 4 GB RAM, running
-Raspberry Pi OS with desktop. The database is about 30 MB and the app is
+Raspberry Pi OS with desktop. The database is about 15 MB and the app is
 light; Chromium is the main memory user.
 
 **Optional early win:** once Phase 2 is finished, a folder of exported
