@@ -9,7 +9,7 @@ anything at real data.
 
 For the real, continuously-maintained database — the amalgamated,
 six-source store, and how to query it for actual career stats, match
-lookups, and team records — see [README.md](README.md#using-the-main-database)'s
+lookups, and team records — see [USAGE.md](USAGE.md)'s
 "Using the main database" section instead. Everything below uses the same
 `sqlite_queries.py`/`playcricket_scorecard.py` functions that section does;
 only the data underneath differs.

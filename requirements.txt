@@ -1,0 +1,9 @@
+pandas
+numpy
+requests
+pypdf
+xlrd
+ruamel.yaml
+python-pptx
+jinja2
+playwright
